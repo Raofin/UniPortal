@@ -2,6 +2,9 @@ import React from "react";
 import { Navbar as HeroNavbar, NavbarBrand, NavbarContent, NavbarItem, Button, Avatar } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { ThemeSwitcher } from "./theme-switcher";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Badge } from "@heroui/react";
+import { NotificationCenter } from "./notification-center";
+import { ProfilePopup } from "./profile-popup";
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
@@ -56,6 +59,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
             Notes
           </Button>
         </NavbarItem>
+        <NavbarItem>
+          <Button
+            variant="light"
+            onPress={() => onNavigate("timeline")}
+            startContent={<Icon icon="lucide:timeline" />}
+          >
+            Timeline
+          </Button>
+        </NavbarItem>
+        <NavbarItem>
+          <Button
+            variant="light"
+            onPress={() => onNavigate("conversations")}
+            startContent={<Icon icon="lucide:message-circle" />}
+          >
+            Messages
+          </Button>
+        </NavbarItem>
       </NavbarContent>
       
       <NavbarContent justify="end">
@@ -63,11 +84,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
           <ThemeSwitcher />
         </NavbarItem>
         <NavbarItem>
-          <Avatar
-            isBordered
-            color="primary"
-            src="https://img.heroui.chat/image/avatar?w=200&h=200&u=1"
-            size="sm"
+          <NotificationCenter />
+        </NavbarItem>
+        <NavbarItem>
+          <ProfilePopup 
+            trigger={
+              <Avatar
+                isBordered
+                color="primary"
+                src="https://img.heroui.chat/image/avatar?w=200&h=200&u=1"
+                size="sm"
+                className="cursor-pointer"
+              />
+            }
           />
         </NavbarItem>
       </NavbarContent>

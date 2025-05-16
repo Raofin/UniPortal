@@ -7,6 +7,11 @@ import { RecentGrades } from "./components/recent-grades";
 import { NotesAndFiles } from "./components/notes-files";
 import { ScrollToTop } from "./components/scroll-to-top";
 import { motion } from "framer-motion";
+import { AcademicTimeline } from "./components/academic-timeline";
+import { Conversations } from "./components/conversations";
+import { MotivationalFooter } from "./components/motivational-footer";
+import { FloatingChat } from "./components/floating-chat";
+import { FloatingResources } from "./components/floating-resources";
 
 const App: React.FC = () => {
   const sectionRefs = {
@@ -14,6 +19,8 @@ const App: React.FC = () => {
     assignments: React.useRef<HTMLDivElement>(null),
     grades: React.useRef<HTMLDivElement>(null),
     notes: React.useRef<HTMLDivElement>(null),
+    timeline: React.useRef<HTMLDivElement>(null),
+    conversations: React.useRef<HTMLDivElement>(null),
   };
 
   const scrollToSection = (section: keyof typeof sectionRefs) => {
@@ -76,9 +83,34 @@ const App: React.FC = () => {
         >
           <NotesAndFiles />
         </motion.div>
+        
+        <motion.div 
+          ref={sectionRefs.timeline}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-12"
+        >
+          <AcademicTimeline />
+        </motion.div>
+        
+        <motion.div 
+          ref={sectionRefs.conversations}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-12"
+        >
+          <Conversations />
+        </motion.div>
       </main>
       
+      <MotivationalFooter />
       <ScrollToTop />
+      <FloatingChat />
+      <FloatingResources />
     </div>
   );
 };
