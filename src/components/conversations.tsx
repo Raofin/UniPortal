@@ -288,7 +288,7 @@ export const Conversations: React.FC = () => {
       </CardHeader>
       
       <CardBody className="p-0">
-        {selected === "inbox" && (
+        {selected === "inbox" ? (
           <div className="flex flex-col md:flex-row h-[600px]">
             {/* Message list */}
             <div className="w-full md:w-2/5 border-r border-divider overflow-y-auto">
@@ -360,7 +360,7 @@ export const Conversations: React.FC = () => {
                     className="flex flex-col h-full"
                   >
                     {(() => {
-                      const message = messages.find(m => m.id === selectedMessage);
+                      const message = selectedMessageData;
                       if (!message) return null;
                       
                       return (

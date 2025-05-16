@@ -1,10 +1,10 @@
 import React from "react";
-import { 
-  Button, 
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
   ModalFooter,
   Tabs,
   Tab,
@@ -15,6 +15,7 @@ import {
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { EnhancedAIChat } from "./enhanced-ai-chat";
 
 interface Message {
   id: string;
@@ -43,8 +44,9 @@ export const FloatingChat: React.FC = () => {
   const [selectedChat, setSelectedChat] = React.useState<string | null>("cs301");
   const [newMessage, setNewMessage] = React.useState("");
   const [isTyping, setIsTyping] = React.useState(false);
+  const [selectedInboxMessage, setSelectedInboxMessage] = React.useState<string | null>(null);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
-  
+
   // Mock data for chat groups
   const chatGroups: ChatGroup[] = [
     {
@@ -69,7 +71,7 @@ export const FloatingChat: React.FC = () => {
       lastMessageTime: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
     }
   ];
-  
+
   // Mock chat messages for CS301
   const [messages, setMessages] = React.useState<Record<string, Message[]>>({
     cs301: [
@@ -175,7 +177,7 @@ export const FloatingChat: React.FC = () => {
       }
     ]
   });
-  
+
   // Mock inbox messages
   const inboxMessages = [
     {
@@ -225,12 +227,12 @@ export const FloatingChat: React.FC = () => {
       isRead: true
     }
   ];
-  
+
   // Format time function
   const formatTime = (date: Date) => {
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffInHours < 48) {
@@ -239,10 +241,9 @@ export const FloatingChat: React.FC = () => {
       return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
   };
-  
+
   const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedChat) return;
-    
+    if (!newMessage.trim() || (!selectedChat && activeTab !== "ai")) return;
     const newMsg: Message = {
       id: `new-${Date.now()}`,
       sender: {
@@ -255,21 +256,15 @@ export const FloatingChat: React.FC = () => {
       timestamp: new Date(),
       isRead: true
     };
-    
-    // For AI chat, we'll simulate a response
+
     if (activeTab === "ai") {
       setMessages(prev => ({
         ...prev,
         ai: [...prev.ai, newMsg]
       }));
-      
-      // Simulate typing indicator
       setIsTyping(true);
-      
-      // Simulate AI response after a delay
       setTimeout(() => {
         setIsTyping(false);
-        
         const aiResponse: Message = {
           id: `ai-${Date.now()}`,
           sender: {
@@ -282,27 +277,24 @@ export const FloatingChat: React.FC = () => {
           timestamp: new Date(),
           isRead: true
         };
-        
         setMessages(prev => ({
           ...prev,
           ai: [...prev.ai, aiResponse]
         }));
       }, 1500);
     } else {
-      // For regular chats
       setMessages(prev => ({
         ...prev,
-        [selectedChat]: [...(prev[selectedChat] || []), newMsg]
+        [selectedChat!]: [...(prev[selectedChat!] || []), newMsg]
       }));
     }
-    
     setNewMessage("");
   };
-  
+
   // Generate a simple AI response based on the message content
   const generateAIResponse = (message: string) => {
     const lowerMsg = message.toLowerCase();
-    
+
     if (lowerMsg.includes("algorithm") || lowerMsg.includes("cs301")) {
       return "For Advanced Algorithms (CS301), I recommend focusing on dynamic programming, graph algorithms, and complexity analysis. The midterm exam will cover these topics extensively. Would you like me to explain any specific algorithm concept?";
     } else if (lowerMsg.includes("data structure") || lowerMsg.includes("cs202")) {
@@ -315,14 +307,14 @@ export const FloatingChat: React.FC = () => {
       return "I'm here to help with your coursework and assignments. Could you please specify which course or topic you need assistance with? For example, you can ask about Advanced Algorithms (CS301), Data Structures (CS202), or Database Systems (CS305).";
     }
   };
-  
+
   // Scroll to bottom of chat when new messages are added
   React.useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, selectedChat, activeTab, isTyping]);
-  
+
   return (
     <>
       {/* Floating button */}
@@ -342,10 +334,10 @@ export const FloatingChat: React.FC = () => {
           Conversations
         </Button>
       </motion.div>
-      
+
       {/* Chat modal */}
-      <Modal 
-        isOpen={isOpen} 
+      <Modal
+        isOpen={isOpen}
         onOpenChange={setIsOpen}
         size="4xl"
         scrollBehavior="inside"
@@ -357,8 +349,8 @@ export const FloatingChat: React.FC = () => {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                <Tabs 
-                  selectedKey={activeTab} 
+                <Tabs
+                  selectedKey={activeTab}
                   onSelectionChange={(key) => setActiveTab(key as "discussion" | "inbox" | "ai")}
                   color="primary"
                   variant="underlined"
@@ -366,8 +358,8 @@ export const FloatingChat: React.FC = () => {
                     tabList: "gap-6",
                   }}
                 >
-                  <Tab 
-                    key="discussion" 
+                  <Tab
+                    key="discussion"
                     title={
                       <div className="flex items-center gap-2">
                         <Icon icon="lucide:users" />
@@ -375,8 +367,8 @@ export const FloatingChat: React.FC = () => {
                       </div>
                     }
                   />
-                  <Tab 
-                    key="inbox" 
+                  <Tab
+                    key="inbox"
                     title={
                       <div className="flex items-center gap-2">
                         <Icon icon="lucide:inbox" />
@@ -384,8 +376,8 @@ export const FloatingChat: React.FC = () => {
                       </div>
                     }
                   />
-                  <Tab 
-                    key="ai" 
+                  <Tab
+                    key="ai"
                     title={
                       <div className="flex items-center gap-2">
                         <Icon icon="lucide:sparkles" />
@@ -395,7 +387,7 @@ export const FloatingChat: React.FC = () => {
                   />
                 </Tabs>
               </ModalHeader>
-              
+
               <ModalBody className="p-0">
                 {activeTab === "discussion" && (
                   <div className="flex h-full">
@@ -409,7 +401,7 @@ export const FloatingChat: React.FC = () => {
                           className="mb-2"
                         />
                       </div>
-                      
+
                       <div className="space-y-1 px-2">
                         {chatGroups.map((group) => (
                           <motion.div
@@ -428,11 +420,11 @@ export const FloatingChat: React.FC = () => {
                                 </Chip>
                               )}
                             </div>
-                            
+
                             <p className="text-xs text-default-500 truncate mt-1">
                               {group.lastMessage}
                             </p>
-                            
+
                             <p className="text-xs text-default-400 mt-1">
                               {formatTime(group.lastMessageTime)}
                             </p>
@@ -440,7 +432,7 @@ export const FloatingChat: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                    
+
                     {/* Chat content */}
                     <div className="w-2/3 flex flex-col h-full">
                       {selectedChat ? (
@@ -455,7 +447,7 @@ export const FloatingChat: React.FC = () => {
                                   28 members
                                 </Chip>
                               </div>
-                              
+
                               <div className="flex gap-1">
                                 <Button
                                   isIconOnly
@@ -463,7 +455,7 @@ export const FloatingChat: React.FC = () => {
                                   variant="light"
                                   aria-label="Search in conversation"
                                 >
-                                  <Icon icon="lucide:search" size={18} />
+                                  <Icon icon="lucide:search" width={18} height={18} />
                                 </Button>
                                 <Button
                                   isIconOnly
@@ -471,13 +463,13 @@ export const FloatingChat: React.FC = () => {
                                   variant="light"
                                   aria-label="More options"
                                 >
-                                  <Icon icon="lucide:more-vertical" size={18} />
+                                  <Icon icon="lucide:more-vertical" width={18} height={18} />
                                 </Button>
                               </div>
                             </div>
                           </div>
-                          
-                          <div 
+
+                          <div
                             ref={chatContainerRef}
                             className="flex-grow overflow-y-auto p-4 space-y-4"
                           >
@@ -510,7 +502,7 @@ export const FloatingChat: React.FC = () => {
                                         {formatTime(message.timestamp)}
                                       </span>
                                     </div>
-                                    
+
                                     <div className="mt-1">
                                       <p className="text-sm">{message.content}</p>
                                     </div>
@@ -519,7 +511,7 @@ export const FloatingChat: React.FC = () => {
                               </motion.div>
                             ))}
                           </div>
-                          
+
                           <div className="p-3 border-t border-divider">
                             <div className="flex gap-2">
                               <Input
@@ -541,7 +533,7 @@ export const FloatingChat: React.FC = () => {
                                       variant="light"
                                       aria-label="Attach file"
                                     >
-                                      <Icon icon="lucide:paperclip" size={18} />
+                                      <Icon icon="lucide:paperclip" width={18} height={18} />
                                     </Button>
                                     <Button
                                       isIconOnly
@@ -549,7 +541,7 @@ export const FloatingChat: React.FC = () => {
                                       variant="light"
                                       aria-label="Add emoji"
                                     >
-                                      <Icon icon="lucide:smile" size={18} />
+                                      <Icon icon="lucide:smile" width={18} height={18} />
                                     </Button>
                                   </div>
                                 }
@@ -578,7 +570,7 @@ export const FloatingChat: React.FC = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {activeTab === "inbox" && (
                   <div className="flex h-full">
                     {/* Message list */}
@@ -591,19 +583,18 @@ export const FloatingChat: React.FC = () => {
                           className="mb-2"
                         />
                       </div>
-                      
+
                       <div className="divide-y divide-divider">
                         {inboxMessages.map((message) => (
                           <motion.div
                             key={message.id}
                             whileHover={{ backgroundColor: "var(--heroui-content1)" }}
-                            className={`p-3 cursor-pointer ${
-                              !message.isRead ? "border-l-4 border-primary" : ""
-                            }`}
+                            className={`p-3 cursor-pointer ${!message.isRead ? "border-l-4 border-primary" : ""}`}
+                            onClick={() => setSelectedInboxMessage(message.id)}
                           >
                             <div className="flex items-center gap-3">
                               <Avatar src={message.sender.avatar} size="sm" />
-                              
+
                               <div className="flex-grow min-w-0">
                                 <div className="flex justify-between items-center mb-1">
                                   <h4 className={`font-medium truncate ${!message.isRead ? "text-foreground" : "text-default-600"}`}>
@@ -613,18 +604,18 @@ export const FloatingChat: React.FC = () => {
                                     {formatTime(message.timestamp)}
                                   </span>
                                 </div>
-                                
+
                                 <p className={`text-sm truncate ${!message.isRead ? "font-medium" : "text-default-500"}`}>
                                   {message.subject}
                                 </p>
-                                
+
                                 <p className="text-xs truncate text-default-400">
                                   {message.content.substring(0, 60)}...
                                 </p>
-                                
+
                                 {message.attachments && message.attachments.length > 0 && (
                                   <div className="flex items-center gap-1 mt-1">
-                                    <Icon icon="lucide:paperclip" className="text-default-400" size={12} />
+                                    <Icon icon="lucide:paperclip" className="text-default-400" width={12} height={12} />
                                     <span className="text-xs text-default-400">
                                       {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
                                     </span>
@@ -636,27 +627,55 @@ export const FloatingChat: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                    
+
                     {/* Message content */}
                     <div className="w-2/3 flex flex-col h-full">
-                      <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                        <Icon icon="lucide:mail" className="w-16 h-16 text-default-300 mb-4" />
-                        <h3 className="text-xl font-medium mb-2">Select a message</h3>
-                        <p className="text-default-500 max-w-md">
-                          Choose a message from the list to view its contents
-                        </p>
-                      </div>
+                      {selectedInboxMessage ? (
+                        (() => {
+                          const message = inboxMessages.find(m => m.id === selectedInboxMessage);
+                          if (!message) return null;
+                          return (
+                            <div className="flex flex-col h-full p-6">
+                              <div className="flex items-center gap-3 mb-4">
+                                <Avatar src={message.sender.avatar} size="md" />
+                                <div>
+                                  <h3 className="font-medium text-lg">{message.sender.name}</h3>
+                                  <p className="text-xs text-default-400">{formatTime(message.timestamp)}</p>
+                                </div>
+                              </div>
+                              <h4 className="text-lg font-semibold mb-2">{message.subject}</h4>
+                              <div className="mb-4 text-default-700 whitespace-pre-line">{message.content}</div>
+                              {message.attachments && message.attachments.length > 0 && (
+                                <div className="mt-2">
+                                  <h5 className="font-medium mb-1">Attachments:</h5>
+                                  <ul className="list-disc list-inside">
+                                    {message.attachments.map((att, i) => (
+                                      <li key={i} className="text-sm text-default-500">{att.name} ({att.size})</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                          <Icon icon="lucide:mail" className="w-16 h-16 text-default-300 mb-4" />
+                          <h3 className="text-xl font-medium mb-2">Select a message</h3>
+                          <p className="text-default-500 max-w-md">Choose a message from the list to view its contents</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
-                
+
                 {activeTab === "ai" && (
                   <div className="flex h-full w-full">
                     <EnhancedAIChat />
                   </div>
                 )}
               </ModalBody>
-              
+
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close

@@ -1,14 +1,14 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Chip, Button, Tabs, Tab } from "@heroui/react";
+import { Card, CardBody, CardHeader, Chip, Button, Tabs, Tab, Tooltip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip as RechartsTooltip
 } from "recharts";
 
@@ -45,7 +45,7 @@ interface Course {
 
 export const RecentGrades: React.FC = () => {
   const [selected, setSelected] = React.useState<"byDate" | "byCourse">("byDate");
-  
+
   const courses: Course[] = [
     {
       id: "cs301",
@@ -312,48 +312,48 @@ export const RecentGrades: React.FC = () => {
       }
     }
   ];
-  
+
   const calculateProgress = (course: Course) => {
     const midtermAssessments = course.assessments.midterm;
     const finalAssessments = course.assessments.final;
-    
+
     const totalMidtermWeight = midtermAssessments.reduce((sum, a) => sum + a.weight, 0);
     const totalFinalWeight = finalAssessments.reduce((sum, a) => sum + a.weight, 0);
     const totalWeight = totalMidtermWeight + totalFinalWeight;
-    
+
     const earnedMidtermPoints = midtermAssessments
       .filter(a => a.status === "completed" && a.score !== undefined)
       .reduce((sum, a) => sum + ((a.score || 0) / a.totalScore) * a.weight, 0);
-    
+
     const earnedFinalPoints = finalAssessments
       .filter(a => a.status === "completed" && a.score !== undefined)
       .reduce((sum, a) => sum + ((a.score || 0) / a.totalScore) * a.weight, 0);
-    
+
     const totalEarnedPoints = earnedMidtermPoints + earnedFinalPoints;
-    
+
     // Calculate completed percentage (what portion of the course has been completed)
     const completedMidtermWeight = midtermAssessments
       .filter(a => a.status === "completed")
       .reduce((sum, a) => sum + a.weight, 0);
-    
+
     const completedFinalWeight = finalAssessments
       .filter(a => a.status === "completed")
       .reduce((sum, a) => sum + a.weight, 0);
-    
+
     const completedPercentage = ((completedMidtermWeight + completedFinalWeight) / totalWeight) * 100;
-    
+
     // Calculate current grade percentage based on completed assessments
-    const currentGradePercentage = completedPercentage > 0 
+    const currentGradePercentage = completedPercentage > 0
       ? (totalEarnedPoints / (completedMidtermWeight + completedFinalWeight)) * 100
       : 0;
-    
+
     return {
       currentGradePercentage,
       completedPercentage,
       letterGrade: getLetterGrade(currentGradePercentage)
     };
   };
-  
+
   const getLetterGrade = (percentage: number) => {
     if (percentage >= 90) return "A";
     if (percentage >= 80) return "B";
@@ -361,7 +361,7 @@ export const RecentGrades: React.FC = () => {
     if (percentage >= 60) return "D";
     return "F";
   };
-  
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
@@ -374,17 +374,17 @@ export const RecentGrades: React.FC = () => {
         return "default";
     }
   };
-  
+
   // Add new function for tooltips
   const renderTooltip = (assessment: Assessment) => {
     if (assessment.status !== "completed" || assessment.score === undefined) {
       return `${assessment.name} - Not completed yet`;
     }
-    
+
     const percentage = (assessment.score / assessment.totalScore) * 100;
     return `${assessment.name} - ${assessment.score}/${assessment.totalScore} (${assessment.weight}%)`;
   };
-  
+
   // Define colors for different assessment types
   const assessmentColors = {
     "Attendance": "var(--heroui-success)",
@@ -395,7 +395,7 @@ export const RecentGrades: React.FC = () => {
     "Presentation": "var(--heroui-warning)",
     "Project": "var(--heroui-warning)"
   };
-  
+
   // Fix the circle charts visibility issues by ensuring proper color contrast
   const renderCircleChart = (data: any[], percentage: number, title: string) => {
     return (
@@ -404,7 +404,7 @@ export const RecentGrades: React.FC = () => {
           <Icon icon={title.includes("Midterm") ? "lucide:calendar-check" : "lucide:calendar-clock"} className="text-primary" size={16} />
           {title}
         </h4>
-        
+
         <div className="relative w-32 h-32">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             {/* Background circle with improved visibility */}
@@ -416,45 +416,45 @@ export const RecentGrades: React.FC = () => {
               stroke="var(--heroui-default-200)"
               strokeWidth="10"
             />
-            
+
             {/* Segments for each assessment with improved visibility */}
             {data.map((item, i) => {
               // Calculate start and end angles
               const totalValue = data.reduce((sum, d) => sum + d.value, 0);
               const anglePerValue = 360 / totalValue;
-              
+
               let startAngle = 0;
               for (let j = 0; j < i; j++) {
                 startAngle += data[j].value * anglePerValue;
               }
-              
+
               const endAngle = startAngle + item.value * anglePerValue;
-              
+
               // Convert to radians and calculate path
               const startRad = (startAngle - 90) * Math.PI / 180;
               const endRad = (endAngle - 90) * Math.PI / 180;
-              
+
               const x1 = 50 + 45 * Math.cos(startRad);
               const y1 = 50 + 45 * Math.sin(startRad);
               const x2 = 50 + 45 * Math.cos(endRad);
               const y2 = 50 + 45 * Math.sin(endRad);
-              
+
               const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
-              
+
               const pathData = `M 50 50 L ${x1} ${y1} A 45 45 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-              
+
               // For pending items, use dashed stroke
               const dashArray = item.status === "pending" ? "3,2" : "none";
-              
+
               // Use more vibrant colors with better contrast
-              const fillColor = item.status === "completed" 
-                ? item.color 
-                : item.status === "pending" 
-                  ? "var(--heroui-default-200)" 
+              const fillColor = item.status === "completed"
+                ? item.color
+                : item.status === "pending"
+                  ? "var(--heroui-default-200)"
                   : "var(--heroui-default-100)";
-              
+
               return (
-                <Tooltip 
+                <Tooltip
                   key={`${title}-${item.name}`}
                   content={
                     <div className="p-2">
@@ -479,7 +479,7 @@ export const RecentGrades: React.FC = () => {
                 </Tooltip>
               );
             })}
-            
+
             {/* Center circle with improved visibility */}
             <circle
               cx="50"
@@ -489,7 +489,7 @@ export const RecentGrades: React.FC = () => {
               stroke="var(--heroui-divider)"
               strokeWidth="1"
             />
-            
+
             {/* Completion text with improved visibility */}
             <text
               x="50"
@@ -503,7 +503,7 @@ export const RecentGrades: React.FC = () => {
             >
               {Math.round(percentage)}%
             </text>
-            
+
             <text
               x="50"
               y="60"
@@ -520,7 +520,7 @@ export const RecentGrades: React.FC = () => {
       </div>
     );
   };
-  
+
   return (
     <Card className="shadow-sm">
       <CardHeader>
@@ -534,13 +534,13 @@ export const RecentGrades: React.FC = () => {
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardBody>
         <div className="overflow-x-auto pb-4">
           <div className="flex gap-6 min-w-max">
             {courses.map((course, courseIndex) => {
               const progress = calculateProgress(course);
-              
+
               // Calculate midterm and final term data for pie charts
               const midtermData = course.assessments.midterm.map(assessment => ({
                 name: assessment.name,
@@ -550,7 +550,7 @@ export const RecentGrades: React.FC = () => {
                 totalScore: assessment.totalScore,
                 color: assessmentColors[assessment.name as keyof typeof assessmentColors] || "var(--heroui-default-500)"
               }));
-              
+
               const finalData = course.assessments.final.map(assessment => ({
                 name: assessment.name,
                 value: assessment.weight,
@@ -559,19 +559,19 @@ export const RecentGrades: React.FC = () => {
                 totalScore: assessment.totalScore,
                 color: assessmentColors[assessment.name as keyof typeof assessmentColors] || "var(--heroui-default-500)"
               }));
-              
+
               // Calculate completion percentages
               const midtermCompletedWeight = course.assessments.midterm
                 .filter(a => a.status === "completed")
                 .reduce((sum, a) => sum + a.weight, 0);
-              
+
               const finalCompletedWeight = course.assessments.final
                 .filter(a => a.status === "completed")
                 .reduce((sum, a) => sum + a.weight, 0);
-              
+
               const midtermPercentage = (midtermCompletedWeight / 50) * 100;
               const finalPercentage = (finalCompletedWeight / 50) * 100;
-              
+
               return (
                 <motion.div
                   key={course.id}
@@ -587,15 +587,15 @@ export const RecentGrades: React.FC = () => {
                           <h3 className="text-lg font-medium">{course.name}</h3>
                           <p className="text-sm text-default-500">{course.code} • {course.credits} Credits</p>
                           <p className="text-sm text-default-500">{course.instructor}</p>
-                          
+
                           <div className="flex flex-wrap gap-2 mt-2">
                             <Chip size="sm" color="primary" variant="flat">
                               {Math.round(progress.completedPercentage)}% Complete
                             </Chip>
-                            <Chip 
-                              size="sm" 
-                              color={progress.currentGradePercentage >= 80 ? "success" : 
-                                    progress.currentGradePercentage >= 70 ? "primary" : 
+                            <Chip
+                              size="sm"
+                              color={progress.currentGradePercentage >= 80 ? "success" :
+                                    progress.currentGradePercentage >= 70 ? "primary" :
                                     progress.currentGradePercentage >= 60 ? "warning" : "danger"}
                               variant="flat"
                             >
@@ -604,11 +604,11 @@ export const RecentGrades: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-col sm:flex-row gap-6 justify-center">
                         {/* Midterm Chart */}
                         {renderCircleChart(midtermData, midtermPercentage, "Midterm (50%)")}
-                        
+
                         {/* Final Term Chart */}
                         {renderCircleChart(finalData, finalPercentage, "Final Term (50%)")}
                       </div>
