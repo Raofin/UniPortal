@@ -30,7 +30,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar onNavigate={scrollToSection} />
-      
+
       <main className="container mx-auto px-4 pt-16 pb-24 max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -39,8 +39,8 @@ const App: React.FC = () => {
         >
           <WelcomeSection />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           ref={sectionRefs.calendar}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -50,8 +50,8 @@ const App: React.FC = () => {
         >
           <WeeklyCalendar />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           ref={sectionRefs.assignments}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -61,8 +61,8 @@ const App: React.FC = () => {
         >
           <UpcomingAssignments />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           ref={sectionRefs.grades}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -72,8 +72,8 @@ const App: React.FC = () => {
         >
           <RecentGrades />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           ref={sectionRefs.notes}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -83,8 +83,8 @@ const App: React.FC = () => {
         >
           <NotesAndFiles />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           ref={sectionRefs.timeline}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -94,19 +94,8 @@ const App: React.FC = () => {
         >
           <AcademicTimeline />
         </motion.div>
-        
-        <motion.div 
-          ref={sectionRefs.conversations}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mt-12"
-        >
-          <Conversations />
-        </motion.div>
       </main>
-      
+
       <MotivationalFooter />
       <ScrollToTop />
       <FloatingChat />

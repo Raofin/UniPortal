@@ -31,8 +31,8 @@ interface ChatGroup {
   lastMessageTime: Date;
 }
 
-export const Conversations: React.FC = () => {
-  const [selected, setSelected] = React.useState<"inbox" | "discussion">("inbox");
+export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+  const [selected, setSelected] = React.useState<"inbox" | "discussion" | "ai">("inbox");
   const [selectedMessage, setSelectedMessage] = React.useState<string | null>(null);
   const [selectedChat, setSelectedChat] = React.useState<string | null>("cs301");
   const [isTyping, setIsTyping] = React.useState(false);
@@ -254,28 +254,36 @@ export const Conversations: React.FC = () => {
 
   return (
     <Card className="shadow-sm">
-      <CardHeader className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold">Conversations</h2>
-
-        <Tabs
-          selectedKey={selected}
-          onSelectionChange={key => setSelected(key as "inbox" | "discussion" | "ai")}
-          variant="light"
-          color="primary"
-          classNames={{ tabList: "gap-4" }}
+      <CardHeader className="flex flex-row items-center gap-2 border-b border-divider bg-default-50/80 sticky top-0 z-10 justify-between">
+        <div className="flex flex-row items-center gap-2">
+          <Tabs
+            selectedKey={selected}
+            onSelectionChange={key => setSelected(key as "inbox" | "discussion" | "ai")}
+            variant="light"
+            color="primary"
+            classNames={{ tabList: "gap-4" }}
+          >
+            <Tab key="inbox" title={<div className="flex items-center gap-2"><Icon icon="lucide:inbox" /><span>Smart Inbox</span></div>} />
+            <Tab key="discussion" title={<div className="flex items-center gap-2"><Icon icon="lucide:message-circle" /><span>Class Discussion</span></div>} />
+            <Tab key="ai" title={<div className="flex items-center gap-2"><Icon icon="lucide:sparkles" /><span>AI Chat</span></div>} />
+          </Tabs>
+        </div>
+        <button
+          type="button"
+          onClick={onClose || (() => {})}
+          className="ml-auto rounded-full p-2 text-danger hover:bg-danger-100 transition-colors"
+          aria-label="Close conversations"
         >
-          <Tab key="inbox" title={<div className="flex items-center gap-2"><Icon icon="lucide:inbox" /><span>Smart Inbox</span></div>} />
-          <Tab key="discussion" title={<div className="flex items-center gap-2"><Icon icon="lucide:message-circle" /><span>Class Discussion</span></div>} />
-          <Tab key="ai" title={<div className="flex items-center gap-2"><Icon icon="lucide:sparkles" /><span>AI Chat</span></div>} />
-        </Tabs>
+          <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
+        </button>
       </CardHeader>
 
       <CardBody className="p-0 flex-1 min-h-0">
         {selected === "inbox" && (
-          <div className="flex flex-col md:flex-row h-[600px]">
+          <div className="flex flex-col md:flex-row h-screen">
             {/* Message list */}
             <div className="w-full md:w-2/5 border-r border-divider overflow-y-auto">
-              <div className="p-3">
+              <div className="p-3 pb-0"> {/* Remove bottom padding */}
                 <Input
                   placeholder="Search messages..."
                   startContent={<Icon icon="lucide:search" className="text-default-400" />}
@@ -285,13 +293,13 @@ export const Conversations: React.FC = () => {
               </div>
 
               <div className="divide-y divide-divider">
-                {messages.map((message) => (
+                {messages.map((message, idx) => (
                   <motion.div
                     key={message.id}
                     whileHover={{ backgroundColor: "var(--heroui-content1)" }}
                     className={`p-3 cursor-pointer ${
                       selectedMessage === message.id ? "bg-content1" : ""
-                    } ${!message.isRead ? "border-l-4 border-primary" : ""}`}
+                    } ${!message.isRead ? "border-l-4 border-primary" : ""} ${idx === messages.length - 1 ? 'border-b-0' : ''}`}
                     onClick={() => setSelectedMessage(message.id)}
                   >
                     <div className="flex items-center gap-3">
@@ -848,7 +856,7 @@ export const Conversations: React.FC = () => {
               </div>
 
               {/* Input area (static for demo) */}
-              <div className="p-4 border-t border-divider bg-white flex gap-2">
+              <div className="p-4 border-t border-divider color-inherit flex gap-2">
                 <Input fullWidth placeholder="Message AI Assistant..." startContent={<Icon icon="lucide:sparkles" className="text-primary" />} />
                 <Button color="primary" isIconOnly aria-label="Send message">
                   <Icon icon="lucide:send" />

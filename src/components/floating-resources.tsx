@@ -1,10 +1,10 @@
 import React from "react";
-import { 
-  Button, 
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
   ModalFooter,
   Tabs,
   Tab,
@@ -45,7 +45,7 @@ export const FloatingResources: React.FC = () => {
   const [isAddingSectionModalOpen, setIsAddingSectionModalOpen] = React.useState(false);
   const [newSectionName, setNewSectionName] = React.useState("");
   const [selectedSection, setSelectedSection] = React.useState<string | null>(null);
-  
+
   // Sample sections
   const [sections, setSections] = React.useState<Section[]>([
     { id: "algorithms", name: "Algorithms", color: "primary" },
@@ -53,7 +53,7 @@ export const FloatingResources: React.FC = () => {
     { id: "datastructures", name: "Data Structures", color: "success" },
     { id: "networks", name: "Computer Networks", color: "warning" }
   ]);
-  
+
   // Sample files
   const [files, setFiles] = React.useState<FileItem[]>([
     {
@@ -132,7 +132,7 @@ export const FloatingResources: React.FC = () => {
       starred: true
     }
   ]);
-  
+
   const getFileIcon = (type: string) => {
     switch (type) {
       case "pdf":
@@ -152,39 +152,39 @@ export const FloatingResources: React.FC = () => {
         return <Icon icon="lucide:file" className="text-default-500" />;
     }
   };
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
-  
+
   // Drag and drop functionality
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
-  
+
   const handleDragLeave = () => {
     setIsDragging(false);
   };
-  
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     // In a real app, we would handle file upload here
     // For demo purposes, let's simulate adding a new file
     if (e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
-      
+
       let fileType: FileItem['type'] = 'txt';
       if (['pdf'].includes(fileExtension)) fileType = 'pdf';
       else if (['doc', 'docx'].includes(fileExtension)) fileType = 'docx';
       else if (['ppt', 'pptx'].includes(fileExtension)) fileType = 'pptx';
       else if (['zip', 'rar'].includes(fileExtension)) fileType = 'zip';
       else if (['jpg', 'jpeg', 'png'].includes(fileExtension)) fileType = 'png';
-      
+
       const newFile: FileItem = {
         id: `new-${Date.now()}`,
         title: file.name,
@@ -194,42 +194,42 @@ export const FloatingResources: React.FC = () => {
         lastUpdated: new Date().toISOString().split('T')[0],
         size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`
       };
-      
+
       setFiles([newFile, ...files]);
     }
   };
-  
+
   // Filter files based on active tab and search query
   const filteredFiles = React.useMemo(() => {
     let result = files;
-    
+
     // Filter by tab
     if (activeTab === "recent") {
       // Sort by date and take the 5 most recent
-      result = [...files].sort((a, b) => 
+      result = [...files].sort((a, b) =>
         new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
       ).slice(0, 5);
     } else if (activeTab === "starred") {
       result = files.filter(file => file.starred);
     }
-    
+
     // Filter by section if selected
     if (selectedSection) {
       result = result.filter(file => file.section === selectedSection);
     }
-    
+
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(file => 
-        file.title.toLowerCase().includes(query) || 
+      result = result.filter(file =>
+        file.title.toLowerCase().includes(query) ||
         file.course.toLowerCase().includes(query)
       );
     }
-    
+
     return result;
   }, [files, activeTab, searchQuery, selectedSection]);
-  
+
   const handleAddSection = () => {
     if (newSectionName.trim()) {
       const newSection: Section = {
@@ -239,20 +239,20 @@ export const FloatingResources: React.FC = () => {
           Math.floor(Math.random() * 5)
         ] as Section["color"]
       };
-      
+
       setSections([...sections, newSection]);
       setNewSectionName("");
       setIsAddingSectionModalOpen(false);
       setSelectedSection(newSection.id);
     }
   };
-  
+
   const toggleStarFile = (fileId: string) => {
-    setFiles(files.map(file => 
+    setFiles(files.map(file =>
       file.id === fileId ? { ...file, starred: !file.starred } : file
     ));
   };
-  
+
   return (
     <>
       {/* Floating button */}
@@ -272,10 +272,10 @@ export const FloatingResources: React.FC = () => {
           Resources
         </Button>
       </motion.div>
-      
+
       {/* Resources modal */}
-      <Modal 
-        isOpen={isOpen} 
+      <Modal
+        isOpen={isOpen}
         onOpenChange={setIsOpen}
         size="5xl"
         scrollBehavior="inside"
@@ -294,7 +294,7 @@ export const FloatingResources: React.FC = () => {
                   </h2>
                 </div>
               </ModalHeader>
-              
+
               <ModalBody className="p-0">
                 <div className="flex h-full">
                   {/* Sidebar */}
@@ -309,17 +309,17 @@ export const FloatingResources: React.FC = () => {
                         onClear={() => setSearchQuery("")}
                       />
                     </div>
-                    
+
                     <div className="mb-4">
-                      <Tabs 
-                        selectedKey={activeTab} 
+                      <Tabs
+                        selectedKey={activeTab}
                         onSelectionChange={(key) => setActiveTab(key as "all" | "recent" | "starred")}
                         variant="light"
                         color="primary"
                         fullWidth
                       >
-                        <Tab 
-                          key="all" 
+                        <Tab
+                          key="all"
                           title={
                             <div className="flex items-center gap-2">
                               <Icon icon="lucide:layers" />
@@ -327,8 +327,8 @@ export const FloatingResources: React.FC = () => {
                             </div>
                           }
                         />
-                        <Tab 
-                          key="recent" 
+                        <Tab
+                          key="recent"
                           title={
                             <div className="flex items-center gap-2">
                               <Icon icon="lucide:clock" />
@@ -336,8 +336,8 @@ export const FloatingResources: React.FC = () => {
                             </div>
                           }
                         />
-                        <Tab 
-                          key="starred" 
+                        <Tab
+                          key="starred"
                           title={
                             <div className="flex items-center gap-2">
                               <Icon icon="lucide:star" />
@@ -347,7 +347,7 @@ export const FloatingResources: React.FC = () => {
                         />
                       </Tabs>
                     </div>
-                    
+
                     <div className="mb-2 flex justify-between items-center">
                       <h3 className="text-sm font-medium text-default-600">Sections</h3>
                       <Button
@@ -359,7 +359,7 @@ export const FloatingResources: React.FC = () => {
                         <Icon icon="lucide:plus" />
                       </Button>
                     </div>
-                    
+
                     <div className="space-y-1">
                       <Button
                         fullWidth
@@ -371,7 +371,7 @@ export const FloatingResources: React.FC = () => {
                       >
                         All Sections
                       </Button>
-                      
+
                       {sections.map((section) => (
                         <Button
                           key={section.id}
@@ -387,12 +387,12 @@ export const FloatingResources: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Main content */}
                   <div className="w-3/4 flex flex-col">
                     {/* Upload area */}
                     <div className="p-4 border-b border-divider">
-                      <div 
+                      <div
                         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                           isDragging ? "border-primary bg-primary-50" : "border-divider"
                         }`}
@@ -400,9 +400,9 @@ export const FloatingResources: React.FC = () => {
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                       >
-                        <Icon 
-                          icon="lucide:upload-cloud" 
-                          className={`mx-auto mb-2 w-10 h-10 ${isDragging ? "text-primary" : "text-default-400"}`} 
+                        <Icon
+                          icon="lucide:upload-cloud"
+                          className={`mx-auto mb-2 w-10 h-10 ${isDragging ? "text-primary" : "text-default-400"}`}
                         />
                         <p className={`${isDragging ? "text-primary" : "text-default-600"}`}>
                           Drag and drop files here to upload
@@ -410,7 +410,7 @@ export const FloatingResources: React.FC = () => {
                         <p className="text-xs text-default-400 mt-1 mb-3">
                           Supported formats: PDF, DOCX, PPTX, TXT, ZIP, JPG, PNG (Max 10MB)
                         </p>
-                        
+
                         <Button
                           color="primary"
                           variant="flat"
@@ -420,7 +420,7 @@ export const FloatingResources: React.FC = () => {
                         </Button>
                       </div>
                     </div>
-                    
+
                     {/* Files list */}
                     <div className="flex-grow overflow-y-auto p-4">
                       {filteredFiles.length > 0 ? (
@@ -438,7 +438,7 @@ export const FloatingResources: React.FC = () => {
                                     <div className="p-2 rounded-md bg-default-100">
                                       {getFileIcon(file.type)}
                                     </div>
-                                    
+
                                     <div className="flex-grow">
                                       <div className="flex justify-between items-start">
                                         <h3 className="font-medium text-sm mb-1">{file.title}</h3>
@@ -449,17 +449,17 @@ export const FloatingResources: React.FC = () => {
                                           className="text-default-400 hover:text-warning-500"
                                           onPress={() => toggleStarFile(file.id)}
                                         >
-                                          <Icon 
-                                            icon={file.starred ? "lucide:star" : "lucide:star"} 
-                                            className={file.starred ? "text-warning-500 fill-warning-500" : ""} 
+                                          <Icon
+                                            icon={file.starred ? "lucide:star" : "lucide:star"}
+                                            className={file.starred ? "text-warning-500 fill-warning-500" : ""}
                                           />
                                         </Button>
                                       </div>
-                                      
+
                                       <div className="flex flex-wrap gap-2 mb-2">
-                                        <Chip 
-                                          size="sm" 
-                                          variant="flat" 
+                                        <Chip
+                                          size="sm"
+                                          variant="flat"
                                           color={sections.find(s => s.id === file.section)?.color || "primary"}
                                         >
                                           {sections.find(s => s.id === file.section)?.name || file.section}
@@ -471,11 +471,11 @@ export const FloatingResources: React.FC = () => {
                                           {file.size}
                                         </span>
                                       </div>
-                                      
+
                                       <p className="text-xs text-default-400">
                                         Last updated: {formatDate(file.lastUpdated)}
                                       </p>
-                                      
+
                                       <div className="flex gap-1 mt-2">
                                         <Button
                                           size="sm"
@@ -509,7 +509,7 @@ export const FloatingResources: React.FC = () => {
                                             <DropdownItem startContent={<Icon icon="lucide:folder" size={16} />}>
                                               Move to section
                                             </DropdownItem>
-                                            <DropdownItem 
+                                            <DropdownItem
                                               startContent={<Icon icon="lucide:trash-2" size={16} />}
                                               className="text-danger"
                                             >
@@ -530,8 +530,8 @@ export const FloatingResources: React.FC = () => {
                           <Icon icon="lucide:file-question" className="w-16 h-16 text-default-300 mb-4" />
                           <h3 className="text-xl font-medium mb-2">No files found</h3>
                           <p className="text-default-500 max-w-md mb-4">
-                            {searchQuery ? 
-                              `No files matching "${searchQuery}"` : 
+                            {searchQuery ?
+                              `No files matching "${searchQuery}"` :
                               "Upload files by dragging and dropping or using the browse button"}
                           </p>
                           {searchQuery && (
@@ -549,20 +549,14 @@ export const FloatingResources: React.FC = () => {
                   </div>
                 </div>
               </ModalBody>
-              
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
-      
+
       {/* Add Section Modal */}
-      <Modal 
-        isOpen={isAddingSectionModalOpen} 
+      <Modal
+        isOpen={isAddingSectionModalOpen}
         onOpenChange={setIsAddingSectionModalOpen}
         size="sm"
       >

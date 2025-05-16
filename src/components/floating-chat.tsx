@@ -346,15 +346,9 @@ export const FloatingChat: React.FC = () => {
         <ModalContent>
           {(onClose) => (
             <>
-              {/* Remove ModalHeader, just show Conversations with all tabs */}
               <ModalBody className="p-0">
                 <Conversations />
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>
