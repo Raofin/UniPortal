@@ -36,7 +36,7 @@ export const Conversations: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = React.useState<string | null>(null);
   const [selectedChat, setSelectedChat] = React.useState<string | null>("cs301");
   const [isTyping, setIsTyping] = React.useState(false);
-  
+
   // Mock data for inbox
   const messages: Message[] = [
     {
@@ -106,7 +106,7 @@ export const Conversations: React.FC = () => {
       ]
     }
   ];
-  
+
   // Mock data for chat groups
   const chatGroups: ChatGroup[] = [
     {
@@ -131,7 +131,7 @@ export const Conversations: React.FC = () => {
       lastMessageTime: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
     }
   ];
-  
+
   // Mock chat messages for CS301
   const cs301Messages: Message[] = [
     {
@@ -208,12 +208,12 @@ export const Conversations: React.FC = () => {
       isRead: false
     }
   ];
-  
+
   // Format time function
   const formatTime = (date: Date) => {
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffInHours < 48) {
@@ -222,73 +222,56 @@ export const Conversations: React.FC = () => {
       return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
   };
-  
+
   // Fix the Smart Inbox tab crash by ensuring proper state handling
   React.useEffect(() => {
     return () => {
       // Clean up any timers or subscriptions
     };
   }, []);
-  
+
   // Fix the inbox tab rendering by adding proper null checks
   const selectedMessageData = React.useMemo(() => {
     return messages.find(m => m.id === selectedMessage) || null;
   }, [selectedMessage]);
-  
+
   // Simulate typing indicator
   React.useEffect(() => {
     if (selected === "discussion" && selectedChat) {
       const timer = setTimeout(() => {
         setIsTyping(true);
-        
+
         const timer2 = setTimeout(() => {
           setIsTyping(false);
         }, 3000);
-        
+
         return () => clearTimeout(timer2);
       }, 5000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [selected, selectedChat, cs301Messages]);
-  
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold">Conversations</h2>
-        
-        <Tabs 
-          selectedKey={selected} 
-          onSelectionChange={key => setSelected(key as "inbox" | "discussion")}
+
+        <Tabs
+          selectedKey={selected}
+          onSelectionChange={key => setSelected(key as "inbox" | "discussion" | "ai")}
           variant="light"
           color="primary"
-          classNames={{
-            tabList: "gap-4",
-          }}
+          classNames={{ tabList: "gap-4" }}
         >
-          <Tab 
-            key="inbox" 
-            title={
-              <div className="flex items-center gap-2">
-                <Icon icon="lucide:inbox" />
-                <span>Smart Inbox</span>
-              </div>
-            } 
-          />
-          <Tab 
-            key="discussion" 
-            title={
-              <div className="flex items-center gap-2">
-                <Icon icon="lucide:message-circle" />
-                <span>Class Discussion</span>
-              </div>
-            } 
-          />
+          <Tab key="inbox" title={<div className="flex items-center gap-2"><Icon icon="lucide:inbox" /><span>Smart Inbox</span></div>} />
+          <Tab key="discussion" title={<div className="flex items-center gap-2"><Icon icon="lucide:message-circle" /><span>Class Discussion</span></div>} />
+          <Tab key="ai" title={<div className="flex items-center gap-2"><Icon icon="lucide:sparkles" /><span>AI Chat</span></div>} />
         </Tabs>
       </CardHeader>
-      
-      <CardBody className="p-0">
-        {selected === "inbox" ? (
+
+      <CardBody className="p-0 flex-1 min-h-0">
+        {selected === "inbox" && (
           <div className="flex flex-col md:flex-row h-[600px]">
             {/* Message list */}
             <div className="w-full md:w-2/5 border-r border-divider overflow-y-auto">
@@ -300,7 +283,7 @@ export const Conversations: React.FC = () => {
                   className="mb-2"
                 />
               </div>
-              
+
               <div className="divide-y divide-divider">
                 {messages.map((message) => (
                   <motion.div
@@ -313,7 +296,7 @@ export const Conversations: React.FC = () => {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar src={message.sender.avatar} size="sm" />
-                      
+
                       <div className="flex-grow min-w-0">
                         <div className="flex justify-between items-center mb-1">
                           <h4 className={`font-medium truncate ${!message.isRead ? "text-foreground" : "text-default-600"}`}>
@@ -323,15 +306,15 @@ export const Conversations: React.FC = () => {
                             {formatTime(message.timestamp)}
                           </span>
                         </div>
-                        
+
                         <p className={`text-sm truncate ${!message.isRead ? "font-medium" : "text-default-500"}`}>
                           {message.subject}
                         </p>
-                        
+
                         <p className="text-xs truncate text-default-400">
                           {message.content.substring(0, 60)}...
                         </p>
-                        
+
                         {message.attachments && message.attachments.length > 0 && (
                           <div className="flex items-center gap-1 mt-1">
                             <Icon icon="lucide:paperclip" className="text-default-400" size={12} />
@@ -346,7 +329,7 @@ export const Conversations: React.FC = () => {
                 ))}
               </div>
             </div>
-            
+
             {/* Message content */}
             <div className="w-full md:w-3/5 flex flex-col h-full">
               {selectedMessageData ? (
@@ -362,7 +345,7 @@ export const Conversations: React.FC = () => {
                     {(() => {
                       const message = selectedMessageData;
                       if (!message) return null;
-                      
+
                       return (
                         <>
                           <div className="p-4 border-b border-divider">
@@ -376,7 +359,7 @@ export const Conversations: React.FC = () => {
                                   </p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex gap-1">
                                 <Button
                                   isIconOnly
@@ -404,33 +387,33 @@ export const Conversations: React.FC = () => {
                                 </Button>
                               </div>
                             </div>
-                            
+
                             <h2 className="text-lg font-medium">{message.subject}</h2>
                           </div>
-                          
+
                           <div className="p-4 flex-grow overflow-y-auto">
                             <div className="prose prose-sm max-w-none">
                               {message.content.split('\n').map((paragraph, i) => (
                                 <p key={i} className="mb-4 text-default-700">{paragraph}</p>
                               ))}
                             </div>
-                            
+
                             {message.attachments && message.attachments.length > 0 && (
                               <div className="mt-6">
                                 <h4 className="text-sm font-medium mb-2">Attachments</h4>
                                 <div className="flex flex-wrap gap-2">
                                   {message.attachments.map((attachment, i) => (
-                                    <div 
+                                    <div
                                       key={i}
                                       className="flex items-center gap-2 p-2 border border-divider rounded-md hover:bg-default-100 transition-colors cursor-pointer"
                                     >
-                                      <Icon 
+                                      <Icon
                                         icon={
                                           attachment.type === "pdf" ? "lucide:file-text" :
                                           attachment.type === "docx" ? "lucide:file-text" :
                                           attachment.type === "pptx" ? "lucide:file-presentation" :
                                           "lucide:file"
-                                        } 
+                                        }
                                         className={
                                           attachment.type === "pdf" ? "text-danger" :
                                           attachment.type === "docx" ? "text-primary" :
@@ -457,7 +440,7 @@ export const Conversations: React.FC = () => {
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="p-4 border-t border-divider">
                             <div className="flex gap-2">
                               <Button
@@ -490,8 +473,9 @@ export const Conversations: React.FC = () => {
               )}
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col md:flex-row h-[600px]">
+        )}
+        {selected === "discussion" && (
+          <div className="flex flex-col md:flex-row h-[600px] min-h-0 flex-1">
             {/* Chat groups list */}
             <div className="w-full md:w-1/4 border-r border-divider overflow-y-auto">
               <div className="p-3">
@@ -502,13 +486,13 @@ export const Conversations: React.FC = () => {
                   className="mb-2"
                 />
               </div>
-              
+
               <div className="px-3 py-2">
                 <h4 className="text-xs font-medium text-default-500 uppercase tracking-wider mb-2">
                   Your Courses
                 </h4>
               </div>
-              
+
               <div className="space-y-1 px-2">
                 {chatGroups.map((group) => (
                   <motion.div
@@ -527,26 +511,26 @@ export const Conversations: React.FC = () => {
                         </Chip>
                       )}
                     </div>
-                    
+
                     <p className="text-xs text-default-500 truncate mt-1">
                       {group.lastMessage}
                     </p>
-                    
+
                     <p className="text-xs text-default-400 mt-1">
                       {formatTime(group.lastMessageTime)}
                     </p>
                   </motion.div>
                 ))}
               </div>
-              
+
               <Divider className="my-3" />
-              
+
               <div className="px-3 py-2">
                 <h4 className="text-xs font-medium text-default-500 uppercase tracking-wider mb-2">
                   Direct Messages
                 </h4>
               </div>
-              
+
               <div className="space-y-1 px-2">
                 <div className="p-2 rounded-md hover:bg-content1 cursor-pointer">
                   <div className="flex items-center gap-2">
@@ -557,7 +541,7 @@ export const Conversations: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-2 rounded-md hover:bg-content1 cursor-pointer">
                   <div className="flex items-center gap-2">
                     <Avatar src="https://img.heroui.chat/image/avatar?w=200&h=200&u=4" size="sm" />
@@ -567,7 +551,7 @@ export const Conversations: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-2 rounded-md hover:bg-content1 cursor-pointer">
                   <div className="flex items-center gap-2">
                     <Avatar src="https://img.heroui.chat/image/avatar?w=200&h=200&u=5" size="sm" />
@@ -579,7 +563,7 @@ export const Conversations: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Chat content */}
             <div className="w-full md:w-3/4 flex flex-col h-full">
               {selectedChat ? (
@@ -602,7 +586,7 @@ export const Conversations: React.FC = () => {
                             28 members
                           </Chip>
                         </div>
-                        
+
                         <div className="flex gap-1">
                           <Button
                             isIconOnly
@@ -623,12 +607,12 @@ export const Conversations: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex-grow overflow-y-auto p-4">
                       {/* Pinned messages */}
                       <div className="mb-4">
                         {cs301Messages.filter(m => m.isPinned).map((message) => (
-                          <div 
+                          <div
                             key={message.id}
                             className="bg-default-50 p-3 rounded-lg border-l-4 border-primary mb-2"
                           >
@@ -641,7 +625,7 @@ export const Conversations: React.FC = () => {
                                 {formatTime(message.timestamp)}
                               </span>
                             </div>
-                            
+
                             <div className="flex items-start gap-2 mt-1">
                               <Avatar src={message.sender.avatar} size="sm" />
                               <div>
@@ -659,7 +643,7 @@ export const Conversations: React.FC = () => {
                           </div>
                         ))}
                       </div>
-                      
+
                       {/* Regular messages */}
                       <div className="space-y-4">
                         {cs301Messages.filter(m => !m.isPinned).map((message, index) => (
@@ -690,13 +674,13 @@ export const Conversations: React.FC = () => {
                                     {formatTime(message.timestamp)}
                                   </span>
                                 </div>
-                                
+
                                 <div className="mt-1">
                                   {message.content.split('\n\n').map((paragraph, i) => (
                                     <p key={i} className="text-sm mb-2">{paragraph}</p>
                                   ))}
                                 </div>
-                                
+
                                 <div className="flex gap-2 mt-1">
                                   <Button
                                     size="sm"
@@ -720,7 +704,7 @@ export const Conversations: React.FC = () => {
                           </motion.div>
                         ))}
                       </div>
-                      
+
                       {/* Typing indicator */}
                       {isTyping && (
                         <div className="flex items-start gap-3 mt-4">
@@ -747,7 +731,7 @@ export const Conversations: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="p-3 border-t border-divider">
                       <div className="flex gap-2">
                         <Input
@@ -782,7 +766,7 @@ export const Conversations: React.FC = () => {
                           <Icon icon="lucide:send" />
                         </Button>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 mt-2">
                         <Icon icon="lucide:sparkles" className="text-primary" size={16} />
                         <span className="text-xs text-default-500">
@@ -801,6 +785,75 @@ export const Conversations: React.FC = () => {
                   </p>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {selected === "ai" && (
+          <div className="flex flex-col h-[600px] min-h-0 flex-1">
+            <div className="flex flex-col flex-1 min-h-0 h-full">
+              <div className="flex-1 overflow-y-auto p-6 bg-default-50 min-h-0">
+                {/* Dummy conversation thread */}
+                <div className="max-w-2xl mx-auto space-y-6">
+                  {/* User message 1 */}
+                  <div className="flex justify-end">
+                    <div className="bg-primary-100 text-primary-800 rounded-lg p-4 max-w-[80%]">
+                      <div className="font-medium text-sm mb-1">You</div>
+                      <div>Can you summarize the key points from <span className='text-primary font-semibold'>@algo_lecture4.pdf</span>?</div>
+                      <div className="text-xs text-default-400 mt-2 text-right">Today, 10:02 AM</div>
+                    </div>
+                  </div>
+                  {/* AI message 1 */}
+                  <div className="flex justify-start">
+                    <div className="bg-default-100 rounded-lg p-4 max-w-[80%]">
+                      <div className="font-medium text-sm mb-1">AI Assistant</div>
+                      <div>
+                        Sure! Here are the key points from <span className='text-primary font-semibold'>@algo_lecture4.pdf</span>:
+                        <ul className="list-disc ml-5 mt-2">
+                          <li>Dynamic programming principles and optimal substructure</li>
+                          <li>Memoization vs. tabulation</li>
+                          <li>Example: Longest Increasing Subsequence</li>
+                          <li>Practice problems at the end of the lecture</li>
+                        </ul>
+                        Let me know if you want a detailed explanation of any section!
+                      </div>
+                      <div className="text-xs text-default-400 mt-2">Today, 10:02 AM</div>
+                    </div>
+                  </div>
+                  {/* User message 2 */}
+                  <div className="flex justify-end">
+                    <div className="bg-primary-100 text-primary-800 rounded-lg p-4 max-w-[80%]">
+                      <div className="font-medium text-sm mb-1">You</div>
+                      <div>Can you generate some practice questions based on <span className='text-primary font-semibold'>@algo_lecture4.pdf</span>?</div>
+                      <div className="text-xs text-default-400 mt-2 text-right">Today, 10:03 AM</div>
+                    </div>
+                  </div>
+                  {/* AI message 2 */}
+                  <div className="flex justify-start">
+                    <div className="bg-default-100 rounded-lg p-4 max-w-[80%]">
+                      <div className="font-medium text-sm mb-1">AI Assistant</div>
+                      <div>
+                        Absolutely! Here are some practice questions:
+                        <ol className="list-decimal ml-5 mt-2">
+                          <li>Explain the difference between memoization and tabulation with examples.</li>
+                          <li>Given an array, how would you find the Longest Increasing Subsequence using dynamic programming?</li>
+                          <li>What are the advantages of using dynamic programming over greedy algorithms?</li>
+                        </ol>
+                        Would you like solutions or hints for any of these?
+                      </div>
+                      <div className="text-xs text-default-400 mt-2">Today, 10:03 AM</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Input area (static for demo) */}
+              <div className="p-4 border-t border-divider bg-white flex gap-2">
+                <Input fullWidth placeholder="Message AI Assistant..." startContent={<Icon icon="lucide:sparkles" className="text-primary" />} />
+                <Button color="primary" isIconOnly aria-label="Send message">
+                  <Icon icon="lucide:send" />
+                </Button>
+              </div>
             </div>
           </div>
         )}
