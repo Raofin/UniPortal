@@ -347,7 +347,7 @@ export const FloatingChat: React.FC = () => {
           {(onClose) => (
             <>
               <ModalBody className="p-0">
-                <Conversations />
+                <Conversations onClose={onClose} />
               </ModalBody>
             </>
           )}

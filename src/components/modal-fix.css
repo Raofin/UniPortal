@@ -1,0 +1,27 @@
+/* Custom fixes for modal overlay and focus behavior */
+.no-trap-focus .modal-backdrop {
+  pointer-events: none !important;
+}
+
+.no-trap-focus .modal-content {
+  pointer-events: auto !important;
+}
+
+/* Fix for z-index issues */
+.modal-header-fix {
+  position: relative;
+  z-index: 10;
+}
+
+/* Fix for scrolling behavior */
+.modal-scroll-fix {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+/* Animation optimization */
+.optimized-animation {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

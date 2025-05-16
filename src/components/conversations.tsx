@@ -1,7 +1,8 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Tabs, Tab, Avatar, Input, Button, Divider, Chip } from "@heroui/react";
+import { Card, Tabs, Tab, Avatar, Input, Button, Divider, Chip, ModalHeader, ModalBody } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
+import "./modal-fix.css";
 
 interface Message {
   id: string;
@@ -229,32 +230,41 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
       // Clean up any timers or subscriptions
     };
   }, []);
-
   // Fix the inbox tab rendering by adding proper null checks
   const selectedMessageData = React.useMemo(() => {
     return messages.find(m => m.id === selectedMessage) || null;
   }, [selectedMessage]);
 
-  // Simulate typing indicator
+  // Memoize cs301Messages to prevent unnecessary re-renders
+  const memoizedCS301Messages = React.useMemo(() => cs301Messages, []);
+
+  // Use a ref for storing timers to ensure proper cleanup
+  const timersRef = React.useRef<{timer1?: NodeJS.Timeout, timer2?: NodeJS.Timeout}>({});
+
+  // Simulate typing indicator with proper cleanup
   React.useEffect(() => {
+    // Clear any existing timers first
+    if (timersRef.current.timer1) clearTimeout(timersRef.current.timer1);
+    if (timersRef.current.timer2) clearTimeout(timersRef.current.timer2);
+
     if (selected === "discussion" && selectedChat) {
-      const timer = setTimeout(() => {
+      timersRef.current.timer1 = setTimeout(() => {
         setIsTyping(true);
 
-        const timer2 = setTimeout(() => {
+        timersRef.current.timer2 = setTimeout(() => {
           setIsTyping(false);
         }, 3000);
-
-        return () => clearTimeout(timer2);
       }, 5000);
-
-      return () => clearTimeout(timer);
     }
-  }, [selected, selectedChat, cs301Messages]);
 
+    return () => {
+      if (timersRef.current.timer1) clearTimeout(timersRef.current.timer1);
+      if (timersRef.current.timer2) clearTimeout(timersRef.current.timer2);
+    };
+  }, [selected, selectedChat]);
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="flex flex-row items-center gap-2 border-b border-divider bg-default-50/80 sticky top-0 z-10 justify-between">
+    <div className="no-trap-focus">
+      <ModalHeader className="flex flex-row items-center gap-2 border-b border-divider bg-default-50/80 sticky top-0 z-10 justify-between modal-header-fix">
         <div className="flex flex-row items-center gap-2">
           <Tabs
             selectedKey={selected}
@@ -262,6 +272,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
             variant="light"
             color="primary"
             classNames={{ tabList: "gap-4" }}
+            disableAnimation={true}
           >
             <Tab key="inbox" title={<div className="flex items-center gap-2"><Icon icon="lucide:inbox" /><span>Smart Inbox</span></div>} />
             <Tab key="discussion" title={<div className="flex items-center gap-2"><Icon icon="lucide:message-circle" /><span>Class Discussion</span></div>} />
@@ -276,220 +287,226 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
         >
           <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
         </button>
-      </CardHeader>
+      </ModalHeader>
+      <ModalBody className="p-0 flex-1 min-h-0 modal-scroll-fix">
+        <AnimatePresence mode="wait" initial={false}>
+          {selected === "inbox" && (
+            <motion.div
+              key="inbox"
+              className="flex flex-col md:flex-row h-screen optimized-animation"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              {/* Message list */}
+              <div className="w-full md:w-2/5 border-r border-divider overflow-y-auto">
+                <div className="p-3 pb-0"> {/* Remove bottom padding */}
+                  <Input
+                    placeholder="Search messages..."
+                    startContent={<Icon icon="lucide:search" className="text-default-400" style={{ fontSize: 18 }} />}
+                    size="sm"
+                    className="mb-2"
+                  />
+                </div>
 
-      <CardBody className="p-0 flex-1 min-h-0">
-        {selected === "inbox" && (
-          <div className="flex flex-col md:flex-row h-screen">
-            {/* Message list */}
-            <div className="w-full md:w-2/5 border-r border-divider overflow-y-auto">
-              <div className="p-3 pb-0"> {/* Remove bottom padding */}
-                <Input
-                  placeholder="Search messages..."
-                  startContent={<Icon icon="lucide:search" className="text-default-400" />}
-                  size="sm"
-                  className="mb-2"
-                />
-              </div>
+                <div className="divide-y divide-divider">
+                  {messages.map((message, idx) => (
+                    <motion.div
+                      key={message.id}
+                      whileHover={{ backgroundColor: "var(--heroui-content1)" }}
+                      className={`p-3 cursor-pointer ${
+                        selectedMessage === message.id ? "bg-content1" : ""
+                      } ${!message.isRead ? "border-l-4 border-primary" : ""} ${idx === messages.length - 1 ? 'border-b-0' : ''}`}
+                      onClick={() => setSelectedMessage(message.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar src={message.sender.avatar} size="sm" />
 
-              <div className="divide-y divide-divider">
-                {messages.map((message, idx) => (
-                  <motion.div
-                    key={message.id}
-                    whileHover={{ backgroundColor: "var(--heroui-content1)" }}
-                    className={`p-3 cursor-pointer ${
-                      selectedMessage === message.id ? "bg-content1" : ""
-                    } ${!message.isRead ? "border-l-4 border-primary" : ""} ${idx === messages.length - 1 ? 'border-b-0' : ''}`}
-                    onClick={() => setSelectedMessage(message.id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar src={message.sender.avatar} size="sm" />
-
-                      <div className="flex-grow min-w-0">
-                        <div className="flex justify-between items-center mb-1">
-                          <h4 className={`font-medium truncate ${!message.isRead ? "text-foreground" : "text-default-600"}`}>
-                            {message.sender.name}
-                          </h4>
-                          <span className="text-xs text-default-400 whitespace-nowrap">
-                            {formatTime(message.timestamp)}
-                          </span>
-                        </div>
-
-                        <p className={`text-sm truncate ${!message.isRead ? "font-medium" : "text-default-500"}`}>
-                          {message.subject}
-                        </p>
-
-                        <p className="text-xs truncate text-default-400">
-                          {message.content.substring(0, 60)}...
-                        </p>
-
-                        {message.attachments && message.attachments.length > 0 && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <Icon icon="lucide:paperclip" className="text-default-400" size={12} />
-                            <span className="text-xs text-default-400">
-                              {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
+                        <div className="flex-grow min-w-0">
+                          <div className="flex justify-between items-center mb-1">
+                            <h4 className={`font-medium truncate ${!message.isRead ? "text-foreground" : "text-default-600"}`}>
+                              {message.sender.name}
+                            </h4>
+                            <span className="text-xs text-default-400 whitespace-nowrap">
+                              {formatTime(message.timestamp)}
                             </span>
                           </div>
-                        )}
+
+                          <p className={`text-sm truncate ${!message.isRead ? "font-medium" : "text-default-500"}`}>
+                            {message.subject}
+                          </p>
+
+                          <p className="text-xs truncate text-default-400">
+                            {message.content.substring(0, 60)}...
+                          </p>
+
+                          {message.attachments && message.attachments.length > 0 && (
+                            <div className="flex items-center gap-1 mt-1">
+                              <Icon icon="lucide:paperclip" className="text-default-400" style={{ fontSize: 12 }} />
+                              <span className="text-xs text-default-400">
+                                {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Message content */}
-            <div className="w-full md:w-3/5 flex flex-col h-full">
-              {selectedMessageData ? (
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={selectedMessageData.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex flex-col h-full"
-                  >
-                    {(() => {
-                      const message = selectedMessageData;
-                      if (!message) return null;
-
-                      return (
-                        <>
-                          <div className="p-4 border-b border-divider">
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex items-center gap-3">
-                                <Avatar src={message.sender.avatar} size="md" />
-                                <div>
-                                  <h3 className="font-medium">{message.sender.name}</h3>
-                                  <p className="text-xs text-default-400">
-                                    {formatTime(message.timestamp)} ({message.sender.role})
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="flex gap-1">
-                                <Button
-                                  isIconOnly
-                                  size="sm"
-                                  variant="light"
-                                  aria-label="Reply"
-                                >
-                                  <Icon icon="lucide:reply" size={18} />
-                                </Button>
-                                <Button
-                                  isIconOnly
-                                  size="sm"
-                                  variant="light"
-                                  aria-label="Forward"
-                                >
-                                  <Icon icon="lucide:forward" size={18} />
-                                </Button>
-                                <Button
-                                  isIconOnly
-                                  size="sm"
-                                  variant="light"
-                                  aria-label="More options"
-                                >
-                                  <Icon icon="lucide:more-vertical" size={18} />
-                                </Button>
-                              </div>
-                            </div>
-
-                            <h2 className="text-lg font-medium">{message.subject}</h2>
-                          </div>
-
-                          <div className="p-4 flex-grow overflow-y-auto">
-                            <div className="prose prose-sm max-w-none">
-                              {message.content.split('\n').map((paragraph, i) => (
-                                <p key={i} className="mb-4 text-default-700">{paragraph}</p>
-                              ))}
-                            </div>
-
-                            {message.attachments && message.attachments.length > 0 && (
-                              <div className="mt-6">
-                                <h4 className="text-sm font-medium mb-2">Attachments</h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {message.attachments.map((attachment, i) => (
-                                    <div
-                                      key={i}
-                                      className="flex items-center gap-2 p-2 border border-divider rounded-md hover:bg-default-100 transition-colors cursor-pointer"
-                                    >
-                                      <Icon
-                                        icon={
-                                          attachment.type === "pdf" ? "lucide:file-text" :
-                                          attachment.type === "docx" ? "lucide:file-text" :
-                                          attachment.type === "pptx" ? "lucide:file-presentation" :
-                                          "lucide:file"
-                                        }
-                                        className={
-                                          attachment.type === "pdf" ? "text-danger" :
-                                          attachment.type === "docx" ? "text-primary" :
-                                          attachment.type === "pptx" ? "text-warning" :
-                                          "text-default-500"
-                                        }
-                                      />
-                                      <div>
-                                        <p className="text-sm font-medium">{attachment.name}</p>
-                                        <p className="text-xs text-default-400">{attachment.size}</p>
-                                      </div>
-                                      <Button
-                                        isIconOnly
-                                        size="sm"
-                                        variant="light"
-                                        className="ml-2"
-                                        aria-label="Download attachment"
-                                      >
-                                        <Icon icon="lucide:download" size={16} />
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="p-4 border-t border-divider">
-                            <div className="flex gap-2">
-                              <Button
-                                color="primary"
-                                startContent={<Icon icon="lucide:reply" />}
-                              >
-                                Reply
-                              </Button>
-                              <Button
-                                variant="flat"
-                                startContent={<Icon icon="lucide:forward" />}
-                              >
-                                Forward
-                              </Button>
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </motion.div>
-                </AnimatePresence>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                  <Icon icon="lucide:mail" className="w-16 h-16 text-default-300 mb-4" />
-                  <h3 className="text-xl font-medium mb-2">Select a message</h3>
-                  <p className="text-default-500 max-w-md">
-                    Choose a message from the list to view its contents
-                  </p>
+                    </motion.div>
+                  ))}
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-        {selected === "discussion" && (
+              </div>
+
+              {/* Message content */}
+              <div className="w-full md:w-3/5 flex flex-col h-full">
+                {selectedMessageData ? (
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={selectedMessageData.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex flex-col h-full"
+                    >
+                      {(() => {
+                        const message = selectedMessageData;
+                        if (!message) return null;
+
+                        return (
+                          <>
+                            <div className="p-4 border-b border-divider">
+                              <div className="flex justify-between items-start mb-3">
+                                <div className="flex items-center gap-3">
+                                  <Avatar src={message.sender.avatar} size="md" />
+                                  <div>
+                                    <h3 className="font-medium">{message.sender.name}</h3>
+                                    <p className="text-xs text-default-400">
+                                      {formatTime(message.timestamp)} ({message.sender.role})
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex gap-1">
+                                  <Button
+                                    isIconOnly
+                                    size="sm"
+                                    variant="light"
+                                    aria-label="Reply"
+                                  >
+                                    <Icon icon="lucide:reply" style={{ fontSize: 18 }} />
+                                  </Button>
+                                  <Button
+                                    isIconOnly
+                                    size="sm"
+                                    variant="light"
+                                    aria-label="Forward"
+                                  >
+                                    <Icon icon="lucide:forward" style={{ fontSize: 18 }} />
+                                  </Button>
+                                  <Button
+                                    isIconOnly
+                                    size="sm"
+                                    variant="light"
+                                    aria-label="More options"
+                                  >
+                                    <Icon icon="lucide:more-vertical" style={{ fontSize: 18 }} />
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <h2 className="text-lg font-medium">{message.subject}</h2>
+                            </div>
+
+                            <div className="p-4 flex-grow overflow-y-auto">
+                              <div className="prose prose-sm max-w-none">
+                                {message.content.split('\n').map((paragraph, i) => (
+                                  <p key={i} className="mb-4 text-default-700">{paragraph}</p>
+                                ))}
+                              </div>
+
+                              {message.attachments && message.attachments.length > 0 && (
+                                <div className="mt-6">
+                                  <h4 className="text-sm font-medium mb-2">Attachments</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {message.attachments.map((attachment, i) => (
+                                      <div
+                                        key={i}
+                                        className="flex items-center gap-2 p-2 border border-divider rounded-md hover:bg-default-100 transition-colors cursor-pointer"
+                                      >
+                                        <Icon
+                                          icon={
+                                            attachment.type === "pdf" ? "lucide:file-text" :
+                                            attachment.type === "docx" ? "lucide:file-text" :
+                                            attachment.type === "pptx" ? "lucide:file-presentation" :
+                                            "lucide:file"
+                                          }
+                                          className={
+                                            attachment.type === "pdf" ? "text-danger" :
+                                            attachment.type === "docx" ? "text-primary" :
+                                            attachment.type === "pptx" ? "text-warning" :
+                                            "text-default-500"
+                                          }
+                                        />
+                                        <div>
+                                          <p className="text-sm font-medium">{attachment.name}</p>
+                                          <p className="text-xs text-default-400">{attachment.size}</p>
+                                        </div>
+                                        <Button
+                                          isIconOnly
+                                          size="sm"
+                                          variant="light"
+                                          className="ml-2"
+                                          aria-label="Download attachment"
+                                        >
+                                          <Icon icon="lucide:download" style={{ fontSize: 16 }} />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="p-4 border-t border-divider">
+                              <div className="flex gap-2">
+                                <Button
+                                  color="primary"
+                                  startContent={<Icon icon="lucide:reply" />}
+                                >
+                                  Reply
+                                </Button>
+                                <Button
+                                  variant="flat"
+                                  startContent={<Icon icon="lucide:forward" />}
+                                >
+                                  Forward
+                                </Button>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </motion.div>
+                  </AnimatePresence>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                    <Icon icon="lucide:mail" className="w-16 h-16 text-default-300 mb-4" />
+                    <h3 className="text-xl font-medium mb-2">Select a message</h3>
+                    <p className="text-default-500 max-w-md">
+                      Choose a message from the list to view its contents
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+        )}        {selected === "discussion" && (
           <div className="flex flex-col md:flex-row h-[600px] min-h-0 flex-1">
             {/* Chat groups list */}
             <div className="w-full md:w-1/4 border-r border-divider overflow-y-auto">
               <div className="p-3">
                 <Input
                   placeholder="Search chats..."
-                  startContent={<Icon icon="lucide:search" className="text-default-400" />}
+                  startContent={<Icon icon="lucide:search" className="text-default-400" style={{ fontSize: 18 }} />}
                   size="sm"
                   className="mb-2"
                 />
@@ -602,7 +619,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                             variant="light"
                             aria-label="Search in conversation"
                           >
-                            <Icon icon="lucide:search" size={18} />
+                            <Icon icon="lucide:search" style={{ fontSize: 18 }} />
                           </Button>
                           <Button
                             isIconOnly
@@ -610,7 +627,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                             variant="light"
                             aria-label="More options"
                           >
-                            <Icon icon="lucide:more-vertical" size={18} />
+                            <Icon icon="lucide:more-vertical" style={{ fontSize: 18 }} />
                           </Button>
                         </div>
                       </div>
@@ -626,7 +643,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                           >
                             <div className="flex justify-between items-start">
                               <div className="flex items-center gap-2 mb-1">
-                                <Icon icon="lucide:pin" className="text-primary" size={14} />
+                                <Icon icon="lucide:pin" className="text-primary" style={{ fontSize: 14 }} />
                                 <span className="text-xs font-medium text-primary">Pinned by instructor</span>
                               </div>
                               <span className="text-xs text-default-400">
@@ -694,7 +711,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                     size="sm"
                                     variant="light"
                                     className="h-6 min-w-0 px-1"
-                                    startContent={<Icon icon="lucide:thumbs-up" size={14} />}
+                                    startContent={<Icon icon="lucide:thumbs-up" style={{ fontSize: 14 }} />}
                                   >
                                     <span className="text-xs">2</span>
                                   </Button>
@@ -702,7 +719,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                     size="sm"
                                     variant="light"
                                     className="h-6 min-w-0 px-1"
-                                    startContent={<Icon icon="lucide:reply" size={14} />}
+                                    startContent={<Icon icon="lucide:reply" style={{ fontSize: 14 }} />}
                                   >
                                     <span className="text-xs">Reply</span>
                                   </Button>
@@ -753,7 +770,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                 variant="light"
                                 aria-label="Attach file"
                               >
-                                <Icon icon="lucide:paperclip" size={18} />
+                                <Icon icon="lucide:paperclip" style={{ fontSize: 18 }} />
                               </Button>
                               <Button
                                 isIconOnly
@@ -761,7 +778,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                 variant="light"
                                 aria-label="Add emoji"
                               >
-                                <Icon icon="lucide:smile" size={18} />
+                                <Icon icon="lucide:smile" style={{ fontSize: 18 }} />
                               </Button>
                             </div>
                           }
@@ -776,7 +793,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                       </div>
 
                       <div className="flex items-center gap-2 mt-2">
-                        <Icon icon="lucide:sparkles" className="text-primary" size={16} />
+                        <Icon icon="lucide:sparkles" className="text-primary" style={{ fontSize: 16 }} />
                         <span className="text-xs text-default-500">
                           AI Assistant is available to help with questions about this course
                         </span>
@@ -865,7 +882,8 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
             </div>
           </div>
         )}
-      </CardBody>
-    </Card>
+        </AnimatePresence>
+        </ModalBody>
+    </div>
   );
 };
