@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Badge, Chip, Tabs, Tab } from '@heroui/react'
+import { Popover, PopoverTrigger, PopoverContent, Button, Badge, Chip } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -12,6 +12,9 @@ interface Notification {
   isRead: boolean
   course?: string
   link?: string
+  sender?: string
+  score?: string
+  dueDate?: Date
 }
 
 export const NotificationCenter: React.FC = () => {
@@ -21,11 +24,13 @@ export const NotificationCenter: React.FC = () => {
     {
       id: 'n1',
       type: 'grade',
-      title: 'New Grade Released',
+      title: 'Midterm Grade Released',
       description: 'Your midterm exam for Advanced Algorithms has been graded.',
       timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
       isRead: false,
       course: 'CS301: Advanced Algorithms',
+      score: '92/100',
+      sender: 'Prof. Johnson',
     },
     {
       id: 'n2',
@@ -35,6 +40,7 @@ export const NotificationCenter: React.FC = () => {
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       isRead: false,
       course: 'CS202: Data Structures',
+      dueDate: new Date(Date.now() + 5 * 60 * 60 * 1000),
     },
     {
       id: 'n3',
@@ -44,15 +50,18 @@ export const NotificationCenter: React.FC = () => {
       timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
       isRead: true,
       course: 'CS301: Advanced Algorithms',
+      sender: 'Prof. Johnson',
     },
     {
       id: 'n4',
       type: 'grade',
-      title: 'New Grade Released',
+      title: 'Project Grade Released',
       description: 'Your Project 1 for Database Systems has been graded.',
       timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
       isRead: true,
       course: 'CS305: Database Systems',
+      score: '88/100',
+      sender: 'Prof. Smith',
     },
     {
       id: 'n5',
@@ -62,9 +71,32 @@ export const NotificationCenter: React.FC = () => {
       timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
       isRead: true,
       course: 'CS304: Computer Networks',
+      dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    },
+    {
+      id: 'n6',
+      type: 'message',
+      title: 'Group Project Update',
+      description: 'Your team members have updated the project repository with new changes.',
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+      isRead: false,
+      course: 'CS301: Advanced Algorithms',
+      sender: 'Team Lead',
+    },
+    {
+      id: 'n7',
+      type: 'grade',
+      title: 'Quiz Results Available',
+      description: 'Your weekly quiz results for Data Structures are now available.',
+      timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+      isRead: false,
+      course: 'CS202: Data Structures',
+      score: '18/20',
+      sender: 'Prof. Williams',
     },
   ])
 
+  const totalCount = notifications.length
   const unreadCount = notifications.filter((n) => !n.isRead).length
 
   const filteredNotifications = selectedType === 'all' ? notifications : notifications.filter((n) => n.type === selectedType)
@@ -75,6 +107,10 @@ export const NotificationCenter: React.FC = () => {
 
   const markAllAsRead = () => {
     setNotifications(notifications.map((n) => ({ ...n, isRead: true })))
+  }
+
+  const handleTypeChange = (type: 'all' | 'grade' | 'assignment' | 'message') => {
+    setSelectedType(type)
   }
 
   const getTypeIcon = (type: string) => {
@@ -108,28 +144,29 @@ export const NotificationCenter: React.FC = () => {
   }
 
   return (
-    <Dropdown isOpen={isOpen} onOpenChange={setIsOpen} placement="bottom-end">
-      <DropdownTrigger>
-        <Button isIconOnly variant="light" aria-label={`${unreadCount} unread notifications`} className="relative">
-          <Icon icon="lucide:bell" className="text-default-600" />
-          {unreadCount > 0 && (
-            <Badge content={unreadCount > 9 ? '9+' : unreadCount} color="danger" shape="circle" size="sm" className="absolute -right-1 -top-1" />
-          )}
+    <Popover
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      placement="bottom-end"
+      showArrow={true}
+      classNames={{
+        base: 'p-0',
+        content: 'w-80 sm:w-96 bg-background/80 backdrop-blur-md border border-divider shadow-lg',
+      }}
+    >
+      <PopoverTrigger>
+        <Button
+          isIconOnly
+          variant="light"
+          aria-label={`${unreadCount} unread notifications`}
+          className="relative flex h-8 w-8 items-center justify-center"
+        >
+          <Icon icon="lucide:bell" className={`text-default-600 transition-colors ${unreadCount > 0 ? 'text-primary' : ''}`} width={18} height={18} />
         </Button>
-      </DropdownTrigger>
+      </PopoverTrigger>
 
-      <DropdownMenu
-        aria-label="Notifications"
-        className="w-80 p-0 sm:w-96"
-        onAction={(key) => {
-          if (key === 'mark-all-read') {
-            markAllAsRead()
-          } else {
-            setSelectedType(key as any)
-          }
-        }}
-      >
-        <div className="border-b border-divider p-3">
+      <PopoverContent>
+        <div className="border-b border-divider bg-background/80 p-3 backdrop-blur-md">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-medium">Notifications</h3>
             <Button size="sm" variant="light" onPress={markAllAsRead} isDisabled={unreadCount === 0}>
@@ -143,7 +180,7 @@ export const NotificationCenter: React.FC = () => {
               variant={selectedType === 'all' ? 'flat' : 'light'}
               color={selectedType === 'all' ? 'primary' : 'default'}
               className="flex-1"
-              onPress={() => setSelectedType('all')}
+              onPress={() => handleTypeChange('all')}
             >
               All
             </Button>
@@ -153,7 +190,7 @@ export const NotificationCenter: React.FC = () => {
               color={selectedType === 'grade' ? 'success' : 'default'}
               className="flex-1"
               startContent={<Icon icon="lucide:award" />}
-              onPress={() => setSelectedType('grade')}
+              onPress={() => handleTypeChange('grade')}
             >
               Grades
             </Button>
@@ -163,7 +200,7 @@ export const NotificationCenter: React.FC = () => {
               color={selectedType === 'assignment' ? 'warning' : 'default'}
               className="flex-1"
               startContent={<Icon icon="lucide:clipboard-list" />}
-              onPress={() => setSelectedType('assignment')}
+              onPress={() => handleTypeChange('assignment')}
             >
               Assignments
             </Button>
@@ -173,7 +210,7 @@ export const NotificationCenter: React.FC = () => {
               color={selectedType === 'message' ? 'primary' : 'default'}
               className="flex-1"
               startContent={<Icon icon="lucide:message-circle" />}
-              onPress={() => setSelectedType('message')}
+              onPress={() => handleTypeChange('message')}
             >
               Messages
             </Button>
@@ -181,77 +218,108 @@ export const NotificationCenter: React.FC = () => {
         </div>
 
         <div className="max-h-[400px] overflow-y-auto">
-          {filteredNotifications.length > 0 ? (
-            <AnimatePresence>
-              {filteredNotifications.map((notification, index) => (
-                <motion.div
-                  key={notification.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ delay: index * 0.05, duration: 0.2 }}
-                >
-                  <DropdownItem
-                    key={notification.id}
-                    textValue={notification.title}
-                    className={`py-3 ${!notification.isRead ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}
-                    onClick={() => handleNotificationClick(notification.id)}
-                  >
-                    <div className="flex gap-3">
-                      <div
-                        className={`rounded-full p-2 ${
-                          notification.type === 'grade'
-                            ? 'bg-success-100 text-success-500'
-                            : notification.type === 'assignment'
-                              ? 'bg-warning-100 text-warning-500'
-                              : 'bg-primary-100 text-primary-500'
-                        }`}
-                      >
-                        {getTypeIcon(notification.type)}
-                      </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedType}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            >
+              {filteredNotifications.length > 0 ? (
+                <div className="divide-y divide-divider">
+                  {filteredNotifications.map((notification) => (
+                    <motion.div
+                      key={notification.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.1 }}
+                      className={`${!notification.isRead ? 'bg-primary-50/50 dark:bg-primary-900/20' : ''} hover:bg-default-100`}
+                    >
+                      <div className="cursor-pointer p-3" onClick={() => handleNotificationClick(notification.id)}>
+                        <div className="flex gap-3">
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            className={`rounded-full p-2 ${
+                              notification.type === 'grade'
+                                ? 'bg-success-100 text-success-500 dark:bg-success-900/30'
+                                : notification.type === 'assignment'
+                                  ? 'bg-warning-100 text-warning-500 dark:bg-warning-900/30'
+                                  : 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
+                            }`}
+                          >
+                            {getTypeIcon(notification.type)}
+                          </motion.div>
 
-                      <div className="flex-grow">
-                        <div className="flex items-start justify-between">
-                          <h4 className={`text-sm ${!notification.isRead ? 'font-medium' : ''}`}>{notification.title}</h4>
-                          <span className="text-xs text-default-400">{formatTime(notification.timestamp)}</span>
-                        </div>
+                          <div className="flex-grow">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h4 className={`text-sm ${!notification.isRead ? 'font-medium' : ''}`}>{notification.title}</h4>
+                                {notification.sender && <p className="text-xs text-default-500">From: {notification.sender}</p>}
+                              </div>
+                              <span className="text-xs text-default-400">{formatTime(notification.timestamp)}</span>
+                            </div>
 
-                        <p className="mt-1 text-xs text-default-500">{notification.description}</p>
+                            <p className="mt-1 text-xs text-default-500">{notification.description}</p>
 
-                        {notification.course && (
-                          <div className="mt-2">
-                            <Chip size="sm" variant="flat" color="primary" className="text-xs">
-                              {notification.course}
-                            </Chip>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {notification.course && (
+                                <Chip size="sm" variant="flat" color="primary" className="text-xs">
+                                  {notification.course}
+                                </Chip>
+                              )}
+                              {notification.score && (
+                                <Chip size="sm" variant="flat" color="success" className="text-xs">
+                                  Score: {notification.score}
+                                </Chip>
+                              )}
+                              {notification.dueDate && (
+                                <Chip size="sm" variant="flat" color="warning" className="text-xs">
+                                  Due: {formatTime(notification.dueDate)}
+                                </Chip>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
 
-                      {!notification.isRead && <div className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-primary" />}
-                    </div>
-                  </DropdownItem>
+                          {!notification.isRead && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                              className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-primary"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="py-8 text-center"
+                >
+                  <Icon icon="lucide:check-circle" className="mx-auto mb-2 h-10 w-10 text-default-300" />
+                  <p className="text-default-500">No notifications to display</p>
+                  {selectedType !== 'all' && (
+                    <Button size="sm" variant="light" color="primary" className="mt-2" onPress={() => handleTypeChange('all')}>
+                      Show all notifications
+                    </Button>
+                  )}
                 </motion.div>
-              ))}
-            </AnimatePresence>
-          ) : (
-            <div className="py-8 text-center">
-              <Icon icon="lucide:check-circle" className="mx-auto mb-2 h-10 w-10 text-default-300" />
-              <p className="text-default-500">No notifications to display</p>
-              {selectedType !== 'all' && (
-                <Button size="sm" variant="light" color="primary" className="mt-2" onPress={() => setSelectedType('all')}>
-                  Show all notifications
-                </Button>
               )}
-            </div>
-          )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        <div className="border-t border-divider p-2">
+        <div className="border-t border-divider bg-background/80 p-2 backdrop-blur-md">
           <Button size="sm" variant="light" className="w-full" onPress={() => setIsOpen(false)}>
-            View all notifications
+            Close
           </Button>
         </div>
-      </DropdownMenu>
-    </Dropdown>
+      </PopoverContent>
+    </Popover>
   )
 }

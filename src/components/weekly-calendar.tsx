@@ -77,7 +77,7 @@ export const WeeklyCalendar: React.FC = () => {
           </Button>
         </div>
 
-        <div className="overflow-x-auto pb-2">
+        <div className="mt-1 overflow-x-auto pb-2">
           <div className="flex min-w-max gap-2">
             {week.map((day, index) => (
               <motion.div

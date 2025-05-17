@@ -231,17 +231,17 @@ export const AcademicTimeline: React.FC = () => {
   const getEventTypeIcon = (type: string) => {
     switch (type) {
       case 'assignment':
-        return <Icon icon="lucide:clipboard-list" className="text-primary" />
+        return <Icon icon="lucide:clipboard-check" className="text-primary" width={20} height={20} />
       case 'exam':
-        return <Icon icon="lucide:file-text" className="text-danger" />
+        return <Icon icon="lucide:file-check" className="text-danger" width={20} height={20} />
       case 'holiday':
-        return <Icon icon="lucide:palm-tree" className="text-success" />
+        return <Icon icon="lucide:party-popper" className="text-success" width={20} height={20} />
       case 'semester-break':
-        return <Icon icon="lucide:calendar-off" className="text-warning" />
+        return <Icon icon="lucide:coffee" className="text-warning" width={20} height={20} />
       case 'class':
-        return <Icon icon="lucide:book-open" className="text-default-600" />
+        return <Icon icon="lucide:graduation-cap" className="text-primary" width={20} height={20} />
       default:
-        return <Icon icon="lucide:calendar" className="text-default-500" />
+        return <Icon icon="lucide:calendar" className="text-default-500" width={20} height={20} />
     }
   }
 
@@ -408,21 +408,23 @@ export const AcademicTimeline: React.FC = () => {
                       <Card shadow="sm" className="border border-divider">
                         <CardBody className="p-3">
                           <div className="flex items-start gap-3">
-                            <div
-                              className={`rounded-md p-2 ${
+                            <motion.div
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              whileTap={{ scale: 0.95 }}
+                              className={`rounded-md p-2.5 ${
                                 event.type === 'assignment'
-                                  ? 'bg-primary-100 text-primary-500'
+                                  ? 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
                                   : event.type === 'exam'
-                                    ? 'bg-danger-100 text-danger-500'
+                                    ? 'bg-danger-100 text-danger-500 dark:bg-danger-900/30'
                                     : event.type === 'holiday'
-                                      ? 'bg-success-100 text-success-500'
+                                      ? 'bg-success-100 text-success-500 dark:bg-success-900/30'
                                       : event.type === 'semester-break'
-                                        ? 'bg-warning-100 text-warning-500'
-                                        : 'bg-default-100 text-default-600'
+                                        ? 'bg-warning-100 text-warning-500 dark:bg-warning-900/30'
+                                        : 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
                               }`}
                             >
                               {getEventTypeIcon(event.type)}
-                            </div>
+                            </motion.div>
 
                             <div className="flex-grow">
                               <div className="flex items-start justify-between">
