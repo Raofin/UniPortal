@@ -1,17 +1,17 @@
-import React from "react";
-import { Navbar } from "./components/navbar";
-import { WelcomeSection } from "./components/welcome-section";
-import { WeeklyCalendar } from "./components/weekly-calendar";
-import { UpcomingAssignments } from "./components/upcoming-assignments";
-import { RecentGrades } from "./components/recent-grades";
-import { NotesAndFiles } from "./components/notes-files";
-import { ScrollToTop } from "./components/scroll-to-top";
-import { motion } from "framer-motion";
-import { AcademicTimeline } from "./components/academic-timeline";
-import { Conversations } from "./components/conversations";
-import { MotivationalFooter } from "./components/motivational-footer";
-import { FloatingChat } from "./components/floating-chat";
-import { FloatingResources } from "./components/floating-resources";
+import React from 'react'
+import { Navbar } from './components/navbar'
+import { WelcomeSection } from './components/welcome-section'
+import { WeeklyCalendar } from './components/weekly-calendar'
+import { UpcomingAssignments } from './components/upcoming-assignments'
+import { RecentGrades } from './components/recent-grades'
+import { NotesAndFiles } from './components/notes-files'
+import { ScrollToTop } from './components/scroll-to-top'
+import { motion } from 'framer-motion'
+import { AcademicTimeline } from './components/academic-timeline'
+import { Conversations } from './components/conversations'
+import { MotivationalFooter } from './components/motivational-footer'
+import { FloatingChat } from './components/floating-chat'
+import { FloatingResources } from './components/floating-resources'
 
 const App: React.FC = () => {
   const sectionRefs = {
@@ -21,22 +21,18 @@ const App: React.FC = () => {
     notes: React.useRef<HTMLDivElement>(null),
     timeline: React.useRef<HTMLDivElement>(null),
     conversations: React.useRef<HTMLDivElement>(null),
-  };
+  }
 
   const scrollToSection = (section: keyof typeof sectionRefs) => {
-    sectionRefs[section].current?.scrollIntoView({ behavior: "smooth" });
-  };
+    sectionRefs[section].current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar onNavigate={scrollToSection} />
 
-      <main className="container mx-auto px-4 pt-16 pb-24 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+      <main className="container mx-auto max-w-6xl px-4 pb-24 pt-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <WelcomeSection />
         </motion.div>
 
@@ -44,7 +40,7 @@ const App: React.FC = () => {
           ref={sectionRefs.calendar}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-8"
         >
@@ -55,7 +51,7 @@ const App: React.FC = () => {
           ref={sectionRefs.assignments}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-12"
         >
@@ -66,7 +62,7 @@ const App: React.FC = () => {
           ref={sectionRefs.grades}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-12"
         >
@@ -77,7 +73,7 @@ const App: React.FC = () => {
           ref={sectionRefs.notes}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-12"
         >
@@ -88,7 +84,7 @@ const App: React.FC = () => {
           ref={sectionRefs.timeline}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-12"
         >
@@ -101,7 +97,7 @@ const App: React.FC = () => {
       <FloatingChat />
       <FloatingResources />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

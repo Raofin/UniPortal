@@ -1,31 +1,31 @@
-import React from "react";
-import { Button } from "@heroui/react";
-import { Icon } from "@iconify/react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react'
+import { Button } from '@heroui/react'
+import { Icon } from '@iconify/react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export const ScrollToTop: React.FC = () => {
-  const [isVisible, setIsVisible] = React.useState(false);
-  
+  const [isVisible, setIsVisible] = React.useState(false)
+
   const toggleVisibility = () => {
     if (window.scrollY > 300) {
-      setIsVisible(true);
+      setIsVisible(true)
     } else {
-      setIsVisible(false);
+      setIsVisible(false)
     }
-  };
-  
+  }
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
-    });
-  };
-  
+      behavior: 'smooth',
+    })
+  }
+
   React.useEffect(() => {
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-  
+    window.addEventListener('scroll', toggleVisibility)
+    return () => window.removeEventListener('scroll', toggleVisibility)
+  }, [])
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -36,19 +36,11 @@ export const ScrollToTop: React.FC = () => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.2 }}
         >
-          <Button
-            isIconOnly
-            color="primary"
-            variant="solid"
-            size="lg"
-            className="shadow-lg"
-            onPress={scrollToTop}
-            aria-label="Scroll to top"
-          >
+          <Button isIconOnly color="primary" variant="solid" size="lg" className="shadow-lg" onPress={scrollToTop} aria-label="Scroll to top">
             <Icon icon="lucide:chevron-up" width={24} height={24} />
           </Button>
         </motion.div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}

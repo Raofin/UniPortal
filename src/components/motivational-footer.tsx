@@ -1,187 +1,182 @@
-import React from "react";
-import { Card, CardBody, Button, Progress, Tooltip } from "@heroui/react";
-import { Icon } from "@iconify/react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react'
+import { Card, CardBody, Button, Progress, Tooltip } from '@heroui/react'
+import { Icon } from '@iconify/react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Quote {
-  id: number;
-  text: string;
-  author: string;
+  id: number
+  text: string
+  author: string
 }
 
 interface MoodEntry {
-  date: Date;
-  mood: "great" | "good" | "okay" | "bad" | "terrible";
-  reflection?: string;
+  date: Date
+  mood: 'great' | 'good' | 'okay' | 'bad' | 'terrible'
+  reflection?: string
 }
 
 export const MotivationalFooter: React.FC = () => {
-  const [currentQuoteIndex, setCurrentQuoteIndex] = React.useState(0);
-  const [showReflection, setShowReflection] = React.useState(false);
-  const [reflection, setReflection] = React.useState("");
-  const [currentMood, setCurrentMood] = React.useState<MoodEntry["mood"] | null>(null);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = React.useState(0)
+  const [showReflection, setShowReflection] = React.useState(false)
+  const [reflection, setReflection] = React.useState('')
+  const [currentMood, setCurrentMood] = React.useState<MoodEntry['mood'] | null>(null)
   const [moodHistory, setMoodHistory] = React.useState<MoodEntry[]>([
-    { date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), mood: "good" },
-    { date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), mood: "great" },
-    { date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), mood: "okay" },
-    { date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), mood: "good" },
-    { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), mood: "bad" },
-    { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), mood: "okay" },
-  ]);
-  
+    { date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), mood: 'good' },
+    { date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), mood: 'great' },
+    { date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), mood: 'okay' },
+    { date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), mood: 'good' },
+    { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), mood: 'bad' },
+    { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), mood: 'okay' },
+  ])
+
   const quotes: Quote[] = [
     {
       id: 1,
-      text: "The only way to do great work is to love what you do.",
-      author: "Steve Jobs"
+      text: 'The only way to do great work is to love what you do.',
+      author: 'Steve Jobs',
     },
     {
       id: 2,
-      text: "Education is the most powerful weapon which you can use to change the world.",
-      author: "Nelson Mandela"
+      text: 'Education is the most powerful weapon which you can use to change the world.',
+      author: 'Nelson Mandela',
     },
     {
       id: 3,
-      text: "The beautiful thing about learning is that no one can take it away from you.",
-      author: "B.B. King"
+      text: 'The beautiful thing about learning is that no one can take it away from you.',
+      author: 'B.B. King',
     },
     {
       id: 4,
-      text: "The expert in anything was once a beginner.",
-      author: "Helen Hayes"
+      text: 'The expert in anything was once a beginner.',
+      author: 'Helen Hayes',
     },
     {
       id: 5,
       text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.",
-      author: "Dr. Seuss"
-    }
-  ];
-  
+      author: 'Dr. Seuss',
+    },
+  ]
+
   const reflectionPrompts = [
     "What's one thing you're proud of today?",
-    "What was your biggest challenge today?",
+    'What was your biggest challenge today?',
     "What's something new you learned today?",
-    "What are you looking forward to tomorrow?",
-    "What's one way you helped someone today?"
-  ];
-  
-  const [currentPrompt, setCurrentPrompt] = React.useState(
-    reflectionPrompts[Math.floor(Math.random() * reflectionPrompts.length)]
-  );
-  
+    'What are you looking forward to tomorrow?',
+    "What's one way you helped someone today?",
+  ]
+
+  const [currentPrompt, setCurrentPrompt] = React.useState(reflectionPrompts[Math.floor(Math.random() * reflectionPrompts.length)])
+
   // Rotate quotes every 10 seconds
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
-    }, 10000);
-    
-    return () => clearInterval(interval);
-  }, [quotes.length]);
-  
-  const handleMoodSelection = (mood: MoodEntry["mood"]) => {
-    setCurrentMood(mood);
-    
+      setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length)
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [quotes.length])
+
+  const handleMoodSelection = (mood: MoodEntry['mood']) => {
+    setCurrentMood(mood)
+
     if (mood) {
       // If user already submitted a mood today, update it
-      const today = new Date();
-      const todayEntry = moodHistory.find(entry => 
-        entry.date.getDate() === today.getDate() &&
-        entry.date.getMonth() === today.getMonth() &&
-        entry.date.getFullYear() === today.getFullYear()
-      );
-      
+      const today = new Date()
+      const todayEntry = moodHistory.find(
+        (entry) =>
+          entry.date.getDate() === today.getDate() && entry.date.getMonth() === today.getMonth() && entry.date.getFullYear() === today.getFullYear(),
+      )
+
       if (todayEntry) {
-        setMoodHistory(moodHistory.map(entry => 
-          entry === todayEntry ? { ...entry, mood } : entry
-        ));
+        setMoodHistory(moodHistory.map((entry) => (entry === todayEntry ? { ...entry, mood } : entry)))
       } else {
         // Otherwise add a new entry
-        setMoodHistory([...moodHistory, { date: today, mood }]);
+        setMoodHistory([...moodHistory, { date: today, mood }])
       }
     }
-  };
-  
+  }
+
   const handleReflectionSubmit = () => {
     if (reflection.trim() && currentMood) {
       // Update the latest mood entry with the reflection
-      const updatedHistory = [...moodHistory];
-      const latestEntry = updatedHistory[updatedHistory.length - 1];
-      latestEntry.reflection = reflection;
-      
-      setMoodHistory(updatedHistory);
-      setReflection("");
-      setShowReflection(false);
+      const updatedHistory = [...moodHistory]
+      const latestEntry = updatedHistory[updatedHistory.length - 1]
+      latestEntry.reflection = reflection
+
+      setMoodHistory(updatedHistory)
+      setReflection('')
+      setShowReflection(false)
     }
-  };
-  
-  const getMoodIcon = (mood: MoodEntry["mood"]) => {
+  }
+
+  const getMoodIcon = (mood: MoodEntry['mood']) => {
     switch (mood) {
-      case "great":
-        return <Icon icon="lucide:smile" className="text-success" />;
-      case "good":
-        return <Icon icon="lucide:smile" className="text-primary" />;
-      case "okay":
-        return <Icon icon="lucide:meh" className="text-warning" />;
-      case "bad":
-        return <Icon icon="lucide:frown" className="text-danger" />;
-      case "terrible":
-        return <Icon icon="lucide:frown" className="text-danger" />;
+      case 'great':
+        return <Icon icon="lucide:smile" className="text-success" />
+      case 'good':
+        return <Icon icon="lucide:smile" className="text-primary" />
+      case 'okay':
+        return <Icon icon="lucide:meh" className="text-warning" />
+      case 'bad':
+        return <Icon icon="lucide:frown" className="text-danger" />
+      case 'terrible':
+        return <Icon icon="lucide:frown" className="text-danger" />
       default:
-        return <Icon icon="lucide:help-circle" className="text-default-500" />;
+        return <Icon icon="lucide:help-circle" className="text-default-500" />
     }
-  };
-  
-  const getMoodColor = (mood: MoodEntry["mood"]) => {
+  }
+
+  const getMoodColor = (mood: MoodEntry['mood']) => {
     switch (mood) {
-      case "great":
-        return "success";
-      case "good":
-        return "primary";
-      case "okay":
-        return "warning";
-      case "bad":
-        return "danger";
-      case "terrible":
-        return "danger";
+      case 'great':
+        return 'success'
+      case 'good':
+        return 'primary'
+      case 'okay':
+        return 'warning'
+      case 'bad':
+        return 'danger'
+      case 'terrible':
+        return 'danger'
       default:
-        return "default";
+        return 'default'
     }
-  };
-  
-  const getMoodValue = (mood: MoodEntry["mood"]) => {
+  }
+
+  const getMoodValue = (mood: MoodEntry['mood']) => {
     switch (mood) {
-      case "great":
-        return 100;
-      case "good":
-        return 75;
-      case "okay":
-        return 50;
-      case "bad":
-        return 25;
-      case "terrible":
-        return 0;
+      case 'great':
+        return 100
+      case 'good':
+        return 75
+      case 'okay':
+        return 50
+      case 'bad':
+        return 25
+      case 'terrible':
+        return 0
       default:
-        return 0;
+        return 0
     }
-  };
-  
+  }
+
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString(undefined, { weekday: 'short' });
-  };
-  
+    return date.toLocaleDateString(undefined, { weekday: 'short' })
+  }
+
   return (
-    <div className="mt-12 mb-6 container mx-auto px-4 max-w-6xl">
-      <Card className="shadow-sm bg-gradient-to-r from-primary-50 to-background">
+    <div className="container mx-auto mb-6 mt-12 max-w-6xl px-4">
+      <Card className="bg-gradient-to-r from-primary-50 to-background shadow-sm">
         <CardBody className="p-6">
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col gap-6 md:flex-row">
             {/* Quote section */}
             <div className="w-full md:w-1/2">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
                 <Icon icon="lucide:sparkles" className="text-primary" />
                 Today's Spark
               </h2>
-              
-              <div className="h-32 relative">
+
+              <div className="relative h-32">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentQuoteIndex}
@@ -191,17 +186,13 @@ export const MotivationalFooter: React.FC = () => {
                     transition={{ duration: 0.5 }}
                     className="absolute inset-0"
                   >
-                    <blockquote className="italic text-lg text-default-700">
-                      "{quotes[currentQuoteIndex].text}"
-                    </blockquote>
-                    <footer className="mt-2 text-sm text-default-500">
-                      — {quotes[currentQuoteIndex].author}
-                    </footer>
+                    <blockquote className="text-lg italic text-default-700">"{quotes[currentQuoteIndex].text}"</blockquote>
+                    <footer className="mt-2 text-sm text-default-500">— {quotes[currentQuoteIndex].author}</footer>
                   </motion.div>
                 </AnimatePresence>
               </div>
-              
-              <div className="flex justify-between items-center mt-4">
+
+              <div className="mt-4 flex items-center justify-between">
                 <Button
                   variant="light"
                   size="sm"
@@ -210,167 +201,148 @@ export const MotivationalFooter: React.FC = () => {
                 >
                   Next Quote
                 </Button>
-                
-                <Button
-                  variant="light"
-                  size="sm"
-                  startContent={<Icon icon="lucide:archive" />}
-                >
+
+                <Button variant="light" size="sm" startContent={<Icon icon="lucide:archive" />}>
                   View Archive
                 </Button>
               </div>
             </div>
-            
+
             {/* Reflection section */}
             <div className="w-full md:w-1/2">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
                 <Icon icon="lucide:heart-handshake" className="text-primary" />
                 Daily Reflection
               </h2>
-              
+
               {!showReflection ? (
                 <div className="mb-4">
-                  <p className="text-default-600 mb-3">{currentPrompt}</p>
-                  
-                  <Button
-                    color="primary"
-                    variant="flat"
-                    onPress={() => setShowReflection(true)}
-                    startContent={<Icon icon="lucide:edit-3" />}
-                  >
+                  <p className="mb-3 text-default-600">{currentPrompt}</p>
+
+                  <Button color="primary" variant="flat" onPress={() => setShowReflection(true)} startContent={<Icon icon="lucide:edit-3" />}>
                     Add Reflection
                   </Button>
                 </div>
               ) : (
                 <div className="mb-4">
                   <textarea
-                    className="w-full p-3 rounded-lg border border-divider bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all mb-3"
+                    className="mb-3 w-full rounded-lg border border-divider bg-background p-3 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                     rows={3}
                     placeholder="Write your reflection here..."
                     value={reflection}
                     onChange={(e) => setReflection(e.target.value)}
                   ></textarea>
-                  
+
                   <div className="flex gap-2">
-                    <Button
-                      color="primary"
-                      onPress={handleReflectionSubmit}
-                      isDisabled={!reflection.trim() || !currentMood}
-                    >
+                    <Button color="primary" onPress={handleReflectionSubmit} isDisabled={!reflection.trim() || !currentMood}>
                       Save
                     </Button>
-                    <Button
-                      variant="flat"
-                      onPress={() => setShowReflection(false)}
-                    >
+                    <Button variant="flat" onPress={() => setShowReflection(false)}>
                       Cancel
                     </Button>
                   </div>
                 </div>
               )}
-              
+
               <div>
-                <p className="text-sm text-default-600 mb-2">How are you feeling today?</p>
-                
-                <div className="flex gap-2 mb-4">
+                <p className="mb-2 text-sm text-default-600">How are you feeling today?</p>
+
+                <div className="mb-4 flex gap-2">
                   <Tooltip content="Great">
                     <Button
                       isIconOnly
-                      variant={currentMood === "great" ? "solid" : "light"}
-                      color={currentMood === "great" ? "success" : "default"}
-                      onPress={() => handleMoodSelection("great")}
+                      variant={currentMood === 'great' ? 'solid' : 'light'}
+                      color={currentMood === 'great' ? 'success' : 'default'}
+                      onPress={() => handleMoodSelection('great')}
                       aria-label="Feeling great"
                     >
                       <Icon icon="lucide:smile" />
                     </Button>
                   </Tooltip>
-                  
+
                   <Tooltip content="Good">
                     <Button
                       isIconOnly
-                      variant={currentMood === "good" ? "solid" : "light"}
-                      color={currentMood === "good" ? "primary" : "default"}
-                      onPress={() => handleMoodSelection("good")}
+                      variant={currentMood === 'good' ? 'solid' : 'light'}
+                      color={currentMood === 'good' ? 'primary' : 'default'}
+                      onPress={() => handleMoodSelection('good')}
                       aria-label="Feeling good"
                     >
                       <Icon icon="lucide:smile" />
                     </Button>
                   </Tooltip>
-                  
+
                   <Tooltip content="Okay">
                     <Button
                       isIconOnly
-                      variant={currentMood === "okay" ? "solid" : "light"}
-                      color={currentMood === "okay" ? "warning" : "default"}
-                      onPress={() => handleMoodSelection("okay")}
+                      variant={currentMood === 'okay' ? 'solid' : 'light'}
+                      color={currentMood === 'okay' ? 'warning' : 'default'}
+                      onPress={() => handleMoodSelection('okay')}
                       aria-label="Feeling okay"
                     >
                       <Icon icon="lucide:meh" />
                     </Button>
                   </Tooltip>
-                  
+
                   <Tooltip content="Bad">
                     <Button
                       isIconOnly
-                      variant={currentMood === "bad" ? "solid" : "light"}
-                      color={currentMood === "bad" ? "danger" : "default"}
-                      onPress={() => handleMoodSelection("bad")}
+                      variant={currentMood === 'bad' ? 'solid' : 'light'}
+                      color={currentMood === 'bad' ? 'danger' : 'default'}
+                      onPress={() => handleMoodSelection('bad')}
                       aria-label="Feeling bad"
                     >
                       <Icon icon="lucide:frown" />
                     </Button>
                   </Tooltip>
-                  
+
                   <Tooltip content="Terrible">
                     <Button
                       isIconOnly
-                      variant={currentMood === "terrible" ? "solid" : "light"}
-                      color={currentMood === "terrible" ? "danger" : "default"}
-                      onPress={() => handleMoodSelection("terrible")}
+                      variant={currentMood === 'terrible' ? 'solid' : 'light'}
+                      color={currentMood === 'terrible' ? 'danger' : 'default'}
+                      onPress={() => handleMoodSelection('terrible')}
                       aria-label="Feeling terrible"
                     >
                       <Icon icon="lucide:frown" />
                     </Button>
                   </Tooltip>
                 </div>
-                
+
                 <div>
-                  <p className="text-sm text-default-600 mb-2">Your mood this week:</p>
-                  
+                  <p className="mb-2 text-sm text-default-600">Your mood this week:</p>
+
                   <div className="flex items-center gap-1">
                     {moodHistory.map((entry, index) => (
-                      <Tooltip 
-                        key={index}
-                        content={`${formatDate(entry.date)}: ${entry.mood}${entry.reflection ? ` - "${entry.reflection}"` : ''}`}
-                      >
+                      <Tooltip key={index} content={`${formatDate(entry.date)}: ${entry.mood}${entry.reflection ? ` - "${entry.reflection}"` : ''}`}>
                         <div className="flex-1">
                           <div className="flex flex-col items-center">
-                            <Progress 
+                            <Progress
                               aria-label={`Mood for ${formatDate(entry.date)}`}
-                              value={getMoodValue(entry.mood)} 
+                              value={getMoodValue(entry.mood)}
                               color={getMoodColor(entry.mood) as any}
                               className="h-8"
                               showValueLabel={false}
                             />
-                            <span className="text-xs mt-1">{formatDate(entry.date)}</span>
+                            <span className="mt-1 text-xs">{formatDate(entry.date)}</span>
                           </div>
                         </div>
                       </Tooltip>
                     ))}
-                    
+
                     {/* Today's mood (if set) */}
                     {currentMood && (
                       <Tooltip content={`Today: ${currentMood}`}>
                         <div className="flex-1">
                           <div className="flex flex-col items-center">
-                            <Progress 
+                            <Progress
                               aria-label="Today's mood"
-                              value={getMoodValue(currentMood)} 
+                              value={getMoodValue(currentMood)}
                               color={getMoodColor(currentMood) as any}
                               className="h-8"
                               showValueLabel={false}
                             />
-                            <span className="text-xs mt-1">Today</span>
+                            <span className="mt-1 text-xs">Today</span>
                           </div>
                         </div>
                       </Tooltip>
@@ -383,5 +355,5 @@ export const MotivationalFooter: React.FC = () => {
         </CardBody>
       </Card>
     </div>
-  );
-};
+  )
+}
