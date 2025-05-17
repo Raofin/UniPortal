@@ -176,8 +176,6 @@ export const FloatingResources: React.FC = () => {
     e.preventDefault()
     setIsDragging(false)
 
-    // In a real app, we would handle file upload here
-    // For demo purposes, let's simulate adding a new file
     if (e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0]
       const fileExtension = file.name.split('.').pop()?.toLowerCase() || ''
@@ -193,8 +191,8 @@ export const FloatingResources: React.FC = () => {
         id: `new-${Date.now()}`,
         title: file.name,
         type: fileType,
-        course: 'Unknown Course', // This would be selected by the user in a real app
-        section: selectedSection || 'algorithms', // Default to the first section if none selected
+        course: 'Unknown Course',
+        section: selectedSection || 'algorithms',
         lastUpdated: new Date().toISOString().split('T')[0],
         size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
       }

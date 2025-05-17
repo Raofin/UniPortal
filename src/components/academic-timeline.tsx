@@ -13,6 +13,8 @@ interface TimelineEvent {
   description?: string
   time?: string
   location?: string
+  status?: 'upcoming' | 'submitted' | 'graded'
+  grade?: string
 }
 
 export const AcademicTimeline: React.FC = () => {
@@ -30,7 +32,7 @@ export const AcademicTimeline: React.FC = () => {
   const generateEvents = (): TimelineEvent[] => {
     const events: TimelineEvent[] = []
 
-    // Add assignments
+    // Add assignments with status
     events.push({
       id: 'a1',
       date: addDays(today, 2),
@@ -38,6 +40,7 @@ export const AcademicTimeline: React.FC = () => {
       type: 'assignment',
       course: 'CS202: Data Structures',
       description: 'Implement a balanced binary search tree with insertion, deletion, and traversal operations.',
+      status: 'upcoming',
     })
 
     events.push({
@@ -47,15 +50,18 @@ export const AcademicTimeline: React.FC = () => {
       type: 'assignment',
       course: 'CS305: Database Systems',
       description: 'Design a normalized database schema for a library management system with at least 5 entities.',
+      status: 'submitted',
     })
 
     events.push({
       id: 'a3',
-      date: addDays(today, 12),
+      date: addDays(today, -3), // Past assignment
       title: 'Algorithm Analysis',
       type: 'assignment',
       course: 'CS301: Advanced Algorithms',
       description: 'Analyze the time and space complexity of the provided sorting algorithms and submit a report.',
+      status: 'graded',
+      grade: 'A',
     })
 
     // Add exams
@@ -260,6 +266,32 @@ export const AcademicTimeline: React.FC = () => {
     }
   }
 
+  const getAssignmentStatusColor = (status?: string) => {
+    switch (status) {
+      case 'upcoming':
+        return 'warning'
+      case 'submitted':
+        return 'primary'
+      case 'graded':
+        return 'success'
+      default:
+        return 'default'
+    }
+  }
+
+  const getAssignmentStatusIcon = (status?: string) => {
+    switch (status) {
+      case 'upcoming':
+        return <Icon icon="lucide:clock" className="text-warning" width={16} height={16} />
+      case 'submitted':
+        return <Icon icon="lucide:check-circle" className="text-primary" width={16} height={16} />
+      case 'graded':
+        return <Icon icon="lucide:award" className="text-success" width={16} height={16} />
+      default:
+        return <Icon icon="lucide:clipboard" className="text-default-500" width={16} height={16} />
+    }
+  }
+
   const toggleFilter = (filter: keyof typeof filters) => {
     setFilters((prev) => ({
       ...prev,
@@ -268,68 +300,76 @@ export const AcademicTimeline: React.FC = () => {
   }
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Academic Timeline</h2>
-          <Button variant="light" startContent={<Icon icon="lucide:filter" />}>
-            Filters
-          </Button>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant={filters.assignment ? 'flat' : 'light'}
-            color={filters.assignment ? 'primary' : 'default'}
-            startContent={<Icon icon="lucide:clipboard-list" />}
-            onPress={() => toggleFilter('assignment')}
-          >
-            Assignments
-          </Button>
-          <Button
-            size="sm"
-            variant={filters.exam ? 'flat' : 'light'}
-            color={filters.exam ? 'danger' : 'default'}
-            startContent={<Icon icon="lucide:file-text" />}
-            onPress={() => toggleFilter('exam')}
-          >
-            Exams
-          </Button>
-          <Button
-            size="sm"
-            variant={filters.holiday ? 'flat' : 'light'}
-            color={filters.holiday ? 'success' : 'default'}
-            startContent={<Icon icon="lucide:palm-tree" />}
-            onPress={() => toggleFilter('holiday')}
-          >
-            Holidays
-          </Button>
-          <Button
-            size="sm"
-            variant={filters.semesterBreak ? 'flat' : 'light'}
-            color={filters.semesterBreak ? 'warning' : 'default'}
-            startContent={<Icon icon="lucide:calendar-off" />}
-            onPress={() => toggleFilter('semesterBreak')}
-          >
-            Breaks
-          </Button>
-          <Button
-            size="sm"
-            variant={filters.class ? 'flat' : 'light'}
-            color={filters.class ? 'default' : 'default'}
-            startContent={<Icon icon="lucide:book-open" />}
-            onPress={() => toggleFilter('class')}
-          >
-            Classes
-          </Button>
+    <Card className="shadow-md">
+      <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
+        <div className="flex w-full flex-col items-center gap-1 text-center">
+          <div className="flex items-center gap-2">
+            <Icon icon="lucide:history" className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold tracking-tight">Academic Timeline</h2>
+          </div>
+          <p className="text-base text-default-500">Track your academic events, assignments, and important dates</p>
         </div>
       </CardHeader>
 
-      <CardBody>
-        <div ref={timelineRef} className="relative max-h-[500px] overflow-y-auto pr-2">
+      <CardBody className="p-0">
+        <div className="px-4 pb-4 pt-2 sm:px-8">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={filters.assignment ? 'flat' : 'light'}
+              color={filters.assignment ? 'primary' : 'default'}
+              startContent={<Icon icon="lucide:clipboard-list" className="h-4 w-4 sm:h-5 sm:w-5" />}
+              onPress={() => toggleFilter('assignment')}
+              className="text-xs sm:text-sm"
+            >
+              Assignments
+            </Button>
+            <Button
+              size="sm"
+              variant={filters.exam ? 'flat' : 'light'}
+              color={filters.exam ? 'danger' : 'default'}
+              startContent={<Icon icon="lucide:file-text" className="h-4 w-4 sm:h-5 sm:w-5" />}
+              onPress={() => toggleFilter('exam')}
+              className="text-xs sm:text-sm"
+            >
+              Exams
+            </Button>
+            <Button
+              size="sm"
+              variant={filters.holiday ? 'flat' : 'light'}
+              color={filters.holiday ? 'success' : 'default'}
+              startContent={<Icon icon="lucide:palm-tree" className="h-4 w-4 sm:h-5 sm:w-5" />}
+              onPress={() => toggleFilter('holiday')}
+              className="text-xs sm:text-sm"
+            >
+              Holidays
+            </Button>
+            <Button
+              size="sm"
+              variant={filters.semesterBreak ? 'flat' : 'light'}
+              color={filters.semesterBreak ? 'warning' : 'default'}
+              startContent={<Icon icon="lucide:calendar-off" className="h-4 w-4 sm:h-5 sm:w-5" />}
+              onPress={() => toggleFilter('semesterBreak')}
+              className="text-xs sm:text-sm"
+            >
+              Breaks
+            </Button>
+            <Button
+              size="sm"
+              variant={filters.class ? 'flat' : 'light'}
+              color={filters.class ? 'primary' : 'default'}
+              startContent={<Icon icon="lucide:book-open" className="h-4 w-4 sm:h-5 sm:w-5" />}
+              onPress={() => toggleFilter('class')}
+              className="text-xs sm:text-sm"
+            >
+              Classes
+            </Button>
+          </div>
+        </div>
+
+        <div className="relative max-h-[500px] overflow-y-auto px-4 pb-4 sm:px-8">
           {/* Vertical line */}
-          <div className="absolute bottom-0 left-4 top-0 z-0 w-0.5 bg-default-200"></div>
+          <div className="absolute bottom-0 left-4 top-0 z-0 w-0.5 bg-default-200 sm:left-6"></div>
 
           {Object.entries(filteredEventsByDate).map(([dateKey, dateEvents]) => {
             const date = new Date(dateKey)
@@ -338,11 +378,11 @@ export const AcademicTimeline: React.FC = () => {
             const isFuture = date > today
 
             return (
-              <div key={dateKey} className="relative mb-6" data-today={isToday}>
+              <div key={dateKey} data-today={isToday} className="mb-6 last:mb-0">
                 {/* Date header */}
                 <div className={`mb-2 flex items-center ${isToday ? 'sticky top-0 z-10 bg-background pb-2' : ''}`}>
                   <div
-                    className={`z-10 flex h-8 w-8 items-center justify-center rounded-full ${
+                    className={`z-10 flex h-7 w-7 items-center justify-center rounded-full sm:h-8 sm:w-8 ${
                       isToday
                         ? 'bg-primary text-white ring-4 ring-primary-100'
                         : isPast
@@ -350,11 +390,13 @@ export const AcademicTimeline: React.FC = () => {
                           : 'bg-default-100 text-default-700'
                     }`}
                   >
-                    <span className="text-sm font-medium">{format(date, 'd')}</span>
+                    <span className="text-xs font-medium sm:text-sm">{format(date, 'd')}</span>
                   </div>
 
-                  <div className="ml-4">
-                    <h3 className={`font-medium ${isToday ? 'text-primary' : ''}`}>{isToday ? 'Today' : format(date, 'EEEE, MMMM d')}</h3>
+                  <div className="ml-3 sm:ml-4">
+                    <h3 className={`text-sm font-medium sm:text-base ${isToday ? 'text-primary' : ''}`}>
+                      {isToday ? 'Today' : format(date, 'EEEE, MMMM d')}
+                    </h3>
                     {isToday && (
                       <motion.div
                         animate={{
@@ -365,7 +407,7 @@ export const AcademicTimeline: React.FC = () => {
                           duration: 2,
                         }}
                       >
-                        <Chip size="sm" color="primary" variant="flat">
+                        <Chip size="sm" color="primary" variant="flat" className="text-xs">
                           Today
                         </Chip>
                       </motion.div>
@@ -374,7 +416,7 @@ export const AcademicTimeline: React.FC = () => {
                 </div>
 
                 {/* Events for this date */}
-                <div className="ml-4 space-y-3 pl-8">
+                <div className="ml-4 space-y-3 pl-6 sm:ml-6 sm:pl-8">
                   {dateEvents.map((event, eventIndex) => (
                     <motion.div
                       key={event.id}
@@ -388,11 +430,11 @@ export const AcademicTimeline: React.FC = () => {
                       className="relative"
                     >
                       {/* Connector line to main timeline */}
-                      <div className="absolute -left-8 top-4 h-0.5 w-6 bg-default-200"></div>
+                      <div className="absolute -left-6 top-4 h-0.5 w-4 bg-default-200 sm:-left-8 sm:w-6"></div>
 
                       {/* Event dot */}
                       <div
-                        className={`absolute -left-10 top-3 h-4 w-4 rounded-full border-2 border-background ${
+                        className={`absolute -left-8 top-3 h-3 w-3 rounded-full border-2 border-background sm:-left-10 sm:h-4 sm:w-4 ${
                           event.type === 'assignment'
                             ? 'bg-primary'
                             : event.type === 'exam'
@@ -405,15 +447,30 @@ export const AcademicTimeline: React.FC = () => {
                         }`}
                       ></div>
 
-                      <Card shadow="sm" className="border border-divider">
-                        <CardBody className="p-3">
-                          <div className="flex items-start gap-3">
+                      <Card
+                        shadow="sm"
+                        className={`border ${
+                          event.type === 'assignment'
+                            ? event.status === 'upcoming'
+                              ? 'border-warning-200 bg-warning-50/50 dark:bg-warning-900/10'
+                              : event.status === 'submitted'
+                                ? 'border-primary-200 bg-primary-50/50 dark:bg-primary-900/10'
+                                : 'border-success-200 bg-success-50/50 dark:bg-success-900/10'
+                            : 'border-divider'
+                        }`}
+                      >
+                        <CardBody className="p-3 sm:p-4">
+                          <div className="flex items-start gap-2 sm:gap-3">
                             <motion.div
                               whileHover={{ scale: 1.1, rotate: 5 }}
                               whileTap={{ scale: 0.95 }}
-                              className={`rounded-md p-2.5 ${
+                              className={`rounded-md p-2 ${
                                 event.type === 'assignment'
-                                  ? 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
+                                  ? event.status === 'upcoming'
+                                    ? 'bg-warning-100 text-warning-500 dark:bg-warning-900/30'
+                                    : event.status === 'submitted'
+                                      ? 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
+                                      : 'bg-success-100 text-success-500 dark:bg-success-900/30'
                                   : event.type === 'exam'
                                     ? 'bg-danger-100 text-danger-500 dark:bg-danger-900/30'
                                     : event.type === 'holiday'
@@ -423,40 +480,58 @@ export const AcademicTimeline: React.FC = () => {
                                         : 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
                               }`}
                             >
-                              {getEventTypeIcon(event.type)}
+                              {event.type === 'assignment' ? getAssignmentStatusIcon(event.status) : getEventTypeIcon(event.type)}
                             </motion.div>
 
                             <div className="flex-grow">
-                              <div className="flex items-start justify-between">
+                              <div className="flex flex-wrap items-start justify-between gap-2">
                                 <div>
-                                  <h4 className="font-medium">{event.title}</h4>
-                                  {event.course && <p className="text-xs text-default-500">{event.course}</p>}
+                                  <h4 className="text-sm font-medium sm:text-base">{event.title}</h4>
+                                  {event.course && <p className="text-xs text-default-500 sm:text-sm">{event.course}</p>}
                                 </div>
 
-                                <Chip size="sm" color={getEventTypeColor(event.type) as any} variant="flat">
-                                  {event.type.replace('-', ' ')}
-                                </Chip>
+                                <div className="flex items-center gap-2">
+                                  {event.type === 'assignment' && event.status === 'graded' && event.grade && (
+                                    <Chip size="sm" color="success" variant="flat" className="text-xs font-medium">
+                                      Grade: {event.grade}
+                                    </Chip>
+                                  )}
+                                  <Chip
+                                    size="sm"
+                                    color={event.type === 'assignment' ? getAssignmentStatusColor(event.status) : getEventTypeColor(event.type)}
+                                    variant="flat"
+                                    className="text-xs"
+                                  >
+                                    {event.type === 'assignment'
+                                      ? event.status === 'upcoming'
+                                        ? 'Upcoming'
+                                        : event.status === 'submitted'
+                                          ? 'Submitted'
+                                          : 'Graded'
+                                      : event.type.replace('-', ' ')}
+                                  </Chip>
+                                </div>
                               </div>
 
-                              {event.description && <p className="mt-2 text-sm text-default-600">{event.description}</p>}
+                              {event.description && <p className="mt-2 text-xs text-default-600 sm:text-sm">{event.description}</p>}
 
-                              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:gap-x-4">
                                 {event.time && (
-                                  <div className="flex items-center gap-1 text-xs text-default-500">
-                                    <Icon icon="lucide:clock" size={12} />
+                                  <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
+                                    <Icon icon="lucide:clock" width={12} height={12} />
                                     <span>{event.time}</span>
                                   </div>
                                 )}
 
                                 {event.location && (
-                                  <div className="flex items-center gap-1 text-xs text-default-500">
-                                    <Icon icon="lucide:map-pin" size={12} />
+                                  <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
+                                    <Icon icon="lucide:map-pin" width={12} height={12} />
                                     <span>{event.location}</span>
                                   </div>
                                 )}
 
-                                <div className="flex items-center gap-1 text-xs text-default-500">
-                                  <Icon icon="lucide:calendar" size={12} />
+                                <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
+                                  <Icon icon="lucide:calendar" width={12} height={12} />
                                   <span>
                                     {isToday
                                       ? 'Today'
@@ -481,12 +556,14 @@ export const AcademicTimeline: React.FC = () => {
 
           {Object.keys(filteredEventsByDate).length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Icon icon="lucide:calendar-x" className="mb-4 h-16 w-16 text-default-300" />
-              <h3 className="mb-2 text-xl font-medium">No events to display</h3>
-              <p className="mb-4 max-w-md text-default-500">Try adjusting your filters to see more events</p>
+              <Icon icon="lucide:calendar-x" className="mb-4 h-12 w-12 text-default-300 sm:h-16 sm:w-16" />
+              <h3 className="mb-2 text-lg font-medium sm:text-xl">No events to display</h3>
+              <p className="mb-4 max-w-md text-sm text-default-500 sm:text-base">Try adjusting your filters to see more events</p>
               <Button
                 color="primary"
                 variant="flat"
+                size="sm"
+                className="text-xs sm:text-sm"
                 onPress={() =>
                   setFilters({
                     assignment: true,

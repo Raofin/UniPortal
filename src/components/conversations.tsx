@@ -233,21 +233,15 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     }
   }
 
-  // Fix the Smart Inbox tab crash by ensuring proper state handling
   React.useEffect(() => {
-    return () => {
-      // Clean up any timers or subscriptions
-    }
+    return () => {}
   }, [])
-  // Fix the inbox tab rendering by adding proper null checks
   const selectedMessageData = React.useMemo(() => {
     return messages.find((m) => m.id === selectedMessage) || null
   }, [selectedMessage])
 
-  // Memoize cs301Messages to prevent unnecessary re-renders
   const memoizedCS301Messages = React.useMemo(() => cs301Messages, [])
 
-  // Use a ref for storing timers to ensure proper cleanup
   const timersRef = React.useRef<{
     timer1?: NodeJS.Timeout
     timer2?: NodeJS.Timeout
@@ -255,7 +249,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
 
   // Simulate typing indicator with proper cleanup
   React.useEffect(() => {
-    // Clear any existing timers first
     if (timersRef.current.timer1) clearTimeout(timersRef.current.timer1)
     if (timersRef.current.timer2) clearTimeout(timersRef.current.timer2)
 

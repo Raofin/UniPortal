@@ -13,10 +13,10 @@ export default {
         dividerWeight: '1px',
         disabledOpacity: 0.45,
         fontSize: {
-          tiny: '0.75rem', // 12px
-          small: '0.875rem', // 14px
-          medium: '0.9375rem', // 15px
-          large: '1.125rem', // 18px
+          tiny: '0.75rem',
+          small: '0.875rem',
+          medium: '0.9375rem',
+          large: '1.125rem',
         },
         lineHeight: {
           tiny: '1rem',

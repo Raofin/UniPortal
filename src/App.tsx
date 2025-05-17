@@ -2,7 +2,7 @@ import React from 'react'
 import { Navbar } from './components/navbar'
 import { WelcomeSection } from './components/welcome-section'
 import { WeeklyCalendar } from './components/weekly-calendar'
-import { UpcomingAssignments } from './components/upcoming-assignments'
+import { UpcomingAssignments } from './components/assessments'
 import { RecentGrades } from './components/recent-grades'
 import { NotesAndFiles } from './components/notes-files'
 import { ScrollToTop } from './components/scroll-to-top'
@@ -31,7 +31,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar onNavigate={scrollToSection} />
 
-      <main className="container mx-auto max-w-6xl px-4 pb-24 pt-16">
+      <main className="container mx-auto max-w-6xl px-4 pt-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <WelcomeSection />
         </motion.div>
@@ -67,17 +67,6 @@ const App: React.FC = () => {
           className="mt-12"
         >
           <RecentGrades />
-        </motion.div>
-
-        <motion.div
-          ref={sectionRefs.notes}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mt-12"
-        >
-          <NotesAndFiles />
         </motion.div>
 
         <motion.div

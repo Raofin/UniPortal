@@ -68,17 +68,20 @@ export const WeeklyCalendar: React.FC = () => {
   }
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Weekly Calendar</h2>
-          <Button isIconOnly variant="light" aria-label="Refresh calendar">
-            <Icon icon="lucide:refresh-cw" />
-          </Button>
+    <Card className="shadow-md">
+      <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
+        <div className="flex w-full flex-col items-center gap-1 text-center">
+          <div className="flex items-center gap-2">
+            <Icon icon="lucide:calendar" className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold tracking-tight">Weekly Calendar</h2>
+          </div>
+          <p className="text-base text-default-500">View your class schedule and attendance for the week</p>
         </div>
+      </CardHeader>
 
-        <div className="mt-1 overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-2">
+      <CardBody className="p-0">
+        <div className="overflow-x-auto px-4 pb-4 pt-2 sm:px-8">
+          <div className="flex min-w-max justify-center gap-2 py-3">
             {week.map((day, index) => (
               <motion.div
                 key={format(day.date, 'yyyy-MM-dd')}
@@ -91,62 +94,63 @@ export const WeeklyCalendar: React.FC = () => {
                 <Button
                   variant={isSameDay(day.date, selectedDay.date) ? 'flat' : 'light'}
                   color={isSameDay(day.date, selectedDay.date) ? 'primary' : 'default'}
-                  className={`flex h-auto min-w-[80px] flex-col py-2 ${isSameDay(day.date, today) ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
+                  className={`flex h-auto min-w-[70px] flex-col py-2 sm:min-w-[80px] ${
+                    isSameDay(day.date, today) ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
+                  }`}
                   onPress={() => setSelectedDay(day)}
                 >
-                  <span className="text-xs font-normal">{format(day.date, 'EEE')}</span>
-                  <span className="text-lg font-semibold">{format(day.date, 'dd')}</span>
+                  <span className="text-[10px] font-normal sm:text-xs">{format(day.date, 'EEE')}</span>
+                  <span className="text-base font-semibold sm:text-lg">{format(day.date, 'dd')}</span>
                   <div className="mt-1">{getStatusIcon(day.status)}</div>
                 </Button>
               </motion.div>
             ))}
           </div>
         </div>
-      </CardHeader>
 
-      <Divider />
+        <Divider />
 
-      <CardBody>
-        <h3 className="mb-4 text-lg font-medium">
-          {isSameDay(selectedDay.date, today) ? "Today's Classes" : `Classes for ${format(selectedDay.date, 'MMMM d')}`}
-        </h3>
+        <div className="p-4 sm:p-8">
+          <h3 className="mb-4 text-lg font-medium">
+            {isSameDay(selectedDay.date, today) ? "Today's Classes" : `Classes for ${format(selectedDay.date, 'MMMM d')}`}
+          </h3>
 
-        {selectedDay.classes.length > 0 ? (
-          <div className="space-y-3">
-            {selectedDay.classes.map((classItem, index) => (
-              <motion.div
-                key={classItem.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
-                className="flex items-center gap-3 rounded-lg border border-divider p-3 transition-colors hover:bg-content1"
-              >
-                <div className="rounded-md bg-primary-100/50 p-2">{getTypeIcon(classItem.type)}</div>
+          {selectedDay.classes.length > 0 ? (
+            <div className="space-y-3">
+              {selectedDay.classes.map((classItem, index) => (
+                <motion.div
+                  key={classItem.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  className="flex items-center gap-3 rounded-lg border border-divider p-3 transition-colors hover:bg-content1"
+                >
+                  <div className="rounded-md bg-primary-100/50 p-1.5 sm:p-2">{getTypeIcon(classItem.type)}</div>
 
-                <div className="flex-grow">
-                  <h4 className="font-medium">{classItem.course}</h4>
-                  <p className="text-sm text-default-500">{classItem.classroom}</p>
-                </div>
+                  <div className="flex-grow">
+                    <h4 className="text-sm font-medium sm:text-base">{classItem.course}</h4>
+                    <p className="text-xs text-default-500 sm:text-sm">{classItem.classroom}</p>
+                  </div>
 
-                <div className="text-right">
-                  <p className="font-medium">{classItem.time}</p>
-                  <p className="text-xs text-default-500">to {classItem.endTime}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Icon icon="lucide:calendar-off" className="mb-2 h-12 w-12 text-default-300" />
-            <p className="text-default-500">No classes scheduled for this day</p>
-          </div>
-        )}
+                  <div className="text-right">
+                    <p className="text-sm font-medium sm:text-base">{classItem.time}</p>
+                    <p className="text-[10px] text-default-500 sm:text-xs">to {classItem.endTime}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Icon icon="lucide:calendar-off" className="mb-2 h-10 w-10 text-default-300 sm:h-12 sm:w-12" />
+              <p className="text-sm text-default-500 sm:text-base">No classes scheduled for this day</p>
+            </div>
+          )}
+        </div>
       </CardBody>
     </Card>
   )
 }
 
-// Sample data
 const todayClasses: ClassData[] = [
   {
     id: '1',

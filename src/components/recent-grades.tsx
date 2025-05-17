@@ -371,30 +371,47 @@ export const RecentGrades: React.FC = () => {
     return `${assessment.name} - ${assessment.score}/${assessment.totalScore} (${assessment.weight}%)`
   }
 
-  // Define colors for different assessment types
+  // Define a cohesive color scheme with different shades of blue
   const assessmentColors = {
-    Attendance: 'var(--heroui-success)',
-    Assignments: 'var(--heroui-primary)',
-    Quizzes: 'var(--heroui-secondary)',
-    'Midterm Exam': 'var(--heroui-danger)',
-    'Final Exam': 'var(--heroui-danger)',
-    Presentation: 'var(--heroui-warning)',
-    Project: 'var(--heroui-warning)',
+    // Use different shades of blue for different assessment types
+    Attendance: '#60a5fa', // lighter blue
+    Assignments: '#3b82f6', // primary blue
+    Quizzes: '#2563eb', // darker blue
+    'Midterm Exam': '#1d4ed8', // deep blue
+    'Final Exam': '#1d4ed8', // deep blue
+    Presentation: '#93c5fd', // very light blue
+    Project: '#93c5fd', // very light blue
   }
 
-  // Fix the circle charts visibility issues by ensuring proper color contrast
+  // Fix the circle charts visibility issues with a cohesive color scheme
   const renderCircleChart = (data: any[], percentage: number, title: string) => {
     return (
       <div className="flex flex-col items-center">
         <h4 className="mb-2 flex items-center gap-1 text-sm font-medium">
-          <Icon icon={title.includes('Midterm') ? 'lucide:calendar-check' : 'lucide:calendar-clock'} className="text-primary" size={16} />
+          <Icon icon={title.includes('Midterm') ? 'lucide:calendar-check' : 'lucide:calendar-clock'} className="text-primary" width={16} />
           {title}
         </h4>
 
-        <div className="relative h-32 w-32">
+        <motion.div
+          className="relative h-32 w-32"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+        >
           <svg className="h-full w-full" viewBox="0 0 100 100">
             {/* Background circle with improved visibility */}
-            <circle cx="50" cy="50" r="45" fill="none" stroke="var(--heroui-default-200)" strokeWidth="10" />
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="45"
+              fill="none"
+              stroke="#e5e7eb" // light gray for light mode
+              className="dark:stroke-gray-700" // darker gray for dark mode
+              strokeWidth="10"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1, ease: 'easeInOut' }}
+            />
 
             {/* Segments for each assessment with improved visibility */}
             {data.map((item, i) => {
@@ -425,9 +442,13 @@ export const RecentGrades: React.FC = () => {
               // For pending items, use dashed stroke
               const dashArray = item.status === 'pending' ? '3,2' : 'none'
 
-              // Use more vibrant colors with better contrast
+              // Use different colors based on status and type
               const fillColor =
-                item.status === 'completed' ? item.color : item.status === 'pending' ? 'var(--heroui-default-200)' : 'var(--heroui-default-100)'
+                item.status === 'completed'
+                  ? item.color // use the assessment-specific color
+                  : item.status === 'pending'
+                    ? '#fbbf24' // amber for pending
+                    : '#e5e7eb' // light gray for unavailable
 
               return (
                 <Tooltip
@@ -446,66 +467,91 @@ export const RecentGrades: React.FC = () => {
                   }
                   placement="top"
                 >
-                  <path
+                  <motion.path
                     d={pathData}
                     fill={fillColor}
-                    stroke="var(--heroui-background)"
+                    stroke="#ffffff" // white stroke for light mode
+                    className="cursor-help transition-all hover:scale-105 hover:opacity-80 dark:stroke-gray-900" // dark stroke for dark mode
                     strokeWidth="1"
                     strokeDasharray={dashArray}
-                    className="cursor-help transition-opacity hover:opacity-80"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: i * 0.1,
+                      ease: 'easeOut',
+                    }}
                   />
                 </Tooltip>
               )
             })}
 
             {/* Center circle with improved visibility */}
-            <circle cx="50" cy="50" r="25" fill="var(--heroui-background)" stroke="var(--heroui-divider)" strokeWidth="1" />
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="25"
+              fill="#ffffff" // white for light mode
+              stroke="#e5e7eb" // light gray for light mode
+              className="dark:fill-gray-900 dark:stroke-gray-700" // dark mode styles
+              strokeWidth="1"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+            />
 
             {/* Completion text with improved visibility */}
-            <text
+            <motion.text
               x="50"
               y="45"
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize="14"
               fontWeight="bold"
-              fill="var(--heroui-foreground)"
-              className="text-foreground"
+              fill="#111827" // dark text for light mode
+              className="dark:fill-gray-100" // light text for dark mode
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.6 }}
             >
               {Math.round(percentage)}%
-            </text>
+            </motion.text>
 
-            <text
+            <motion.text
               x="50"
               y="60"
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize="10"
-              fill="var(--heroui-foreground-500)"
-              className="text-foreground-500"
+              fill="#6b7280" // gray text for light mode
+              className="dark:fill-gray-400" // lighter gray for dark mode
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.7 }}
             >
               Complete
-            </text>
+            </motion.text>
           </svg>
-        </div>
+        </motion.div>
       </div>
     )
   }
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Current Semester</h2>
-          <Button variant="light" startContent={<Icon icon="lucide:download" />}>
-            Export
-          </Button>
+    <Card className="shadow-md">
+      <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
+        <div className="flex w-full flex-col items-center gap-1 text-center">
+          <div className="flex items-center gap-2">
+            <Icon icon="lucide:graduation-cap" className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold tracking-tight">Current Semester</h2>
+          </div>
+          <p className="text-base text-default-500">Track your academic progress and grades across all courses</p>
         </div>
       </CardHeader>
 
-      <CardBody>
-        <div className="overflow-x-auto pb-4">
-          <div className="flex min-w-max gap-6">
+      <CardBody className="p-0">
+        <div className="overflow-x-auto">
+          <div className="flex min-w-max gap-4 pb-4 pt-2 sm:gap-8 sm:p-8">
             {courses.map((course, courseIndex) => {
               const progress = calculateProgress(course)
 
@@ -530,11 +576,13 @@ export const RecentGrades: React.FC = () => {
 
               // Calculate completion percentages
               const midtermCompletedWeight = course.assessments.midterm.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
-
               const finalCompletedWeight = course.assessments.final.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
-
               const midtermPercentage = (midtermCompletedWeight / 50) * 100
               const finalPercentage = (finalCompletedWeight / 50) * 100
+
+              // Calculate next upcoming assessment
+              const allAssessments = [...course.assessments.midterm, ...course.assessments.final]
+              const upcomingAssessment = allAssessments.find((a) => a.status === 'pending') || allAssessments.find((a) => a.status === 'unavailable')
 
               return (
                 <motion.div
@@ -542,47 +590,122 @@ export const RecentGrades: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: courseIndex * 0.1, duration: 0.3 }}
-                  className="min-w-[400px]"
+                  className="min-w-[320px] sm:min-w-[480px]"
                 >
                   <Card shadow="sm" className="border border-divider">
-                    <CardBody className="p-4">
-                      <div className="mb-4 flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium">{course.name}</h3>
-                          <p className="text-sm text-default-500">
-                            {course.code} • {course.credits} Credits
-                          </p>
-                          <p className="text-sm text-default-500">{course.instructor}</p>
-
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <Chip size="sm" color="primary" variant="flat">
-                              {Math.round(progress.completedPercentage)}% Complete
+                    <CardBody className="p-4 sm:p-8">
+                      {/* Course Header */}
+                      <div className="mb-6 flex items-start justify-between border-b border-divider pb-4 sm:mb-8 sm:pb-6">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{course.name}</h3>
+                            <Chip size="sm" variant="flat" color="primary" className="font-medium">
+                              {course.code}
                             </Chip>
-                            <Chip
-                              size="sm"
-                              color={
-                                progress.currentGradePercentage >= 80
-                                  ? 'success'
-                                  : progress.currentGradePercentage >= 70
-                                    ? 'primary'
-                                    : progress.currentGradePercentage >= 60
-                                      ? 'warning'
-                                      : 'danger'
-                              }
-                              variant="flat"
-                            >
-                              Current: {progress.letterGrade} ({Math.round(progress.currentGradePercentage)}%)
-                            </Chip>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-default-600 sm:gap-3">
+                            <div className="flex items-center gap-1 sm:gap-1.5">
+                              <Icon icon="lucide:user" className="h-4 w-4" />
+                              <span>{course.instructor}</span>
+                            </div>
+                            <span className="text-divider">•</span>
+                            <div className="flex items-center gap-1 sm:gap-1.5">
+                              <Icon icon="lucide:book" className="h-4 w-4" />
+                              <span>{course.credits} Credits</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1.5 sm:gap-2">
+                          <Chip
+                            size="sm"
+                            color={
+                              progress.currentGradePercentage >= 80
+                                ? 'success'
+                                : progress.currentGradePercentage >= 70
+                                  ? 'primary'
+                                  : progress.currentGradePercentage >= 60
+                                    ? 'warning'
+                                    : 'danger'
+                            }
+                            variant="flat"
+                            className="px-2 py-1 text-xs font-semibold sm:px-3 sm:text-sm"
+                          >
+                            {progress.letterGrade} ({Math.round(progress.currentGradePercentage)}%)
+                          </Chip>
+                          <div className="flex items-center gap-1 text-xs text-default-500 sm:gap-1.5 sm:text-sm">
+                            <Icon icon="lucide:check-circle" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            <span>{Math.round(progress.completedPercentage)}% Complete</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex flex-col justify-center gap-6 sm:flex-row">
-                        {/* Midterm Chart */}
-                        {renderCircleChart(midtermData, midtermPercentage, 'Midterm (50%)')}
+                      {/* Progress Charts */}
+                      <div className="mb-6 flex flex-nowrap justify-center gap-4 overflow-x-auto pb-2 sm:mb-8 sm:gap-6">
+                        <div className="flex-shrink-0">{renderCircleChart(midtermData, midtermPercentage, 'Midterm (50%)')}</div>
+                        <div className="flex-shrink-0">{renderCircleChart(finalData, finalPercentage, 'Final Term (50%)')}</div>
+                      </div>
 
-                        {/* Final Term Chart */}
-                        {renderCircleChart(finalData, finalPercentage, 'Final Term (50%)')}
+                      {/* Upcoming Assessment */}
+                      {upcomingAssessment && (
+                        <div className="mb-4 rounded-xl bg-default-50 p-3 dark:bg-default-100 sm:mb-6 sm:p-4">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="rounded-full bg-primary/10 p-1.5 sm:p-2">
+                              <Icon
+                                icon={upcomingAssessment.status === 'pending' ? 'lucide:clock' : 'lucide:calendar'}
+                                className="h-4 w-4 text-primary sm:h-5 sm:w-5"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium sm:text-base">Next Assessment</p>
+                              <p className="text-xs text-default-600 sm:text-sm">
+                                {upcomingAssessment.name} ({upcomingAssessment.weight}%)
+                                {upcomingAssessment.status === 'pending' && <span className="ml-2 text-warning">Due Soon</span>}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Assessment Summary */}
+                      <div className="grid grid-cols-2 gap-3 rounded-xl bg-default-50 p-3 dark:bg-default-100 sm:gap-4 sm:p-4">
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <div className="rounded-full bg-success/10 p-1 sm:p-1.5">
+                            <Icon icon="lucide:check-circle" className="h-3.5 w-3.5 text-success sm:h-4 sm:w-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium sm:text-sm">{allAssessments.filter((a) => a.status === 'completed').length}</p>
+                            <p className="text-[10px] text-default-500 sm:text-xs">Completed</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <div className="rounded-full bg-warning/10 p-1 sm:p-1.5">
+                            <Icon icon="lucide:clock" className="h-3.5 w-3.5 text-warning sm:h-4 sm:w-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium sm:text-sm">{allAssessments.filter((a) => a.status === 'pending').length}</p>
+                            <p className="text-[10px] text-default-500 sm:text-xs">Pending</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <div className="rounded-full bg-default-200/50 p-1 dark:bg-default-100 sm:p-1.5">
+                            <Icon icon="lucide:calendar" className="h-3.5 w-3.5 text-default-500 sm:h-4 sm:w-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium sm:text-sm">{allAssessments.filter((a) => a.status === 'unavailable').length}</p>
+                            <p className="text-[10px] text-default-500 sm:text-xs">Upcoming</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <div className="rounded-full bg-primary/10 p-1 sm:p-1.5">
+                            <Icon icon="lucide:target" className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium sm:text-sm">
+                              {progress.currentGradePercentage >= 80 ? 'A' : progress.currentGradePercentage >= 70 ? 'B' : 'C'}
+                            </p>
+                            <p className="text-[10px] text-default-500 sm:text-xs">Target Grade</p>
+                          </div>
+                        </div>
                       </div>
                     </CardBody>
                   </Card>
