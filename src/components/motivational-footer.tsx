@@ -98,14 +98,32 @@ export const MotivationalFooter: React.FC = () => {
 
   const handleReflectionSubmit = () => {
     if (reflection.trim() && currentMood) {
-      // Update the latest mood entry with the reflection
-      const updatedHistory = [...moodHistory]
-      const latestEntry = updatedHistory[updatedHistory.length - 1]
-      latestEntry.reflection = reflection
+      const today = new Date()
+      const todayEntry = moodHistory.find(
+        (entry) =>
+          entry.date.getDate() === today.getDate() && entry.date.getMonth() === today.getMonth() && entry.date.getFullYear() === today.getFullYear(),
+      )
 
-      setMoodHistory(updatedHistory)
+      if (todayEntry) {
+        // Update existing entry
+        setMoodHistory(moodHistory.map((entry) => (entry === todayEntry ? { ...entry, mood: currentMood, reflection: reflection.trim() } : entry)))
+      } else {
+        // Add new entry
+        setMoodHistory([
+          ...moodHistory,
+          {
+            date: today,
+            mood: currentMood,
+            reflection: reflection.trim(),
+          },
+        ])
+      }
+
+      // Reset form
       setReflection('')
       setShowReflection(false)
+      // Set a new random prompt
+      setCurrentPrompt(reflectionPrompts[Math.floor(Math.random() * reflectionPrompts.length)])
     }
   }
 
@@ -167,7 +185,7 @@ export const MotivationalFooter: React.FC = () => {
   return (
     <div className="container mx-auto mb-6 mt-12 max-w-6xl px-4">
       <Card className="bg-gradient-to-r from-primary-50 to-background shadow-sm">
-        <CardBody className="p-6">
+        <CardBody className="overflow-hidden p-6">
           <div className="flex flex-col gap-6 md:flex-row">
             {/* Quote section */}
             <div className="w-full md:w-1/2">
@@ -176,35 +194,62 @@ export const MotivationalFooter: React.FC = () => {
                 Today's Spark
               </h2>
 
-              <div className="relative h-32">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentQuoteIndex}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0"
-                  >
-                    <blockquote className="text-lg italic text-default-700">"{quotes[currentQuoteIndex].text}"</blockquote>
-                    <footer className="mt-2 text-sm text-default-500">— {quotes[currentQuoteIndex].author}</footer>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-lg p-6 pb-0">
+                {/* Decorative elements */}
+                <div className="absolute right-2 top-2 text-5xl text-primary-100/40">
+                  <Icon icon="lucide:quote" />
+                </div>
+                <div className="absolute bottom-16 left-2 rotate-180 text-5xl text-primary-100/40">
+                  <Icon icon="lucide:quote" />
+                </div>
+                <div className="absolute bottom-20 right-1/2 -translate-y-1/2 translate-x-1/2 text-7xl text-primary-100/20">
+                  <Icon icon="lucide:sparkles" />
+                </div>
 
-              <div className="mt-4 flex items-center justify-between">
-                <Button
-                  variant="light"
-                  size="sm"
-                  startContent={<Icon icon="lucide:arrow-left-right" />}
-                  onPress={() => setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length)}
-                >
-                  Next Quote
-                </Button>
+                <div className="relative flex h-full flex-col">
+                  <div className="min-h relative px-4 pt-44">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentQuoteIndex}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute inset-0 flex flex-col justify-center"
+                      >
+                        <blockquote className="relative z-10 text-lg italic text-default-700">"{quotes[currentQuoteIndex].text}"</blockquote>
+                        <footer className="relative z-10 mt-3 text-sm font-medium text-default-500">— {quotes[currentQuoteIndex].author}</footer>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </div>
 
-                <Button variant="light" size="sm" startContent={<Icon icon="lucide:archive" />}>
-                  View Archive
-                </Button>
+                {/* Floating particles */}
+                <div className="pointer-events-none absolute inset-0">
+                  {[...Array(5)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute text-primary-100/30"
+                      initial={{
+                        x: Math.random() * 100 + '%',
+                        y: Math.random() * 100 + '%',
+                        scale: Math.random() * 0.5 + 0.5,
+                      }}
+                      animate={{
+                        y: [null, Math.random() * 20 - 10],
+                        x: [null, Math.random() * 20 - 10],
+                      }}
+                      transition={{
+                        duration: Math.random() * 3 + 2,
+                        repeat: Infinity,
+                        repeatType: 'reverse',
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <Icon icon="lucide:sparkles" className="h-4 w-4" />
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -329,24 +374,6 @@ export const MotivationalFooter: React.FC = () => {
                         </div>
                       </Tooltip>
                     ))}
-
-                    {/* Today's mood (if set) */}
-                    {currentMood && (
-                      <Tooltip content={`Today: ${currentMood}`}>
-                        <div className="flex-1">
-                          <div className="flex flex-col items-center">
-                            <Progress
-                              aria-label="Today's mood"
-                              value={getMoodValue(currentMood)}
-                              color={getMoodColor(currentMood) as any}
-                              className="h-8"
-                              showValueLabel={false}
-                            />
-                            <span className="mt-1 text-xs">Today</span>
-                          </div>
-                        </div>
-                      </Tooltip>
-                    )}
                   </div>
                 </div>
               </div>

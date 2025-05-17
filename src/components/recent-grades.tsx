@@ -38,6 +38,21 @@ interface Course {
 export const RecentGrades: React.FC = () => {
   const [selected, setSelected] = React.useState<'byDate' | 'byCourse'>('byDate')
 
+  // Helper function to randomly assign status
+  const getRandomStatus = (index: number, total: number): 'completed' | 'pending' | 'unavailable' => {
+    const random = Math.random()
+    if (index < Math.floor(total * 0.6)) return 'completed' // 60% chance of completed
+    if (index < Math.floor(total * 0.8)) return 'pending' // 20% chance of pending
+    return 'unavailable' // 20% chance of unavailable
+  }
+
+  // Helper function to generate random score within bounds
+  const getRandomScore = (total: number, minPercentage: number = 0.6): number => {
+    const min = Math.floor(total * minPercentage)
+    const max = total
+    return Math.floor(Math.random() * (max - min + 1)) + min
+  }
+
   const courses: Course[] = [
     {
       id: 'cs301',
@@ -51,7 +66,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a1',
             name: 'Attendance',
             weight: 10,
-            score: 9,
+            score: getRandomScore(10, 0.7), // 7-10
             totalScore: 10,
             status: 'completed',
           },
@@ -59,7 +74,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a2',
             name: 'Assignments',
             weight: 20,
-            score: 18,
+            score: getRandomScore(20, 0.8), // 16-20
             totalScore: 20,
             status: 'completed',
           },
@@ -67,7 +82,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a3',
             name: 'Quizzes',
             weight: 20,
-            score: 17,
+            score: getRandomScore(20, 0.75), // 15-20
             totalScore: 20,
             status: 'completed',
           },
@@ -75,7 +90,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a4',
             name: 'Midterm Exam',
             weight: 40,
-            score: 34,
+            score: getRandomScore(40, 0.8), // 32-40
             totalScore: 40,
             status: 'completed',
           },
@@ -83,7 +98,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a5',
             name: 'Presentation',
             weight: 10,
-            score: 8,
+            score: getRandomScore(10, 0.7), // 7-10
             totalScore: 10,
             status: 'completed',
           },
@@ -93,36 +108,41 @@ export const RecentGrades: React.FC = () => {
             id: 'a6',
             name: 'Attendance',
             weight: 10,
-            status: 'pending',
+            status: getRandomStatus(0, 5),
             totalScore: 10,
+            ...(getRandomStatus(0, 5) === 'completed' && { score: getRandomScore(10, 0.7) }),
           },
           {
             id: 'a7',
             name: 'Assignments',
             weight: 20,
-            status: 'pending',
+            status: getRandomStatus(1, 5),
             totalScore: 20,
+            ...(getRandomStatus(1, 5) === 'completed' && { score: getRandomScore(20, 0.8) }),
           },
           {
             id: 'a8',
             name: 'Quizzes',
             weight: 20,
-            status: 'unavailable',
+            status: getRandomStatus(2, 5),
             totalScore: 20,
+            ...(getRandomStatus(2, 5) === 'completed' && { score: getRandomScore(20, 0.75) }),
           },
           {
             id: 'a9',
             name: 'Final Exam',
             weight: 40,
-            status: 'unavailable',
+            status: getRandomStatus(3, 5),
             totalScore: 40,
+            ...(getRandomStatus(3, 5) === 'completed' && { score: getRandomScore(40, 0.8) }),
           },
           {
             id: 'a10',
             name: 'Project',
             weight: 10,
-            status: 'unavailable',
+            status: getRandomStatus(4, 5),
             totalScore: 10,
+            ...(getRandomStatus(4, 5) === 'completed' && { score: getRandomScore(10, 0.7) }),
           },
         ],
       },
@@ -139,7 +159,7 @@ export const RecentGrades: React.FC = () => {
             id: 'b1',
             name: 'Attendance',
             weight: 10,
-            score: 10,
+            score: getRandomScore(10, 0.6), // 6-10
             totalScore: 10,
             status: 'completed',
           },
@@ -147,7 +167,7 @@ export const RecentGrades: React.FC = () => {
             id: 'b2',
             name: 'Assignments',
             weight: 20,
-            score: 19,
+            score: getRandomScore(20, 0.7), // 14-20
             totalScore: 20,
             status: 'completed',
           },
@@ -155,7 +175,7 @@ export const RecentGrades: React.FC = () => {
             id: 'b3',
             name: 'Quizzes',
             weight: 20,
-            score: 16,
+            score: getRandomScore(20, 0.65), // 13-20
             totalScore: 20,
             status: 'completed',
           },
@@ -163,7 +183,7 @@ export const RecentGrades: React.FC = () => {
             id: 'b4',
             name: 'Midterm Exam',
             weight: 40,
-            score: 38,
+            score: getRandomScore(40, 0.75), // 30-40
             totalScore: 40,
             status: 'completed',
           },
@@ -171,7 +191,7 @@ export const RecentGrades: React.FC = () => {
             id: 'b5',
             name: 'Presentation',
             weight: 10,
-            score: 9,
+            score: getRandomScore(10, 0.6), // 6-10
             totalScore: 10,
             status: 'completed',
           },
@@ -181,36 +201,41 @@ export const RecentGrades: React.FC = () => {
             id: 'b6',
             name: 'Attendance',
             weight: 10,
-            status: 'pending',
+            status: getRandomStatus(0, 5),
             totalScore: 10,
+            ...(getRandomStatus(0, 5) === 'completed' && { score: getRandomScore(10, 0.6) }),
           },
           {
             id: 'b7',
             name: 'Assignments',
             weight: 20,
-            status: 'pending',
+            status: getRandomStatus(1, 5),
             totalScore: 20,
+            ...(getRandomStatus(1, 5) === 'completed' && { score: getRandomScore(20, 0.7) }),
           },
           {
             id: 'b8',
             name: 'Quizzes',
             weight: 20,
-            status: 'unavailable',
+            status: getRandomStatus(2, 5),
             totalScore: 20,
+            ...(getRandomStatus(2, 5) === 'completed' && { score: getRandomScore(20, 0.65) }),
           },
           {
             id: 'b9',
             name: 'Final Exam',
             weight: 40,
-            status: 'unavailable',
+            status: getRandomStatus(3, 5),
             totalScore: 40,
+            ...(getRandomStatus(3, 5) === 'completed' && { score: getRandomScore(40, 0.75) }),
           },
           {
             id: 'b10',
             name: 'Project',
             weight: 10,
-            status: 'unavailable',
+            status: getRandomStatus(4, 5),
             totalScore: 10,
+            ...(getRandomStatus(4, 5) === 'completed' && { score: getRandomScore(10, 0.6) }),
           },
         ],
       },
@@ -227,7 +252,7 @@ export const RecentGrades: React.FC = () => {
             id: 'c1',
             name: 'Attendance',
             weight: 10,
-            score: 8,
+            score: getRandomScore(10, 0.8), // 8-10
             totalScore: 10,
             status: 'completed',
           },
@@ -235,7 +260,7 @@ export const RecentGrades: React.FC = () => {
             id: 'c2',
             name: 'Assignments',
             weight: 20,
-            score: 17,
+            score: getRandomScore(20, 0.75), // 15-20
             totalScore: 20,
             status: 'completed',
           },
@@ -243,7 +268,7 @@ export const RecentGrades: React.FC = () => {
             id: 'c3',
             name: 'Quizzes',
             weight: 20,
-            score: 18,
+            score: getRandomScore(20, 0.7), // 14-20
             totalScore: 20,
             status: 'completed',
           },
@@ -251,7 +276,7 @@ export const RecentGrades: React.FC = () => {
             id: 'c4',
             name: 'Midterm Exam',
             weight: 40,
-            score: 35,
+            score: getRandomScore(40, 0.775), // 31-40
             totalScore: 40,
             status: 'completed',
           },
@@ -259,7 +284,7 @@ export const RecentGrades: React.FC = () => {
             id: 'c5',
             name: 'Presentation',
             weight: 10,
-            score: 9,
+            score: getRandomScore(10, 0.7), // 7-10
             totalScore: 10,
             status: 'completed',
           },
@@ -269,36 +294,41 @@ export const RecentGrades: React.FC = () => {
             id: 'c6',
             name: 'Attendance',
             weight: 10,
-            status: 'pending',
+            status: getRandomStatus(0, 5),
             totalScore: 10,
+            ...(getRandomStatus(0, 5) === 'completed' && { score: getRandomScore(10, 0.8) }),
           },
           {
             id: 'c7',
             name: 'Assignments',
             weight: 20,
-            status: 'pending',
+            status: getRandomStatus(1, 5),
             totalScore: 20,
+            ...(getRandomStatus(1, 5) === 'completed' && { score: getRandomScore(20, 0.75) }),
           },
           {
             id: 'c8',
             name: 'Quizzes',
             weight: 20,
-            status: 'unavailable',
+            status: getRandomStatus(2, 5),
             totalScore: 20,
+            ...(getRandomStatus(2, 5) === 'completed' && { score: getRandomScore(20, 0.7) }),
           },
           {
             id: 'c9',
             name: 'Final Exam',
             weight: 40,
-            status: 'unavailable',
+            status: getRandomStatus(3, 5),
             totalScore: 40,
+            ...(getRandomStatus(3, 5) === 'completed' && { score: getRandomScore(40, 0.775) }),
           },
           {
             id: 'c10',
             name: 'Project',
             weight: 10,
-            status: 'unavailable',
+            status: getRandomStatus(4, 5),
             totalScore: 10,
+            ...(getRandomStatus(4, 5) === 'completed' && { score: getRandomScore(10, 0.7) }),
           },
         ],
       },
@@ -577,8 +607,12 @@ export const RecentGrades: React.FC = () => {
               // Calculate completion percentages
               const midtermCompletedWeight = course.assessments.midterm.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
               const finalCompletedWeight = course.assessments.final.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
-              const midtermPercentage = (midtermCompletedWeight / 50) * 100
-              const finalPercentage = (finalCompletedWeight / 50) * 100
+              const totalMidtermWeight = course.assessments.midterm.reduce((sum, a) => sum + a.weight, 0)
+              const totalFinalWeight = course.assessments.final.reduce((sum, a) => sum + a.weight, 0)
+
+              // Calculate percentages based on total weight of each term
+              const midtermPercentage = (midtermCompletedWeight / totalMidtermWeight) * 100
+              const finalPercentage = (finalCompletedWeight / totalFinalWeight) * 100
 
               // Calculate next upcoming assessment
               const allAssessments = [...course.assessments.midterm, ...course.assessments.final]
