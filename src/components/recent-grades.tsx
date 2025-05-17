@@ -545,7 +545,7 @@ export const RecentGrades: React.FC = () => {
             <Icon icon="lucide:graduation-cap" className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tight">Current Semester</h2>
           </div>
-          <p className="text-base text-default-500">Track your academic progress and grades across all courses</p>
+          <p className="text-base text-default-500">Academic progress and grades across all courses</p>
         </div>
       </CardHeader>
 
@@ -645,29 +645,8 @@ export const RecentGrades: React.FC = () => {
                         <div className="flex-shrink-0">{renderCircleChart(finalData, finalPercentage, 'Final Term (50%)')}</div>
                       </div>
 
-                      {/* Upcoming Assessment */}
-                      {upcomingAssessment && (
-                        <div className="mb-4 rounded-xl bg-default-50 p-3 dark:bg-default-100 sm:mb-6 sm:p-4">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="rounded-full bg-primary/10 p-1.5 sm:p-2">
-                              <Icon
-                                icon={upcomingAssessment.status === 'pending' ? 'lucide:clock' : 'lucide:calendar'}
-                                className="h-4 w-4 text-primary sm:h-5 sm:w-5"
-                              />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium sm:text-base">Next Assessment</p>
-                              <p className="text-xs text-default-600 sm:text-sm">
-                                {upcomingAssessment.name} ({upcomingAssessment.weight}%)
-                                {upcomingAssessment.status === 'pending' && <span className="ml-2 text-warning">Due Soon</span>}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Assessment Summary */}
-                      <div className="grid grid-cols-2 gap-3 rounded-xl bg-default-50 p-3 dark:bg-default-100 sm:gap-4 sm:p-4">
+                      <div className="grid grid-cols-3 gap-3 rounded-xl bg-default-50 p-3 dark:bg-default-100 sm:gap-4 sm:p-4">
                         <div className="flex items-center gap-2 sm:gap-2.5">
                           <div className="rounded-full bg-success/10 p-1 sm:p-1.5">
                             <Icon icon="lucide:check-circle" className="h-3.5 w-3.5 text-success sm:h-4 sm:w-4" />
@@ -693,17 +672,6 @@ export const RecentGrades: React.FC = () => {
                           <div>
                             <p className="text-xs font-medium sm:text-sm">{allAssessments.filter((a) => a.status === 'unavailable').length}</p>
                             <p className="text-[10px] text-default-500 sm:text-xs">Upcoming</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 sm:gap-2.5">
-                          <div className="rounded-full bg-primary/10 p-1 sm:p-1.5">
-                            <Icon icon="lucide:target" className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium sm:text-sm">
-                              {progress.currentGradePercentage >= 80 ? 'A' : progress.currentGradePercentage >= 70 ? 'B' : 'C'}
-                            </p>
-                            <p className="text-[10px] text-default-500 sm:text-xs">Target Grade</p>
                           </div>
                         </div>
                       </div>

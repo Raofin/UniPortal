@@ -402,9 +402,9 @@ export const WeeklyCalendar: React.FC = () => {
         <div className="flex w-full flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-2">
             <Icon icon="lucide:calendar" className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold tracking-tight">Weekly Calendar</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Calendar</h2>
           </div>
-          <p className="text-base text-default-500">View your class schedule and attendance for the week</p>
+          <p className="text-base text-default-500">Class schedule, details, and attendance</p>
         </div>
       </CardHeader>
 

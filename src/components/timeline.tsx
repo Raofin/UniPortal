@@ -302,17 +302,17 @@ export const AcademicTimeline: React.FC = () => {
   return (
     <Card className="shadow-md">
       <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
-        <div className="flex w-full flex-col items-center gap-1 text-center">
+        <div className="flex w-full flex-col items-center gap-1 pb-2 text-center">
           <div className="flex items-center gap-2">
             <Icon icon="lucide:history" className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tight">Academic Timeline</h2>
           </div>
-          <p className="text-base text-default-500">Track your academic events, assignments, and important dates</p>
+          <p className="text-base text-default-500">Academic events, assignments, and important dates</p>
         </div>
       </CardHeader>
 
-      <CardBody className="p-0">
-        <div className="px-4 pb-4 pt-2 sm:px-8">
+      <CardBody className="pt-0">
+        <div className="px-4 pb-6 pt-2 sm:px-8">
           <div className="flex flex-wrap justify-center gap-2">
             <Button
               size="sm"

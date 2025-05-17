@@ -38,11 +38,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
           </Button>
         </NavbarItem>
         <NavbarItem>
-          <Button variant="light" onPress={() => onNavigate('notes')} startContent={<Icon icon="lucide:file-text" width={18} height={18} />}>
-            Notes
-          </Button>
-        </NavbarItem>
-        <NavbarItem>
           <Button variant="light" onPress={() => onNavigate('timeline')} startContent={<Icon icon="lucide:timer" width={18} height={18} />}>
             Timeline
           </Button>

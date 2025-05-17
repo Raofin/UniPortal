@@ -387,10 +387,10 @@ export const UpcomingAssignments: React.FC = () => {
         <div className="flex w-full flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-2">
             <Icon icon="lucide:clipboard-check" className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold tracking-tight">My Assessments</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Assessments</h2>
           </div>
-          <div className="flex items-center gap-2">
-            <p className="text-base text-default-500">Track your upcoming assignments and deadlines</p>
+          <div className="flex items-center gap-1">
+            <p className="text-base text-default-500">Upcoming assignments and deadlines</p>
             {pendingCount > 0 && (
               <Chip color="primary" variant="flat" size="sm" className="ml-2 gap-2 px-2.5">
                 {pendingCount} active

@@ -12,9 +12,9 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
 
   // Mock student data
   const studentData = {
-    name: 'Rawfin Ahmed',
-    id: 'ST-2023-0042',
-    email: 'rawfin.ahmed@university.edu',
+    name: 'Zaid Amin Rawfin',
+    id: '20-42459-1',
+    email: 'hello@rawfin.net',
     department: 'Computer Science',
     year: '3rd Year',
     advisor: 'Dr. Emily Johnson',
