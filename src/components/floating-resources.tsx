@@ -250,19 +250,13 @@ export const FloatingResources: React.FC = () => {
     <>
       {/* Floating button */}
       <motion.div
-        className="fixed bottom-6 left-6 z-50"
+        className="fixed bottom-6 right-6 z-50"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       >
-        <Button
-          color="primary"
-          size="lg"
-          className="h-14 rounded-full px-6 shadow-lg"
-          startContent={<Icon icon="lucide:folder" width={24} height={24} />}
-          onPress={() => setIsOpen(true)}
-        >
-          Resources
+        <Button color="primary" isIconOnly size="lg" className="h-12 w-12 shadow-lg" onPress={() => setIsOpen(true)} aria-label="Open resources">
+          <Icon icon="lucide:folder" width={24} height={24} />
         </Button>
       </motion.div>
 
@@ -272,6 +266,7 @@ export const FloatingResources: React.FC = () => {
         onOpenChange={setIsOpen}
         size="5xl"
         scrollBehavior="inside"
+        hideCloseButton={true}
         classNames={{
           base: 'h-[80vh]',
         }}
@@ -285,6 +280,14 @@ export const FloatingResources: React.FC = () => {
                     <Icon icon="lucide:folder-open" className="text-primary" />
                     Resources Manager
                   </h2>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="ml-auto rounded-full p-2 text-danger transition-colors hover:bg-danger-100"
+                    aria-label="Close resources"
+                  >
+                    <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
+                  </button>
                 </div>
               </ModalHeader>
 
@@ -298,7 +301,7 @@ export const FloatingResources: React.FC = () => {
                         startContent={<Icon icon="lucide:search" className="text-default-400" />}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        clearable
+                        isClearable
                         onClear={() => setSearchQuery('')}
                       />
                     </div>
@@ -445,22 +448,35 @@ export const FloatingResources: React.FC = () => {
                                       <p className="text-xs text-default-400">Last updated: {formatDate(file.lastUpdated)}</p>
 
                                       <div className="mt-2 flex gap-1">
-                                        <Button size="sm" variant="flat" color="primary" startContent={<Icon icon="lucide:eye" size={16} />}>
+                                        <Button
+                                          size="sm"
+                                          variant="flat"
+                                          color="primary"
+                                          startContent={<Icon icon="lucide:eye" width={16} height={16} />}
+                                        >
                                           View
                                         </Button>
-                                        <Button size="sm" variant="light" startContent={<Icon icon="lucide:download" size={16} />}>
+                                        <Button size="sm" variant="light" startContent={<Icon icon="lucide:download" width={16} height={16} />}>
                                           Download
                                         </Button>
                                         <Dropdown>
                                           <DropdownTrigger>
                                             <Button size="sm" variant="light" isIconOnly>
-                                              <Icon icon="lucide:more-vertical" size={16} />
+                                              <Icon icon="lucide:more-vertical" width={16} height={16} />
                                             </Button>
                                           </DropdownTrigger>
                                           <DropdownMenu aria-label="File actions">
-                                            <DropdownItem startContent={<Icon icon="lucide:edit" size={16} />}>Rename</DropdownItem>
-                                            <DropdownItem startContent={<Icon icon="lucide:folder" size={16} />}>Move to section</DropdownItem>
-                                            <DropdownItem startContent={<Icon icon="lucide:trash-2" size={16} />} className="text-danger">
+                                            <DropdownItem key="rename" startContent={<Icon icon="lucide:edit" width={16} height={16} />}>
+                                              Rename
+                                            </DropdownItem>
+                                            <DropdownItem key="move" startContent={<Icon icon="lucide:folder" width={16} height={16} />}>
+                                              Move to section
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              key="delete"
+                                              startContent={<Icon icon="lucide:trash-2" width={16} height={16} />}
+                                              className="text-danger"
+                                            >
                                               Delete
                                             </DropdownItem>
                                           </DropdownMenu>
@@ -497,11 +513,21 @@ export const FloatingResources: React.FC = () => {
       </Modal>
 
       {/* Add Section Modal */}
-      <Modal isOpen={isAddingSectionModalOpen} onOpenChange={setIsAddingSectionModalOpen} size="sm">
+      <Modal isOpen={isAddingSectionModalOpen} onOpenChange={setIsAddingSectionModalOpen} size="sm" hideCloseButton={true}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Add New Section</ModalHeader>
+              <ModalHeader className="flex items-center justify-between">
+                <h2>Add New Section</h2>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="ml-auto rounded-full p-2 text-danger transition-colors hover:bg-danger-100"
+                  aria-label="Close add section"
+                >
+                  <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
+                </button>
+              </ModalHeader>
               <ModalBody>
                 <Input
                   label="Section Name"

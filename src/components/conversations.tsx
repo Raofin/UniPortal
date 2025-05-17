@@ -34,9 +34,11 @@ interface ChatGroup {
 
 export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const [selected, setSelected] = React.useState<'inbox' | 'discussion' | 'ai'>('inbox')
-  const [selectedMessage, setSelectedMessage] = React.useState<string | null>(null)
-  const [selectedChat, setSelectedChat] = React.useState<string | null>('cs301')
+  const [selectedInboxMessage, setSelectedInboxMessage] = React.useState<string | null>(null)
+  const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
+  const [newMessage, setNewMessage] = React.useState('')
   const [isTyping, setIsTyping] = React.useState(false)
+  const chatContainerRef = React.useRef<HTMLDivElement>(null)
 
   // Mock data for inbox
   const messages: Message[] = [
@@ -236,15 +238,30 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
   React.useEffect(() => {
     return () => {}
   }, [])
+
+  // Select first message by default when in inbox tab
+  React.useEffect(() => {
+    if (selected === 'inbox' && messages.length > 0 && !selectedInboxMessage) {
+      setSelectedInboxMessage(messages[0].id)
+    }
+  }, [selected, messages, selectedInboxMessage])
+
+  // Select first chat by default when in discussion tab
+  React.useEffect(() => {
+    if (selected === 'discussion' && chatGroups.length > 0 && !selectedChat) {
+      setSelectedChat(chatGroups[0].id)
+    }
+  }, [selected, chatGroups, selectedChat])
+
   const selectedMessageData = React.useMemo(() => {
-    return messages.find((m) => m.id === selectedMessage) || null
-  }, [selectedMessage])
+    return messages.find((m) => m.id === selectedInboxMessage) || null
+  }, [selectedInboxMessage])
 
   const memoizedCS301Messages = React.useMemo(() => cs301Messages, [])
 
   const timersRef = React.useRef<{
-    timer1?: NodeJS.Timeout
-    timer2?: NodeJS.Timeout
+    timer1?: number
+    timer2?: number
   }>({})
 
   // Simulate typing indicator with proper cleanup
@@ -269,7 +286,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
   }, [selected, selectedChat])
   return (
     <div className="no-trap-focus">
-      <ModalHeader className="modal-header-fix sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b border-divider bg-default-50/80">
+      <ModalHeader className="modal-header-fix sticky top-0 z-10 flex flex-row items-center justify-between gap-2 rounded-t-lg border-b border-divider bg-default-50/80">
         <div className="flex flex-row items-center gap-2">
           <Tabs
             selectedKey={selected}
@@ -317,7 +334,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
           <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
         </button>
       </ModalHeader>
-      <ModalBody className="modal-scroll-fix h-[660px] min-h-0 flex-1 p-0">
+      <ModalBody className="modal-scroll-fix h-[660px] min-h-0 flex-1 overflow-x-hidden p-0">
         <AnimatePresence mode="wait" initial={false}>
           {selected === 'inbox' && (
             <motion.div
@@ -331,38 +348,57 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
               {/* Message list */}
               <div className="w-full overflow-y-auto border-r border-divider md:w-2/5">
                 <div className="p-3 pb-0">
-                  {' '}
-                  {/* Remove bottom padding */}
-                  <Input
-                    placeholder="Search messages..."
-                    startContent={<Icon icon="lucide:search" className="text-default-400" style={{ fontSize: 18 }} />}
-                    size="sm"
-                    className="mb-2"
-                  />
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.1 }}>
+                    <Input
+                      placeholder="Search messages..."
+                      startContent={<Icon icon="lucide:search" className="text-default-400" style={{ fontSize: 18 }} />}
+                      size="sm"
+                      className="mb-2"
+                    />
+                  </motion.div>
                 </div>
 
-                <div className="divide-y divide-divider">
+                <div className="space-y-1">
                   {messages.map((message, idx) => (
                     <motion.div
                       key={message.id}
-                      whileHover={{ backgroundColor: 'var(--heroui-content1)' }}
-                      className={`cursor-pointer p-3 ${
-                        selectedMessage === message.id ? 'bg-content1' : ''
-                      } ${!message.isRead ? 'border-l-4 border-primary' : ''} ${idx === messages.length - 1 ? 'border-b-0' : ''}`}
-                      onClick={() => setSelectedMessage(message.id)}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.2,
+                        delay: idx * 0.05,
+                        ease: 'easeOut',
+                      }}
+                      whileHover={{
+                        backgroundColor: 'var(--heroui-content1)',
+                        transition: { duration: 0.2 },
+                      }}
+                      className={`cursor-pointer rounded-md p-3 ${
+                        selectedInboxMessage === message.id ? 'border-l-4 border-primary-500 bg-content1' : ''
+                      }`}
+                      onClick={() => setSelectedInboxMessage(message.id)}
                     >
                       <div className="flex items-center gap-3">
                         <Avatar src={message.sender.avatar} size="sm" />
-
                         <div className="min-w-0 flex-grow">
                           <div className="mb-1 flex items-center justify-between">
-                            <h4 className={`truncate font-medium ${!message.isRead ? 'text-foreground' : 'text-default-600'}`}>
+                            <h4
+                              className={`truncate font-medium ${
+                                selectedInboxMessage === message.id ? 'text-primary-500' : !message.isRead ? 'text-foreground' : 'text-default-600'
+                              }`}
+                            >
                               {message.sender.name}
                             </h4>
                             <span className="whitespace-nowrap text-xs text-default-400">{formatTime(message.timestamp)}</span>
                           </div>
 
-                          <p className={`truncate text-sm ${!message.isRead ? 'font-medium' : 'text-default-500'}`}>{message.subject}</p>
+                          <p
+                            className={`truncate text-sm ${
+                              selectedInboxMessage === message.id ? 'text-primary-500' : !message.isRead ? 'font-medium' : 'text-default-500'
+                            }`}
+                          >
+                            {message.subject}
+                          </p>
 
                           <p className="truncate text-xs text-default-400">{message.content.substring(0, 60)}...</p>
 
@@ -388,10 +424,10 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={selectedMessageData.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
                       className="flex h-full flex-col"
                     >
                       {(() => {
@@ -400,7 +436,12 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
 
                         return (
                           <>
-                            <div className="border-b border-divider p-4">
+                            <motion.div
+                              className="border-b border-divider p-4"
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.2, delay: 0.1 }}
+                            >
                               <div className="mb-3 flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <Avatar src={message.sender.avatar} size="md" />
@@ -426,9 +467,14 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                               </div>
 
                               <h2 className="text-lg font-medium">{message.subject}</h2>
-                            </div>
+                            </motion.div>
 
-                            <div className="flex-grow overflow-y-auto p-4">
+                            <motion.div
+                              className="flex-grow overflow-y-auto p-4"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3, delay: 0.2 }}
+                            >
                               <div className="prose prose-sm max-w-none">
                                 {message.content.split('\n').map((paragraph, i) => (
                                   <p key={i} className="mb-4 text-default-700">
@@ -478,9 +524,14 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                   </div>
                                 </div>
                               )}
-                            </div>
+                            </motion.div>
 
-                            <div className="border-t border-divider p-4">
+                            <motion.div
+                              className="border-t border-divider p-4"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.2, delay: 0.3 }}
+                            >
                               <div className="flex gap-2">
                                 <Button color="primary" startContent={<Icon icon="lucide:reply" />}>
                                   Reply
@@ -489,24 +540,36 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                   Forward
                                 </Button>
                               </div>
-                            </div>
+                            </motion.div>
                           </>
                         )
                       })()}
                     </motion.div>
                   </AnimatePresence>
                 ) : (
-                  <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+                  <motion.div
+                    className="flex h-full flex-col items-center justify-center p-6 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <Icon icon="lucide:mail" className="mb-4 h-16 w-16 text-default-300" />
                     <h3 className="mb-2 text-xl font-medium">Select a message</h3>
                     <p className="max-w-md text-default-500">Choose a message from the list to view its contents</p>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </motion.div>
-          )}{' '}
+          )}
           {selected === 'discussion' && (
-            <div className="flex h-[600px] min-h-0 flex-1 flex-col md:flex-row">
+            <motion.div
+              key="discussion"
+              className="flex h-[600px] min-h-0 flex-1 flex-col md:flex-row"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
               {/* Chat groups list */}
               <div className="w-full overflow-y-auto border-r border-divider md:w-1/4">
                 <div className="p-3">
@@ -523,15 +586,15 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                 </div>
 
                 <div className="space-y-1 px-2">
-                  {chatGroups.map((group) => (
+                  {chatGroups.map((group, idx) => (
                     <motion.div
                       key={group.id}
                       whileHover={{ backgroundColor: 'var(--heroui-content1)' }}
-                      className={`cursor-pointer rounded-md p-2 ${selectedChat === group.id ? 'bg-content1' : ''}`}
+                      className={`cursor-pointer rounded-md p-2 ${selectedChat === group.id ? 'border-l-4 border-primary-500 bg-content1' : ''}`}
                       onClick={() => setSelectedChat(group.id)}
                     >
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-medium">{group.name}</h4>
+                        <h4 className={`text-sm font-medium ${selectedChat === group.id ? 'text-primary-500' : ''}`}>{group.name}</h4>
                         {group.unreadCount > 0 && (
                           <Chip size="sm" color="primary" variant="flat">
                             {group.unreadCount}
@@ -539,7 +602,9 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         )}
                       </div>
 
-                      <p className="mt-1 truncate text-xs text-default-500">{group.lastMessage}</p>
+                      <p className={`mt-1 truncate text-xs ${selectedChat === group.id ? 'text-primary-500' : 'text-default-500'}`}>
+                        {group.lastMessage}
+                      </p>
 
                       <p className="mt-1 text-xs text-default-400">{formatTime(group.lastMessageTime)}</p>
                     </motion.div>
@@ -660,8 +725,9 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{
-                                  delay: index * 0.05,
                                   duration: 0.2,
+                                  delay: index * 0.05,
+                                  ease: 'easeOut',
                                 }}
                               >
                                 <div className="flex items-start gap-3">
@@ -791,16 +857,28 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
           {selected === 'ai' && (
-            <div className="flex h-[600px] min-h-0 flex-1 flex-col">
+            <motion.div
+              key="ai"
+              className="flex h-[600px] min-h-0 flex-1 flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
               <div className="flex h-full min-h-0 flex-1 flex-col">
                 <div className="min-h-0 flex-1 overflow-y-auto bg-default-50 p-6">
                   {/* Dummy conversation thread */}
                   <div className="mx-auto max-w-2xl space-y-6">
                     {/* User message 1 */}
-                    <div className="flex justify-end">
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      className="flex justify-end"
+                    >
                       <div className="max-w-[80%] rounded-lg bg-primary-100 p-4 text-primary-800">
                         <div className="mb-1 text-sm font-medium">You</div>
                         <div>
@@ -808,9 +886,15 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         </div>
                         <div className="mt-2 text-right text-xs text-default-400">Today, 10:02 AM</div>
                       </div>
-                    </div>
+                    </motion.div>
+
                     {/* AI message 1 */}
-                    <div className="flex justify-start">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+                      className="flex justify-start"
+                    >
                       <div className="max-w-[80%] rounded-lg bg-default-100 p-4">
                         <div className="mb-1 text-sm font-medium">AI Assistant</div>
                         <div>
@@ -825,9 +909,15 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         </div>
                         <div className="mt-2 text-xs text-default-400">Today, 10:02 AM</div>
                       </div>
-                    </div>
+                    </motion.div>
+
                     {/* User message 2 */}
-                    <div className="flex justify-end">
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: 0.2 }}
+                      className="flex justify-end"
+                    >
                       <div className="max-w-[80%] rounded-lg bg-primary-100 p-4 text-primary-800">
                         <div className="mb-1 text-sm font-medium">You</div>
                         <div>
@@ -835,9 +925,15 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         </div>
                         <div className="mt-2 text-right text-xs text-default-400">Today, 10:03 AM</div>
                       </div>
-                    </div>
+                    </motion.div>
+
                     {/* AI message 2 */}
-                    <div className="flex justify-start">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: 0.3 }}
+                      className="flex justify-start"
+                    >
                       <div className="max-w-[80%] rounded-lg bg-default-100 p-4">
                         <div className="mb-1 text-sm font-medium">AI Assistant</div>
                         <div>
@@ -851,19 +947,24 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         </div>
                         <div className="mt-2 text-xs text-default-400">Today, 10:03 AM</div>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
 
-                {/* Input area (static for demo) */}
-                <div className="color-inherit flex gap-2 border-t border-divider p-4">
+                {/* Input area */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeOut', delay: 0.4 }}
+                  className="color-inherit flex gap-2 border-t border-divider p-4"
+                >
                   <Input fullWidth placeholder="Message AI Assistant..." startContent={<Icon icon="lucide:sparkles" className="text-primary" />} />
                   <Button color="primary" isIconOnly aria-label="Send message">
                     <Icon icon="lucide:send" />
                   </Button>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </ModalBody>

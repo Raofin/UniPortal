@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Modal, ModalContent, ModalBody, ModalFooter, Avatar, Input, Chip, Divider } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { EnhancedAIChat } from './enhanced-ai-chat'
+import { EnhancedAIChat } from './ai-chat'
 import { Conversations } from './conversations'
 
 interface Message {
@@ -315,19 +315,13 @@ export const FloatingChat: React.FC = () => {
     <>
       {/* Floating button */}
       <motion.div
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-20 right-6 z-50"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       >
-        <Button
-          color="primary"
-          size="lg"
-          className="h-14 rounded-full px-6 shadow-lg"
-          startContent={<Icon icon="lucide:message-circle" width={24} height={24} />}
-          onPress={() => setIsOpen(true)}
-        >
-          Conversations
+        <Button color="primary" isIconOnly size="lg" className="h-12 w-12 shadow-lg" onPress={() => setIsOpen(true)} aria-label="Open conversations">
+          <Icon icon="lucide:message-circle" width={24} height={24} />
         </Button>
       </motion.div>
 
@@ -337,6 +331,7 @@ export const FloatingChat: React.FC = () => {
         onOpenChange={setIsOpen}
         size="4xl"
         scrollBehavior="inside"
+        hideCloseButton={true}
         classNames={{
           base: 'h-[80vh]',
         }}

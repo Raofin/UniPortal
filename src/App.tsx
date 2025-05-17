@@ -1,13 +1,12 @@
 import React from 'react'
 import { Navbar } from './components/navbar'
 import { WelcomeSection } from './components/welcome-section'
-import { WeeklyCalendar } from './components/weekly-calendar'
+import { WeeklyCalendar } from './components/calendar'
 import { UpcomingAssignments } from './components/assessments'
 import { RecentGrades } from './components/recent-grades'
 import { NotesAndFiles } from './components/notes-files'
-import { ScrollToTop } from './components/scroll-to-top'
 import { motion } from 'framer-motion'
-import { AcademicTimeline } from './components/academic-timeline'
+import { AcademicTimeline } from './components/timeline'
 import { Conversations } from './components/conversations'
 import { MotivationalFooter } from './components/motivational-footer'
 import { FloatingChat } from './components/floating-chat'
@@ -82,7 +81,6 @@ const App: React.FC = () => {
       </main>
 
       <MotivationalFooter />
-      <ScrollToTop />
       <FloatingChat />
       <FloatingResources />
     </div>

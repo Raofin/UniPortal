@@ -64,7 +64,6 @@ const getPriorityColor = (priority: string) => {
   }
 }
 
-// Add this new component at the top level, before the main component
 const CountdownTimer: React.FC<{ dueDate: Date }> = ({ dueDate }) => {
   const [timeLeft, setTimeLeft] = React.useState('')
 
@@ -89,7 +88,6 @@ const CountdownTimer: React.FC<{ dueDate: Date }> = ({ dueDate }) => {
       }
     }
 
-    // Initial calculation
     setTimeLeft(calculateTimeLeft())
 
     // Update every 5 seconds
@@ -116,7 +114,7 @@ const CountdownTimer: React.FC<{ dueDate: Date }> = ({ dueDate }) => {
         color={getUrgencyColor(dueDate)}
         variant="flat"
         startContent={<Icon icon="lucide:clock" width={14} />}
-        className="rounded-full px-3 font-medium"
+        className="gap-2 rounded-full px-2.5 font-medium"
       >
         {timeLeft}
       </Chip>
@@ -124,7 +122,6 @@ const CountdownTimer: React.FC<{ dueDate: Date }> = ({ dueDate }) => {
   )
 }
 
-// Add this new component for the popover content
 const AssignmentDetails: React.FC<{ assignment: Assignment }> = ({ assignment }) => {
   const [timeLeft, setTimeLeft] = React.useState('')
 
@@ -166,7 +163,7 @@ const AssignmentDetails: React.FC<{ assignment: Assignment }> = ({ assignment })
             color={getTypeColor(assignment.type)}
             variant="flat"
             startContent={<Icon icon={getTypeIcon(assignment.type)} width={14} />}
-            className="rounded-full px-3"
+            className="gap-2 rounded-full px-2.5"
           >
             {assignment.type.charAt(0).toUpperCase() + assignment.type.slice(1)}
           </Chip>
@@ -175,7 +172,7 @@ const AssignmentDetails: React.FC<{ assignment: Assignment }> = ({ assignment })
             color={getPriorityColor(assignment.priority)}
             variant="flat"
             startContent={<Icon icon="lucide:alert-circle" width={14} />}
-            className="rounded-full px-3"
+            className="gap-2 rounded-full px-2.5"
           >
             {assignment.priority} Priority
           </Chip>
@@ -395,7 +392,7 @@ export const UpcomingAssignments: React.FC = () => {
           <div className="flex items-center gap-2">
             <p className="text-base text-default-500">Track your upcoming assignments and deadlines</p>
             {pendingCount > 0 && (
-              <Chip color="primary" variant="flat" size="sm" className="ml-2">
+              <Chip color="primary" variant="flat" size="sm" className="ml-2 gap-2 px-2.5">
                 {pendingCount} active
               </Chip>
             )}
@@ -416,13 +413,13 @@ export const UpcomingAssignments: React.FC = () => {
               <Card
                 className={`group relative overflow-visible rounded-xl border transition-all hover:scale-[1.02] ${
                   assignment.status === 'in-progress'
-                    ? 'border-primary-200 bg-primary-50/50 dark:bg-primary-900/10'
+                    ? 'border-primary-200 bg-primary-50/30 dark:bg-primary-900/5'
                     : assignment.status === 'pending'
                       ? assignment.priority === 'high'
-                        ? 'border-danger-200 bg-danger-50/50 dark:bg-danger-900/10'
+                        ? 'border-danger-200 bg-danger-50/30 dark:bg-danger-900/5'
                         : assignment.priority === 'medium'
-                          ? 'border-warning-200 bg-warning-50/50 dark:bg-warning-900/10'
-                          : 'border-success-200 bg-success-50/50 dark:bg-success-900/10'
+                          ? 'border-warning-200 bg-warning-50/30 dark:bg-warning-900/5'
+                          : 'border-success-200 bg-success-50/30 dark:bg-success-900/5'
                       : 'border-divider'
                 }`}
                 shadow="sm"
@@ -436,7 +433,7 @@ export const UpcomingAssignments: React.FC = () => {
                           color={getTypeColor(assignment.type)}
                           variant="flat"
                           startContent={<Icon icon={getTypeIcon(assignment.type)} width={14} />}
-                          className="rounded-full px-3"
+                          className="gap-2 rounded-full px-2.5"
                         >
                           {assignment.type.charAt(0).toUpperCase() + assignment.type.slice(1)}
                         </Chip>
@@ -451,7 +448,7 @@ export const UpcomingAssignments: React.FC = () => {
                           color="primary"
                           variant="flat"
                           startContent={<Icon icon="lucide:play-circle" width={14} />}
-                          className="rounded-full px-3"
+                          className="gap-2 rounded-full px-2.5"
                         >
                           In Progress
                         </Chip>
@@ -462,7 +459,7 @@ export const UpcomingAssignments: React.FC = () => {
                           color={getPriorityColor(assignment.priority)}
                           variant="flat"
                           startContent={<Icon icon="lucide:alert-circle" width={14} />}
-                          className="rounded-full px-3"
+                          className="gap-2 rounded-full px-2.5"
                         >
                           {assignment.priority.charAt(0).toUpperCase() + assignment.priority.slice(1)}
                         </Chip>
@@ -473,23 +470,13 @@ export const UpcomingAssignments: React.FC = () => {
                           color="success"
                           variant="flat"
                           startContent={<Icon icon="lucide:check-circle" width={14} />}
-                          className="rounded-full px-3"
+                          className="gap-2 rounded-full px-2.5"
                         >
                           Submitted
                         </Chip>
                       )}
                     </div>
                   </div>
-
-                  {assignment.status === 'in-progress' && (
-                    <div className="mb-3">
-                      <div className="mb-1 flex items-center justify-between text-xs">
-                        <span className="text-default-500">Progress</span>
-                        <span className="font-medium">{assignment.progress}%</span>
-                      </div>
-                      <Progress value={assignment.progress} color="primary" size="sm" className="h-1.5" />
-                    </div>
-                  )}
 
                   <div className="mb-3 flex flex-wrap gap-2 text-xs text-default-500">
                     <div className="flex items-center gap-1">

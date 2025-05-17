@@ -21,10 +21,10 @@ export const AcademicTimeline: React.FC = () => {
   const today = new Date()
   const timelineRef = React.useRef<HTMLDivElement>(null)
   const [filters, setFilters] = React.useState({
-    assignment: true,
+    assignment: false,
     exam: true,
     holiday: true,
-    semesterBreak: true,
+    semesterBreak: false,
     class: true,
   })
 
@@ -313,7 +313,7 @@ export const AcademicTimeline: React.FC = () => {
 
       <CardBody className="p-0">
         <div className="px-4 pb-4 pt-2 sm:px-8">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             <Button
               size="sm"
               variant={filters.assignment ? 'flat' : 'light'}
@@ -338,7 +338,7 @@ export const AcademicTimeline: React.FC = () => {
               size="sm"
               variant={filters.holiday ? 'flat' : 'light'}
               color={filters.holiday ? 'success' : 'default'}
-              startContent={<Icon icon="lucide:palm-tree" className="h-4 w-4 sm:h-5 sm:w-5" />}
+              startContent={<Icon icon="lucide:party-popper" className="h-4 w-4 sm:h-5 sm:w-5" />}
               onPress={() => toggleFilter('holiday')}
               className="text-xs sm:text-sm"
             >
@@ -368,191 +368,212 @@ export const AcademicTimeline: React.FC = () => {
         </div>
 
         <div className="relative max-h-[500px] overflow-y-auto px-4 pb-4 sm:px-8">
-          {/* Vertical line */}
-          <div className="absolute bottom-0 left-4 top-0 z-0 w-0.5 bg-default-200 sm:left-6"></div>
+          {/* Timeline container with the main line */}
+          <div className="relative">
+            {/* The main timeline line */}
+            <div className="absolute bottom-0 top-0 w-0.5 bg-default-200" />
 
-          {Object.entries(filteredEventsByDate).map(([dateKey, dateEvents]) => {
-            const date = new Date(dateKey)
-            const isToday = isSameDay(date, today)
-            const isPast = date < today
-            const isFuture = date > today
+            {Object.entries(filteredEventsByDate).map(([dateKey, dateEvents], dateIndex, dates) => {
+              const date = new Date(dateKey)
+              const isToday = isSameDay(date, today)
+              const isPast = date < today
+              const isFuture = date > today
 
-            return (
-              <div key={dateKey} data-today={isToday} className="mb-6 last:mb-0">
-                {/* Date header */}
-                <div className={`mb-2 flex items-center ${isToday ? 'sticky top-0 z-10 bg-background pb-2' : ''}`}>
-                  <div
-                    className={`z-10 flex h-7 w-7 items-center justify-center rounded-full sm:h-8 sm:w-8 ${
-                      isToday
-                        ? 'bg-primary text-white ring-4 ring-primary-100'
-                        : isPast
-                          ? 'bg-default-100 text-default-500'
-                          : 'bg-default-100 text-default-700'
-                    }`}
-                  >
-                    <span className="text-xs font-medium sm:text-sm">{format(date, 'd')}</span>
-                  </div>
+              return (
+                <div key={dateKey} data-today={isToday} className="relative mb-6 last:mb-0">
+                  {/* Date header with circle and connecting line */}
+                  <div className={`mb-3 flex items-center gap-3 ${isToday ? 'sticky top-0 z-20 pb-2' : ''}`}>
+                    <div className="relative flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7">
+                      {/* Horizontal connecting line */}
+                      <div className="absolute left-0 top-1/2 h-0.5 w-8 -translate-y-1/2 bg-default-200" />
+                      {/* Date circle */}
+                      {isToday ? (
+                        <div className="absolute left-0 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2">
+                          {/* Main circle */}
+                          <motion.div
+                            animate={{
+                              scale: [1, 1.15, 1],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: [0.4, 0, 0.2, 1],
+                            }}
+                            className="absolute inset-0 rounded-full bg-primary"
+                          />
+                          {/* Pulse effect */}
+                          <motion.div
+                            initial={{ scale: 0.8, opacity: 0.5 }}
+                            animate={{
+                              scale: [0.8, 1.5],
+                              opacity: [0.5, 0],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: [0.4, 0, 0.2, 1],
+                              repeatDelay: 0.2,
+                            }}
+                            className="absolute inset-0 rounded-full bg-primary"
+                          />
+                          {/* Second pulse for continuous effect */}
+                          <motion.div
+                            initial={{ scale: 0.8, opacity: 0.5 }}
+                            animate={{
+                              scale: [0.8, 1.5],
+                              opacity: [0.5, 0],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: [0.4, 0, 0.2, 1],
+                              delay: 0.75,
+                              repeatDelay: 0.2,
+                            }}
+                            className="absolute inset-0 rounded-full bg-primary"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className={`absolute left-0 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full ${
+                            isPast ? 'bg-primary' : 'bg-default-300'
+                          }`}
+                        />
+                      )}
+                    </div>
 
-                  <div className="ml-3 sm:ml-4">
-                    <h3 className={`text-sm font-medium sm:text-base ${isToday ? 'text-primary' : ''}`}>
-                      {isToday ? 'Today' : format(date, 'EEEE, MMMM d')}
-                    </h3>
-                    {isToday && (
-                      <motion.div
-                        animate={{
-                          boxShadow: ['0 0 0 rgba(99, 102, 241, 0)', '0 0 8px rgba(99, 102, 241, 0.5)', '0 0 0 rgba(99, 102, 241, 0)'],
-                        }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 2,
-                        }}
+                    <div className="relative z-20 flex items-center gap-2">
+                      <h3
+                        className={`text-sm font-medium sm:text-base ${isToday ? 'text-primary' : isPast ? 'text-default-600' : 'text-default-500'}`}
                       >
+                        {format(date, 'EEEE, MMMM d')}
+                      </h3>
+                      {isToday && (
                         <Chip size="sm" color="primary" variant="flat" className="text-xs">
                           Today
                         </Chip>
-                      </motion.div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* Events for this date */}
-                <div className="ml-4 space-y-3 pl-6 sm:ml-6 sm:pl-8">
-                  {dateEvents.map((event, eventIndex) => (
-                    <motion.div
-                      key={event.id}
-                      initial={{
-                        opacity: 0,
-                        x: eventIndex % 2 === 0 ? -20 : 20,
-                      }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: '-100px' }}
-                      transition={{ duration: 0.3, delay: eventIndex * 0.1 }}
-                      className="relative"
-                    >
-                      {/* Connector line to main timeline */}
-                      <div className="absolute -left-6 top-4 h-0.5 w-4 bg-default-200 sm:-left-8 sm:w-6"></div>
-
-                      {/* Event dot */}
-                      <div
-                        className={`absolute -left-8 top-3 h-3 w-3 rounded-full border-2 border-background sm:-left-10 sm:h-4 sm:w-4 ${
-                          event.type === 'assignment'
-                            ? 'bg-primary'
-                            : event.type === 'exam'
-                              ? 'bg-danger'
-                              : event.type === 'holiday'
-                                ? 'bg-success'
-                                : event.type === 'semester-break'
-                                  ? 'bg-warning'
-                                  : 'bg-default-400'
-                        }`}
-                      ></div>
-
-                      <Card
-                        shadow="sm"
-                        className={`border ${
-                          event.type === 'assignment'
-                            ? event.status === 'upcoming'
-                              ? 'border-warning-200 bg-warning-50/50 dark:bg-warning-900/10'
-                              : event.status === 'submitted'
-                                ? 'border-primary-200 bg-primary-50/50 dark:bg-primary-900/10'
-                                : 'border-success-200 bg-success-50/50 dark:bg-success-900/10'
-                            : 'border-divider'
-                        }`}
+                  {/* Events */}
+                  <div className="relative ml-6 space-y-3 pl-4 sm:ml-8 sm:pl-6">
+                    {dateEvents.map((event, eventIndex) => (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: eventIndex * 0.1 }}
+                        className="relative"
                       >
-                        <CardBody className="p-3 sm:p-4">
-                          <div className="flex items-start gap-2 sm:gap-3">
-                            <motion.div
-                              whileHover={{ scale: 1.1, rotate: 5 }}
-                              whileTap={{ scale: 0.95 }}
-                              className={`rounded-md p-2 ${
-                                event.type === 'assignment'
-                                  ? event.status === 'upcoming'
-                                    ? 'bg-warning-100 text-warning-500 dark:bg-warning-900/30'
-                                    : event.status === 'submitted'
-                                      ? 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
-                                      : 'bg-success-100 text-success-500 dark:bg-success-900/30'
-                                  : event.type === 'exam'
-                                    ? 'bg-danger-100 text-danger-500 dark:bg-danger-900/30'
-                                    : event.type === 'holiday'
-                                      ? 'bg-success-100 text-success-500 dark:bg-success-900/30'
-                                      : event.type === 'semester-break'
-                                        ? 'bg-warning-100 text-warning-500 dark:bg-warning-900/30'
-                                        : 'bg-primary-100 text-primary-500 dark:bg-primary-900/30'
-                              }`}
-                            >
-                              {event.type === 'assignment' ? getAssignmentStatusIcon(event.status) : getEventTypeIcon(event.type)}
-                            </motion.div>
+                        {/* Event card */}
+                        <Card
+                          shadow="sm"
+                          className={`relative border ${
+                            event.type === 'assignment'
+                              ? event.status === 'upcoming'
+                                ? 'border-warning-200 bg-warning-50/30 dark:bg-warning-900/5'
+                                : event.status === 'submitted'
+                                  ? 'border-primary-200 bg-primary-50/30 dark:bg-primary-900/5'
+                                  : 'border-success-200 bg-success-50/30 dark:bg-success-900/5'
+                              : 'border-divider'
+                          }`}
+                        >
+                          <CardBody className="p-3 sm:p-4">
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <motion.div
+                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                whileTap={{ scale: 0.95 }}
+                                className={`rounded-md p-2 ${
+                                  event.type === 'assignment'
+                                    ? event.status === 'upcoming'
+                                      ? 'bg-warning-100/30 text-warning-500 dark:bg-warning-900/20'
+                                      : event.status === 'submitted'
+                                        ? 'bg-primary-100/30 text-primary-500 dark:bg-primary-900/20'
+                                        : 'bg-success-100/30 text-success-500 dark:bg-success-900/20'
+                                    : event.type === 'exam'
+                                      ? 'bg-danger-100/30 text-danger-500 dark:bg-danger-900/20'
+                                      : event.type === 'holiday'
+                                        ? 'bg-success-100/30 text-success-500 dark:bg-success-900/20'
+                                        : event.type === 'semester-break'
+                                          ? 'bg-warning-100/30 text-warning-500 dark:bg-warning-900/20'
+                                          : 'bg-primary-100/30 text-primary-500 dark:bg-primary-900/20'
+                                }`}
+                              >
+                                {event.type === 'assignment' ? getAssignmentStatusIcon(event.status) : getEventTypeIcon(event.type)}
+                              </motion.div>
 
-                            <div className="flex-grow">
-                              <div className="flex flex-wrap items-start justify-between gap-2">
-                                <div>
-                                  <h4 className="text-sm font-medium sm:text-base">{event.title}</h4>
-                                  {event.course && <p className="text-xs text-default-500 sm:text-sm">{event.course}</p>}
-                                </div>
+                              <div className="flex-grow">
+                                <div className="flex flex-wrap items-start justify-between gap-2">
+                                  <div>
+                                    <h4 className="text-sm font-medium sm:text-base">{event.title}</h4>
+                                    {event.course && <p className="text-xs text-default-500 sm:text-sm">{event.course}</p>}
+                                  </div>
 
-                                <div className="flex items-center gap-2">
-                                  {event.type === 'assignment' && event.status === 'graded' && event.grade && (
-                                    <Chip size="sm" color="success" variant="flat" className="text-xs font-medium">
-                                      Grade: {event.grade}
+                                  <div className="flex items-center gap-2">
+                                    {event.type === 'assignment' && event.status === 'graded' && event.grade && (
+                                      <Chip size="sm" color="success" variant="flat" className="text-xs font-medium">
+                                        Grade: {event.grade}
+                                      </Chip>
+                                    )}
+                                    <Chip
+                                      size="sm"
+                                      color={event.type === 'assignment' ? getAssignmentStatusColor(event.status) : getEventTypeColor(event.type)}
+                                      variant="flat"
+                                      className="text-xs"
+                                    >
+                                      {event.type === 'assignment'
+                                        ? event.status === 'upcoming'
+                                          ? 'Upcoming'
+                                          : event.status === 'submitted'
+                                            ? 'Submitted'
+                                            : 'Graded'
+                                        : event.type.replace('-', ' ')}
                                     </Chip>
-                                  )}
-                                  <Chip
-                                    size="sm"
-                                    color={event.type === 'assignment' ? getAssignmentStatusColor(event.status) : getEventTypeColor(event.type)}
-                                    variant="flat"
-                                    className="text-xs"
-                                  >
-                                    {event.type === 'assignment'
-                                      ? event.status === 'upcoming'
-                                        ? 'Upcoming'
-                                        : event.status === 'submitted'
-                                          ? 'Submitted'
-                                          : 'Graded'
-                                      : event.type.replace('-', ' ')}
-                                  </Chip>
+                                  </div>
                                 </div>
-                              </div>
 
-                              {event.description && <p className="mt-2 text-xs text-default-600 sm:text-sm">{event.description}</p>}
+                                {event.description && <p className="mt-2 text-xs text-default-600 sm:text-sm">{event.description}</p>}
 
-                              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:gap-x-4">
-                                {event.time && (
+                                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:gap-x-4">
+                                  {event.time && (
+                                    <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
+                                      <Icon icon="lucide:clock" width={12} height={12} />
+                                      <span>{event.time}</span>
+                                    </div>
+                                  )}
+
+                                  {event.location && (
+                                    <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
+                                      <Icon icon="lucide:map-pin" width={12} height={12} />
+                                      <span>{event.location}</span>
+                                    </div>
+                                  )}
+
                                   <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
-                                    <Icon icon="lucide:clock" width={12} height={12} />
-                                    <span>{event.time}</span>
+                                    <Icon icon="lucide:calendar" width={12} height={12} />
+                                    <span>
+                                      {isToday
+                                        ? 'Today'
+                                        : isSameDay(date, addDays(today, 1))
+                                          ? 'Tomorrow'
+                                          : isSameDay(date, addDays(today, -1))
+                                            ? 'Yesterday'
+                                            : format(date, 'MMM d')}
+                                    </span>
                                   </div>
-                                )}
-
-                                {event.location && (
-                                  <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
-                                    <Icon icon="lucide:map-pin" width={12} height={12} />
-                                    <span>{event.location}</span>
-                                  </div>
-                                )}
-
-                                <div className="flex items-center gap-1 text-[10px] text-default-500 sm:text-xs">
-                                  <Icon icon="lucide:calendar" width={12} height={12} />
-                                  <span>
-                                    {isToday
-                                      ? 'Today'
-                                      : isSameDay(date, addDays(today, 1))
-                                        ? 'Tomorrow'
-                                        : isSameDay(date, addDays(today, -1))
-                                          ? 'Yesterday'
-                                          : format(date, 'MMM d')}
-                                  </span>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </CardBody>
-                      </Card>
-                    </motion.div>
-                  ))}
+                          </CardBody>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
 
           {Object.keys(filteredEventsByDate).length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -566,11 +587,11 @@ export const AcademicTimeline: React.FC = () => {
                 className="text-xs sm:text-sm"
                 onPress={() =>
                   setFilters({
-                    assignment: true,
+                    assignment: false,
                     exam: true,
                     holiday: true,
-                    semesterBreak: true,
-                    class: true,
+                    semesterBreak: false,
+                    class: false,
                   })
                 }
               >
