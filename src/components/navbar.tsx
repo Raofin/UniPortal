@@ -10,9 +10,16 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
   return (
     <HeroNavbar className="border-b border-divider bg-background/70 backdrop-blur-md" position="sticky" shouldHideOnScroll={false}>
-      <NavbarBrand>
+      <NavbarBrand className="cursor-pointer" onClick={scrollToTop}>
         <Icon icon="lucide:graduation-cap" width={24} height={24} className="text-primary" />
         <p className="ml-2 font-semibold text-inherit">UniPortal</p>
       </NavbarBrand>
