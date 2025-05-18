@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Modal, ModalContent, ModalBody, ModalFooter, Avatar, Input, Chip, Divider } from '@heroui/react'
+import { Button, Modal, ModalContent, ModalBody, ModalFooter, Avatar, Input, Chip, Divider, Tooltip } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EnhancedAIChat } from './ai-chat'
@@ -322,9 +322,9 @@ export const FloatingChat: React.FC = () => {
   return (
     <>
       {/* Floating Buttons Container */}
-      <div className="float-buttons:left-auto float-buttons:right-8 float-buttons:w-auto float-buttons:justify-end fixed bottom-8 left-0 right-0 z-50 flex w-full justify-center">
+      <div className="fixed bottom-8 left-0 right-0 z-50 flex w-full justify-center float-buttons:left-auto float-buttons:right-8 float-buttons:w-auto float-buttons:justify-end">
         {/* Mobile: Horizontal buttons with background */}
-        <div className="float-buttons:hidden flex w-fit flex-row items-center justify-center gap-4 rounded-full bg-background/80 p-2 shadow-lg backdrop-blur-md">
+        <div className="flex w-fit flex-row items-center justify-center gap-4 rounded-full bg-background/80 p-2 shadow-lg backdrop-blur-md float-buttons:hidden">
           {/* Theme Switcher */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -343,44 +343,46 @@ export const FloatingChat: React.FC = () => {
             className="relative h-12 w-12"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
-              <Button
-                isIconOnly
-                variant="light"
-                size="lg"
-                className="relative h-12 w-12 rounded-full"
-                onPress={() => {
-                  const resourcesButton = document.querySelector('[data-resources-button]')
-                  if (resourcesButton instanceof HTMLElement) {
-                    resourcesButton.click()
-                  }
-                }}
-                aria-label="Open resources"
-              >
-                <motion.div
-                  initial={false}
-                  animate={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    scale: 1,
+              <Tooltip content="Open resources">
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="lg"
+                  className="relative h-12 w-12 rounded-full"
+                  onPress={() => {
+                    const resourcesButton = document.querySelector('[data-resources-button]')
+                    if (resourcesButton instanceof HTMLElement) {
+                      resourcesButton.click()
+                    }
                   }}
-                  whileHover={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    scale: 1.1,
-                  }}
-                  transition={{
-                    backgroundColor: { duration: 0.2 },
-                    scale: { duration: 0.2 },
-                  }}
-                  className="flex h-full w-full items-center justify-center rounded-full"
+                  aria-label="Open resources"
                 >
                   <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    initial={false}
+                    animate={{
+                      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                      scale: 1,
+                    }}
+                    whileHover={{
+                      backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                      scale: 1.1,
+                    }}
+                    transition={{
+                      backgroundColor: { duration: 0.2 },
+                      scale: { duration: 0.2 },
+                    }}
+                    className="flex h-full w-full items-center justify-center rounded-full"
                   >
-                    <Icon icon="lucide:folder" width={24} height={24} className="text-danger" />
+                    <motion.div
+                      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <Icon icon="lucide:folder" width={24} height={24} className="text-danger" />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              </Button>
+                </Button>
+              </Tooltip>
             </motion.div>
           </motion.div>
 
@@ -392,47 +394,49 @@ export const FloatingChat: React.FC = () => {
             className="relative h-12 w-12"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
-              <Button
-                isIconOnly
-                variant="light"
-                size="lg"
-                className="relative h-12 w-12 rounded-full"
-                onPress={handleClick}
-                aria-label="Open conversations"
-              >
-                <motion.div
-                  initial={false}
-                  animate={{
-                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                    scale: 1,
-                    rotate: isSpinning ? 360 : 0,
-                  }}
-                  whileHover={{
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    scale: 1.1,
-                  }}
-                  transition={{
-                    backgroundColor: { duration: 0.2 },
-                    scale: { duration: 0.2 },
-                    rotate: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-                  }}
-                  className="flex h-full w-full items-center justify-center rounded-full"
+              <Tooltip content="Open conversations">
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="lg"
+                  className="relative h-12 w-12 rounded-full"
+                  onPress={handleClick}
+                  aria-label="Open conversations"
                 >
                   <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    initial={false}
+                    animate={{
+                      backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                      scale: 1,
+                      rotate: isSpinning ? 360 : 0,
+                    }}
+                    whileHover={{
+                      backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                      scale: 1.1,
+                    }}
+                    transition={{
+                      backgroundColor: { duration: 0.2 },
+                      scale: { duration: 0.2 },
+                      rotate: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                    }}
+                    className="flex h-full w-full items-center justify-center rounded-full"
                   >
-                    <Icon icon="lucide:message-circle" width={24} height={24} className="text-success" />
+                    <motion.div
+                      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <Icon icon="lucide:message-circle" width={24} height={24} className="text-success" />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              </Button>
+                </Button>
+              </Tooltip>
             </motion.div>
           </motion.div>
         </div>
 
         {/* Desktop: Vertical buttons */}
-        <div className="float-buttons:flex hidden flex-col items-end gap-4">
+        <div className="hidden flex-col items-end gap-4 float-buttons:flex">
           {/* Theme Switcher */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -451,44 +455,46 @@ export const FloatingChat: React.FC = () => {
             className="relative h-12 w-12"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
-              <Button
-                isIconOnly
-                variant="light"
-                size="lg"
-                className="relative h-12 w-12 rounded-full"
-                onPress={() => {
-                  const resourcesButton = document.querySelector('[data-resources-button]')
-                  if (resourcesButton instanceof HTMLElement) {
-                    resourcesButton.click()
-                  }
-                }}
-                aria-label="Open resources"
-              >
-                <motion.div
-                  initial={false}
-                  animate={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    scale: 1,
+              <Tooltip content="Open resources">
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="lg"
+                  className="relative h-12 w-12 rounded-full"
+                  onPress={() => {
+                    const resourcesButton = document.querySelector('[data-resources-button]')
+                    if (resourcesButton instanceof HTMLElement) {
+                      resourcesButton.click()
+                    }
                   }}
-                  whileHover={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    scale: 1.1,
-                  }}
-                  transition={{
-                    backgroundColor: { duration: 0.2 },
-                    scale: { duration: 0.2 },
-                  }}
-                  className="flex h-full w-full items-center justify-center rounded-full"
+                  aria-label="Open resources"
                 >
                   <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    initial={false}
+                    animate={{
+                      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                      scale: 1,
+                    }}
+                    whileHover={{
+                      backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                      scale: 1.1,
+                    }}
+                    transition={{
+                      backgroundColor: { duration: 0.2 },
+                      scale: { duration: 0.2 },
+                    }}
+                    className="flex h-full w-full items-center justify-center rounded-full"
                   >
-                    <Icon icon="lucide:folder" width={24} height={24} className="text-danger" />
+                    <motion.div
+                      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <Icon icon="lucide:folder" width={24} height={24} className="text-danger" />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              </Button>
+                </Button>
+              </Tooltip>
             </motion.div>
           </motion.div>
 
@@ -500,41 +506,43 @@ export const FloatingChat: React.FC = () => {
             className="relative h-12 w-12"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
-              <Button
-                isIconOnly
-                variant="light"
-                size="lg"
-                className="relative h-12 w-12 rounded-full"
-                onPress={handleClick}
-                aria-label="Open conversations"
-              >
-                <motion.div
-                  initial={false}
-                  animate={{
-                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                    scale: 1,
-                    rotate: isSpinning ? 360 : 0,
-                  }}
-                  whileHover={{
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    scale: 1.1,
-                  }}
-                  transition={{
-                    backgroundColor: { duration: 0.2 },
-                    scale: { duration: 0.2 },
-                    rotate: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-                  }}
-                  className="flex h-full w-full items-center justify-center rounded-full"
+              <Tooltip content="Open conversations">
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="lg"
+                  className="relative h-12 w-12 rounded-full"
+                  onPress={handleClick}
+                  aria-label="Open conversations"
                 >
                   <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    initial={false}
+                    animate={{
+                      backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                      scale: 1,
+                      rotate: isSpinning ? 360 : 0,
+                    }}
+                    whileHover={{
+                      backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                      scale: 1.1,
+                    }}
+                    transition={{
+                      backgroundColor: { duration: 0.2 },
+                      scale: { duration: 0.2 },
+                      rotate: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                    }}
+                    className="flex h-full w-full items-center justify-center rounded-full"
                   >
-                    <Icon icon="lucide:message-circle" width={24} height={24} className="text-success" />
+                    <motion.div
+                      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <Icon icon="lucide:message-circle" width={24} height={24} className="text-success" />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              </Button>
+                </Button>
+              </Tooltip>
             </motion.div>
           </motion.div>
         </div>
@@ -545,16 +553,15 @@ export const FloatingChat: React.FC = () => {
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         size="4xl"
-        scrollBehavior="inside"
         hideCloseButton={true}
         classNames={{
-          base: 'h-[80vh]',
+          base: 'h-[90vh] overflow-hidden md:my-16 [&:not(.md)]:my-0',
         }}
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalBody className="p-0">
+              <ModalBody className="h-full p-0">
                 <Conversations onClose={onClose} />
               </ModalBody>
             </>
