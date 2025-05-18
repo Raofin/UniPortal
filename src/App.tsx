@@ -80,13 +80,13 @@ const App: React.FC = () => {
       <div className={isLoading ? 'blur-sm' : ''}>
         <Navbar onNavigate={scrollToSection} />
 
-        <main className="container mx-auto max-w-6xl px-4 pt-16">
+        <main className="container mx-auto max-w-6xl px-4 pt-24">
           {/* Content sections with glass effect */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: isLoading ? 0.5 : 0 }}
-            className="scroll-mt-16" // Add scroll margin to account for navbar
+            className="scroll-mt-24"
           >
             <WelcomeSection />
           </motion.div>
@@ -97,7 +97,7 @@ const App: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.5, delay: isLoading ? 0.6 : 0.1 }}
-            className="mt-8 scroll-mt-16" // Add scroll margin to account for navbar
+            className="mt-8 scroll-mt-24"
           >
             <WeeklyCalendar />
           </motion.div>
@@ -108,7 +108,7 @@ const App: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.5, delay: isLoading ? 0.7 : 0.1 }}
-            className="mt-12 scroll-mt-16" // Add scroll margin to account for navbar
+            className="mt-12 scroll-mt-24"
           >
             <UpcomingAssignments />
           </motion.div>
@@ -119,7 +119,7 @@ const App: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.5, delay: isLoading ? 0.8 : 0.1 }}
-            className="mt-12 scroll-mt-16" // Add scroll margin to account for navbar
+            className="mt-12 scroll-mt-24"
           >
             <RecentGrades />
           </motion.div>
@@ -130,7 +130,7 @@ const App: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.5, delay: isLoading ? 0.9 : 0.1 }}
-            className="mt-12 scroll-mt-16" // Add scroll margin to account for navbar
+            className="mt-12 scroll-mt-24"
           >
             <AcademicTimeline />
           </motion.div>

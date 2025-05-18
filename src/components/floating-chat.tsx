@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EnhancedAIChat } from './ai-chat'
 import { Conversations } from './conversations'
+import { ThemeSwitcher } from './theme-switcher'
 
 interface Message {
   id: string
@@ -34,6 +35,7 @@ export const FloatingChat: React.FC = () => {
   const [isTyping, setIsTyping] = React.useState(false)
   const [selectedInboxMessage, setSelectedInboxMessage] = React.useState<string | null>(null)
   const chatContainerRef = React.useRef<HTMLDivElement>(null)
+  const [isSpinning, setIsSpinning] = React.useState(false)
 
   // Mock data for chat groups
   const chatGroups: ChatGroup[] = [
@@ -311,21 +313,234 @@ export const FloatingChat: React.FC = () => {
     }
   }, [messages, selectedChat, activeTab, isTyping])
 
+  const handleClick = () => {
+    setIsSpinning(true)
+    setIsOpen(true)
+    setTimeout(() => setIsSpinning(false), 500)
+  }
+
   return (
     <>
-      {/* Floating button */}
-      <motion.div
-        className="fixed bottom-20 right-6 z-50"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-      >
-        <Button color="primary" isIconOnly size="lg" className="h-12 w-12 shadow-lg" onPress={() => setIsOpen(true)} aria-label="Open conversations">
-          <Icon icon="lucide:message-circle" width={24} height={24} />
-        </Button>
-      </motion.div>
+      {/* Floating Buttons Container */}
+      <div className="float-buttons:left-auto float-buttons:right-8 float-buttons:w-auto float-buttons:justify-end fixed bottom-8 left-0 right-0 z-50 flex w-full justify-center">
+        {/* Mobile: Horizontal buttons with background */}
+        <div className="float-buttons:hidden flex w-fit flex-row items-center justify-center gap-4 rounded-full bg-background/80 p-2 shadow-lg backdrop-blur-md">
+          {/* Theme Switcher */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
+            className="relative h-12 w-12"
+          >
+            <ThemeSwitcher />
+          </motion.div>
 
-      {/* Chat modal */}
+          {/* Resources Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
+            className="relative h-12 w-12"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
+              <Button
+                isIconOnly
+                variant="light"
+                size="lg"
+                className="relative h-12 w-12 rounded-full"
+                onPress={() => {
+                  const resourcesButton = document.querySelector('[data-resources-button]')
+                  if (resourcesButton instanceof HTMLElement) {
+                    resourcesButton.click()
+                  }
+                }}
+                aria-label="Open resources"
+              >
+                <motion.div
+                  initial={false}
+                  animate={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    scale: 1,
+                  }}
+                  whileHover={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    scale: 1.1,
+                  }}
+                  transition={{
+                    backgroundColor: { duration: 0.2 },
+                    scale: { duration: 0.2 },
+                  }}
+                  className="flex h-full w-full items-center justify-center rounded-full"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Icon icon="lucide:folder" width={24} height={24} className="text-danger" />
+                  </motion.div>
+                </motion.div>
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* Chat Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+            className="relative h-12 w-12"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
+              <Button
+                isIconOnly
+                variant="light"
+                size="lg"
+                className="relative h-12 w-12 rounded-full"
+                onPress={handleClick}
+                aria-label="Open conversations"
+              >
+                <motion.div
+                  initial={false}
+                  animate={{
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    scale: 1,
+                    rotate: isSpinning ? 360 : 0,
+                  }}
+                  whileHover={{
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    scale: 1.1,
+                  }}
+                  transition={{
+                    backgroundColor: { duration: 0.2 },
+                    scale: { duration: 0.2 },
+                    rotate: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                  }}
+                  className="flex h-full w-full items-center justify-center rounded-full"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Icon icon="lucide:message-circle" width={24} height={24} className="text-success" />
+                  </motion.div>
+                </motion.div>
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Desktop: Vertical buttons */}
+        <div className="float-buttons:flex hidden flex-col items-end gap-4">
+          {/* Theme Switcher */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
+            className="relative h-12 w-12"
+          >
+            <ThemeSwitcher />
+          </motion.div>
+
+          {/* Resources Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
+            className="relative h-12 w-12"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
+              <Button
+                isIconOnly
+                variant="light"
+                size="lg"
+                className="relative h-12 w-12 rounded-full"
+                onPress={() => {
+                  const resourcesButton = document.querySelector('[data-resources-button]')
+                  if (resourcesButton instanceof HTMLElement) {
+                    resourcesButton.click()
+                  }
+                }}
+                aria-label="Open resources"
+              >
+                <motion.div
+                  initial={false}
+                  animate={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    scale: 1,
+                  }}
+                  whileHover={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    scale: 1.1,
+                  }}
+                  transition={{
+                    backgroundColor: { duration: 0.2 },
+                    scale: { duration: 0.2 },
+                  }}
+                  className="flex h-full w-full items-center justify-center rounded-full"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Icon icon="lucide:folder" width={24} height={24} className="text-danger" />
+                  </motion.div>
+                </motion.div>
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* Chat Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+            className="relative h-12 w-12"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative overflow-hidden rounded-full">
+              <Button
+                isIconOnly
+                variant="light"
+                size="lg"
+                className="relative h-12 w-12 rounded-full"
+                onPress={handleClick}
+                aria-label="Open conversations"
+              >
+                <motion.div
+                  initial={false}
+                  animate={{
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    scale: 1,
+                    rotate: isSpinning ? 360 : 0,
+                  }}
+                  whileHover={{
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    scale: 1.1,
+                  }}
+                  transition={{
+                    backgroundColor: { duration: 0.2 },
+                    scale: { duration: 0.2 },
+                    rotate: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                  }}
+                  className="flex h-full w-full items-center justify-center rounded-full"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Icon icon="lucide:message-circle" width={24} height={24} className="text-success" />
+                  </motion.div>
+                </motion.div>
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Chat Modal */}
       <Modal
         isOpen={isOpen}
         onOpenChange={setIsOpen}

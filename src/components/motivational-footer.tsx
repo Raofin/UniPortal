@@ -183,7 +183,7 @@ export const MotivationalFooter: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto mb-6 mt-12 max-w-6xl px-4">
+    <div className="float-buttons:mb-6 container mx-auto mb-24 mt-12 max-w-6xl px-4">
       <Card className="bg-gradient-to-r from-primary-50 to-background shadow-sm">
         <CardBody className="overflow-hidden p-6">
           <div className="flex flex-col gap-6 md:flex-row">

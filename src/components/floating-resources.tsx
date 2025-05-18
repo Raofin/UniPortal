@@ -170,7 +170,7 @@ const UploadArea: React.FC<{
   >
     <Icon icon="lucide:upload-cloud" className={`mx-auto mb-2 h-10 w-10 ${isDragging ? 'text-primary' : 'text-default-400'}`} />
     <p className={`${isDragging ? 'text-primary' : 'text-default-600'}`}>Drag and drop files here to upload</p>
-    <p className="mb-3 mt-1 text-xs text-default-400">Supported formats: PDF, DOCX, PPTX, TXT, ZIP, JPG, PNG (Max 10MB)</p>
+    <p className="mb-3 mt-1 text-xs text-default-400">Supported formats: PDF, DOCX, PPTX, TXT, ZIP, JPG, PNG (Max 100MB)</p>
     <input
       type="file"
       ref={fileInputRef}
@@ -193,6 +193,7 @@ export const FloatingResources: React.FC = () => {
   const [newSectionName, setNewSectionName] = React.useState('')
   const [selectedSection, setSelectedSection] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const [isSpinning, setIsSpinning] = React.useState(false)
 
   // Sample sections
   const [sections, setSections] = React.useState<Section[]>([
@@ -405,18 +406,17 @@ export const FloatingResources: React.FC = () => {
     }, 100)
   }, [])
 
+  const handleClick = () => {
+    setIsSpinning(true)
+    setIsOpen(true)
+    // Reset spinning after animation
+    setTimeout(() => setIsSpinning(false), 500)
+  }
+
   return (
     <>
-      <motion.div
-        className="fixed bottom-6 right-6 z-50"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-      >
-        <Button color="primary" isIconOnly size="lg" className="h-12 w-12 shadow-lg" onPress={() => setIsOpen(true)} aria-label="Open resources">
-          <Icon icon="lucide:folder" width={24} height={24} />
-        </Button>
-      </motion.div>
+      {/* Hidden button for resources modal trigger */}
+      <Button data-resources-button className="hidden" onPress={() => setIsOpen(true)} />
 
       {isOpen && (
         <Modal

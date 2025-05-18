@@ -334,7 +334,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
           <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
         </button>
       </ModalHeader>
-      <ModalBody className="modal-scroll-fix h-[660px] min-h-0 flex-1 overflow-x-hidden p-0">
+      <ModalBody className="modal-scroll-fix h-[595px] min-h-0 flex-1 overflow-x-hidden p-0">
         <AnimatePresence mode="wait" initial={false}>
           {selected === 'inbox' && (
             <motion.div

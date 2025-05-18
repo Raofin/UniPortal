@@ -1,7 +1,6 @@
 import React from 'react'
 import { Navbar as HeroNavbar, NavbarBrand, NavbarContent, NavbarItem, Button, Avatar } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { ThemeSwitcher } from './theme-switcher'
 import { NotificationCenter } from './notification-center'
 import { ProfilePopup } from './profile-popup'
 
@@ -18,7 +17,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
   }
 
   return (
-    <HeroNavbar className="border-b border-divider/10 bg-background/50 shadow-sm backdrop-blur-md" position="sticky" shouldHideOnScroll={false}>
+    <HeroNavbar
+      className="fixed left-0 right-0 top-0 z-50 border-b border-divider/10 bg-background/50 shadow-sm backdrop-blur-md"
+      shouldHideOnScroll={false}
+    >
       <NavbarBrand className="cursor-pointer" onClick={scrollToTop}>
         <Icon icon="lucide:graduation-cap" width={24} height={24} className="text-primary" />
         <p className="ml-2 font-semibold text-inherit">UniPortal</p>
@@ -52,9 +54,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
       </NavbarContent>
 
       <NavbarContent justify="end" className="gap-2">
-        <NavbarItem className="hidden sm:flex">
-          <ThemeSwitcher />
-        </NavbarItem>
         <NavbarItem>
           <NotificationCenter />
         </NavbarItem>
