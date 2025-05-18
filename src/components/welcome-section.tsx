@@ -25,10 +25,7 @@ export const WelcomeSection: React.FC = () => {
       </AnimatePresence>
 
       <div className="relative">
-        {/* Background gradient */}
-        <div className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-primary-100/30 to-background" />
-
-        <Card className="relative overflow-hidden border-none bg-background/60 shadow-none backdrop-blur-sm">
+        <Card className="relative overflow-hidden border-none bg-transparent shadow-none">
           <CardBody className="p-6">
             <div className="flex flex-col items-center gap-6">
               {/* Avatar */}

@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navbar } from './components/navbar'
 import { WelcomeSection } from './components/welcome-section'
 import { WeeklyCalendar } from './components/calendar'
 import { UpcomingAssignments } from './components/assessments'
-import { RecentGrades } from './components/recent-grades'
+import { RecentGrades } from './components/current-semester'
 import { NotesAndFiles } from './components/notes-files'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AcademicTimeline } from './components/timeline'
@@ -48,7 +48,13 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen">
+      {/* Animated background blobs */}
+      <div className="blob-1" />
+      <div className="blob-2" />
+      <div className="blob-3" />
+
+      {/* Loading overlay */}
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -75,6 +81,7 @@ const App: React.FC = () => {
         <Navbar onNavigate={scrollToSection} />
 
         <main className="container mx-auto max-w-6xl px-4 pt-16">
+          {/* Content sections with glass effect */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

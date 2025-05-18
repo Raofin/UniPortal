@@ -2,6 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Add background to root element */
+#root {
+  position: relative;
+  min-height: 100vh;
+  background: var(--nextui-colors-background);
+  overflow: hidden; /* Prevent scrollbars */
+}
+
+/* Animated background blobs */
+.blob-1,
+.blob-2,
+.blob-3 {
+  position: fixed; /* Change to fixed to stay in viewport */
+  width: 800px; /* Larger size for better coverage */
+  height: 800px;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none; /* Prevent interaction */
+}
+
+.blob-1 {
+  background: radial-gradient(circle at center, rgba(147, 197, 253, 0.15) 0%, transparent 70%);
+  left: -400px; /* Half of width */
+  top: -400px; /* Half of height */
+  animation: moveBlob1 30s linear infinite;
+}
+
+.blob-2 {
+  background: radial-gradient(circle at center, rgba(216, 180, 254, 0.15) 0%, transparent 70%);
+  right: -400px; /* Half of width */
+  bottom: -400px; /* Half of height */
+  animation: moveBlob2 35s linear infinite;
+}
+
+.blob-3 {
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  animation: moveBlob3 40s linear infinite;
+}
+
+/* Dark theme specific colors */
+:root[data-theme='dark'] .blob-1 {
+  background: radial-gradient(circle at center, rgba(96, 165, 250, 0.25) 0%, transparent 70%);
+}
+
+:root[data-theme='dark'] .blob-2 {
+  background: radial-gradient(circle at center, rgba(244, 114, 182, 0.25) 0%, transparent 70%);
+}
+
+:root[data-theme='dark'] .blob-3 {
+  background: radial-gradient(circle at center, rgba(234, 179, 8, 0.25) 0%, transparent 70%);
+}
+
+@keyframes moveBlob1 {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(calc(50vw - 200px), 25vh);
+  }
+  50% {
+    transform: translate(calc(25vw - 200px), calc(50vh - 200px));
+  }
+  75% {
+    transform: translate(calc(75vw - 200px), calc(75vh - 200px));
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes moveBlob2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(calc(-50vw + 200px), -25vh);
+  }
+  50% {
+    transform: translate(calc(-25vw + 200px), calc(-50vh + 200px));
+  }
+  75% {
+    transform: translate(calc(-75vw + 200px), calc(-75vh + 200px));
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes moveBlob3 {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  25% {
+    transform: translate(calc(-50% + 30vw), calc(-50% - 20vh)) rotate(90deg);
+  }
+  50% {
+    transform: translate(calc(-50% - 20vw), calc(-50% + 30vh)) rotate(180deg);
+  }
+  75% {
+    transform: translate(calc(-50% + 20vw), calc(-50% - 30vh)) rotate(270deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
@@ -11,4 +120,9 @@
 .hide-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* Glass Card Effect */
+.glass-card {
+  @apply rounded-xl border border-default-200/50 bg-content1/70 shadow-none backdrop-blur-md dark:border-none dark:shadow-md;
 }

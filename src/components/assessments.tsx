@@ -315,7 +315,7 @@ export const UpcomingAssignments: React.FC = () => {
     },
     {
       id: '4',
-      title: 'Midterm Quiz: Computer Networks',
+      title: 'Computer Networks',
       course: 'CS304: Computer Networks',
       dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48h from now
       status: 'pending',
@@ -382,7 +382,7 @@ export const UpcomingAssignments: React.FC = () => {
   const pendingCount = assignments.filter((a) => a.status === 'pending' || a.status === 'in-progress').length
 
   return (
-    <Card className="rounded-xl shadow-md">
+    <Card className="glass-card">
       <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
         <div className="flex w-full flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-2">
@@ -420,9 +420,9 @@ export const UpcomingAssignments: React.FC = () => {
                         : assignment.priority === 'medium'
                           ? 'border-warning-200 bg-warning-50/30 dark:bg-warning-900/5'
                           : 'border-success-200 bg-success-50/30 dark:bg-success-900/5'
-                      : 'border-divider'
+                      : 'border-divider bg-transparent'
                 }`}
-                shadow="sm"
+                shadow="none"
               >
                 <CardBody className="p-4">
                   <div className="mb-3 flex items-start justify-between gap-2">

@@ -568,7 +568,7 @@ export const RecentGrades: React.FC = () => {
   }
 
   return (
-    <Card className="shadow-md">
+    <Card className="glass-card">
       <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
         <div className="flex w-full flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-2">
@@ -626,7 +626,7 @@ export const RecentGrades: React.FC = () => {
                   transition={{ delay: courseIndex * 0.1, duration: 0.3 }}
                   className="min-w-[320px] sm:min-w-[480px]"
                 >
-                  <Card shadow="sm" className="border border-divider">
+                  <Card shadow="none" className="border border-divider bg-transparent dark:bg-content1/60">
                     <CardBody className="p-4 sm:p-8">
                       {/* Course Header */}
                       <div className="mb-6 flex items-start justify-between border-b border-divider pb-4 sm:mb-8 sm:pb-6">

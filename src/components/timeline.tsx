@@ -237,7 +237,7 @@ export const AcademicTimeline: React.FC = () => {
   const getEventTypeIcon = (type: string) => {
     switch (type) {
       case 'assignment':
-        return <Icon icon="lucide:clipboard-check" className="text-primary" width={20} height={20} />
+        return <Icon icon="lucide:clipboard-check" className="text-secondary" width={20} height={20} />
       case 'exam':
         return <Icon icon="lucide:file-check" className="text-danger" width={20} height={20} />
       case 'holiday':
@@ -254,42 +254,28 @@ export const AcademicTimeline: React.FC = () => {
   const getEventTypeColor = (type: string) => {
     switch (type) {
       case 'assignment':
-        return 'primary'
+        return 'secondary'
       case 'exam':
         return 'danger'
       case 'holiday':
         return 'success'
       case 'semester-break':
         return 'warning'
+      case 'class':
+        return 'primary'
       default:
         return 'default'
     }
   }
 
   const getAssignmentStatusColor = (status?: string) => {
-    switch (status) {
-      case 'upcoming':
-        return 'warning'
-      case 'submitted':
-        return 'primary'
-      case 'graded':
-        return 'success'
-      default:
-        return 'default'
-    }
+    // All assignment statuses use secondary color
+    return 'secondary'
   }
 
   const getAssignmentStatusIcon = (status?: string) => {
-    switch (status) {
-      case 'upcoming':
-        return <Icon icon="lucide:clock" className="text-warning" width={16} height={16} />
-      case 'submitted':
-        return <Icon icon="lucide:check-circle" className="text-primary" width={16} height={16} />
-      case 'graded':
-        return <Icon icon="lucide:award" className="text-success" width={16} height={16} />
-      default:
-        return <Icon icon="lucide:clipboard" className="text-default-500" width={16} height={16} />
-    }
+    // All assignment status icons use secondary color
+    return <Icon icon="lucide:clipboard-check" className="text-secondary" width={16} height={16} />
   }
 
   const toggleFilter = (filter: keyof typeof filters) => {
@@ -300,7 +286,7 @@ export const AcademicTimeline: React.FC = () => {
   }
 
   return (
-    <Card className="shadow-md">
+    <Card className="glass-card">
       <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
         <div className="flex w-full flex-col items-center gap-1 pb-2 text-center">
           <div className="flex items-center gap-2">
@@ -317,7 +303,7 @@ export const AcademicTimeline: React.FC = () => {
             <Button
               size="sm"
               variant={filters.assignment ? 'flat' : 'light'}
-              color={filters.assignment ? 'primary' : 'default'}
+              color={filters.assignment ? 'secondary' : 'default'}
               startContent={<Icon icon="lucide:clipboard-list" className="h-4 w-4 sm:h-5 sm:w-5" />}
               onPress={() => toggleFilter('assignment')}
               className="text-xs sm:text-sm"
@@ -457,7 +443,7 @@ export const AcademicTimeline: React.FC = () => {
                   </div>
 
                   {/* Events */}
-                  <div className="relative ml-6 space-y-3 pl-4 sm:ml-8 sm:pl-6">
+                  <div className="relative ml-2 space-y-3 pl-4 sm:ml-4 sm:pl-6">
                     {dateEvents.map((event, eventIndex) => (
                       <motion.div
                         key={event.id}
@@ -468,16 +454,18 @@ export const AcademicTimeline: React.FC = () => {
                       >
                         {/* Event card */}
                         <Card
-                          shadow="sm"
+                          shadow="none"
                           className={`relative border ${
                             event.type === 'assignment'
-                              ? event.status === 'upcoming'
-                                ? 'border-warning-200 bg-warning-50/30 dark:bg-warning-900/5'
-                                : event.status === 'submitted'
-                                  ? 'border-primary-200 bg-primary-50/30 dark:bg-primary-900/5'
-                                  : 'border-success-200 bg-success-50/30 dark:bg-success-900/5'
-                              : 'border-divider'
-                          }`}
+                              ? 'border-secondary-200 bg-secondary-50/30 dark:bg-secondary-900/5'
+                              : event.type === 'exam'
+                                ? 'border-danger-200 bg-danger-50/30 dark:bg-danger-900/5'
+                                : event.type === 'holiday'
+                                  ? 'border-success-200 bg-success-50/30 dark:bg-success-900/5'
+                                  : event.type === 'semester-break'
+                                    ? 'border-warning-200 bg-warning-50/30 dark:bg-warning-900/5'
+                                    : 'border-primary-200 bg-primary-50/30 dark:bg-primary-900/5'
+                          } bg-opacity-70`}
                         >
                           <CardBody className="p-3 sm:p-4">
                             <div className="flex items-start gap-2 sm:gap-3">
@@ -486,11 +474,7 @@ export const AcademicTimeline: React.FC = () => {
                                 whileTap={{ scale: 0.95 }}
                                 className={`rounded-md p-2 ${
                                   event.type === 'assignment'
-                                    ? event.status === 'upcoming'
-                                      ? 'bg-warning-100/30 text-warning-500 dark:bg-warning-900/20'
-                                      : event.status === 'submitted'
-                                        ? 'bg-primary-100/30 text-primary-500 dark:bg-primary-900/20'
-                                        : 'bg-success-100/30 text-success-500 dark:bg-success-900/20'
+                                    ? 'bg-secondary-100/30 text-secondary-500 dark:bg-secondary-900/20'
                                     : event.type === 'exam'
                                       ? 'bg-danger-100/30 text-danger-500 dark:bg-danger-900/20'
                                       : event.type === 'holiday'
@@ -511,14 +495,9 @@ export const AcademicTimeline: React.FC = () => {
                                   </div>
 
                                   <div className="flex items-center gap-2">
-                                    {event.type === 'assignment' && event.status === 'graded' && event.grade && (
-                                      <Chip size="sm" color="success" variant="flat" className="text-xs font-medium">
-                                        Grade: {event.grade}
-                                      </Chip>
-                                    )}
                                     <Chip
                                       size="sm"
-                                      color={event.type === 'assignment' ? getAssignmentStatusColor(event.status) : getEventTypeColor(event.type)}
+                                      color={event.type === 'assignment' ? 'secondary' : getEventTypeColor(event.type)}
                                       variant="flat"
                                       className="text-xs"
                                     >
@@ -528,7 +507,7 @@ export const AcademicTimeline: React.FC = () => {
                                           : event.status === 'submitted'
                                             ? 'Submitted'
                                             : 'Graded'
-                                        : event.type.replace('-', ' ')}
+                                        : event.type.charAt(0).toUpperCase() + event.type.slice(1).replace('-', ' ')}
                                     </Chip>
                                   </div>
                                 </div>

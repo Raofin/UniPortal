@@ -397,7 +397,7 @@ export const WeeklyCalendar: React.FC = () => {
   }
 
   return (
-    <Card className="rounded-xl shadow-md">
+    <Card className="glass-card">
       <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
         <div className="flex w-full flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-2">
