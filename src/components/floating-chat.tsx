@@ -1,8 +1,7 @@
 import React from 'react'
-import { Button, Modal, ModalContent, ModalBody, ModalFooter, Avatar, Input, Chip, Divider, Tooltip } from '@heroui/react'
+import { Button, Modal, ModalContent, ModalBody, Tooltip } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { EnhancedAIChat } from './ai-chat'
+import { motion } from 'framer-motion'
 import { Conversations } from './conversations'
 import { ThemeSwitcher } from './theme-switcher'
 

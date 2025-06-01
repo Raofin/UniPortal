@@ -1,7 +1,7 @@
 import React from 'react'
-import { Input, Button, Avatar, Divider, Tooltip } from '@heroui/react'
+import { Input, Button, Avatar, Tooltip } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 interface ChatMessage {
   id: string

@@ -37,7 +37,7 @@ interface ChatGroup {
 }
 
 export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
-  // Mock data for inbox messages
+  // Sample data for inbox messages with various types of communications
   const inboxMessages: Message[] = [
     {
       id: 'ai-summary',
@@ -149,7 +149,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     },
   ]
 
-  // Mock data for course chat groups
+  // Sample data for course chat groups with unread counts and last messages
   const chatGroups: ChatGroup[] = [
     {
       id: 'cs301',
@@ -174,7 +174,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     },
   ]
 
-  // Mock data for chat messages
+  // Sample data for chat messages with reactions and timestamps
   const chatMessages: Message[] = [
     {
       id: 'c1',
@@ -278,7 +278,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     },
   ]
 
-  // State management
+  // State management for UI interactions
   const [selected, setSelected] = React.useState<'inbox' | 'discussion' | 'ai'>('inbox')
   const [selectedInboxMessage, setSelectedInboxMessage] = React.useState<string | null>(null)
   const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
@@ -298,7 +298,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Format timestamp to relative time (e.g., "2h ago", "Yesterday")
+  // Format timestamp to show relative time (e.g., "2h ago", "Yesterday")
   const formatTime = (date: Date) => {
     const now = new Date()
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
@@ -315,21 +315,21 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     }
   }
 
-  // Auto-select first message in inbox
+  // Select first message by default when in inbox tab
   React.useEffect(() => {
     if (selected === 'inbox' && inboxMessages.length > 0 && !selectedInboxMessage) {
       setSelectedInboxMessage(inboxMessages[0].id)
     }
   }, [selected, inboxMessages, selectedInboxMessage])
 
-  // Auto-select first chat in discussion
+  // Select first chat by default when in discussion tab
   React.useEffect(() => {
     if (selected === 'discussion' && chatGroups.length > 0 && !selectedChat) {
       setSelectedChat(chatGroups[0].id)
     }
   }, [selected, chatGroups, selectedChat])
 
-  // Memoize selected message data for performance
+  // Get selected message data for display
   const selectedMessageData = React.useMemo(() => {
     return inboxMessages.find((m) => m.id === selectedInboxMessage) || null
   }, [selectedInboxMessage])
@@ -351,7 +351,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
     }
   }, [activeReactionMenu])
 
-  // Handle message reactions (add/remove)
+  // Handle message reactions (add/remove reactions)
   const handleReaction = (messageId: string, emoji: string) => {
     setChatState((prevMessages) => {
       return prevMessages.map((message) => {
@@ -361,10 +361,11 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
         const existingReaction = currentReactions.find((r) => r.emoji === emoji)
 
         if (existingReaction) {
-          // Remove reaction if user already reacted
+          // If user already reacted, remove their reaction
           if (existingReaction.users.includes('current')) {
             const updatedUsers = existingReaction.users.filter((u) => u !== 'current')
             if (updatedUsers.length === 0) {
+              // Remove reaction if no users left
               return {
                 ...message,
                 reactions: currentReactions.filter((r) => r.emoji !== emoji),
@@ -395,7 +396,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
 
   return (
     <div className="no-trap-focus h-full">
-      {/* Header with tab navigation */}
       <ModalHeader className="modal-header-fix sticky top-0 z-10 flex flex-row items-center justify-between gap-2 rounded-t-lg border-b border-divider bg-default-50/80">
         <div className="flex flex-row items-center gap-2">
           <Tabs
@@ -406,7 +406,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
             classNames={{ tabList: 'gap-4' }}
             disableAnimation={true}
           >
-            {/* Smart Inbox Tab */}
             <Tab
               key="inbox"
               title={
@@ -420,7 +419,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                 </div>
               }
             />
-            {/* Class Discussion Tab */}
             <Tab
               key="discussion"
               title={
@@ -434,7 +432,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                 </div>
               }
             />
-            {/* AI Chat Tab */}
             <Tab
               key="ai"
               title={
@@ -450,7 +447,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
             />
           </Tabs>
         </div>
-        {/* Close button */}
         <button
           type="button"
           onClick={onClose || (() => {})}
@@ -460,11 +456,8 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
           <Icon icon="lucide:x" style={{ fontSize: 22 }} className="text-danger" />
         </button>
       </ModalHeader>
-
-      {/* Main content area */}
       <ModalBody className="modal-scroll-fix h-[calc(100%-57px)] min-h-0 flex-1 overflow-hidden p-0">
         <AnimatePresence mode="wait" initial={false}>
-          {/* Smart Inbox View */}
           {selected === 'inbox' && (
             <motion.div
               key="inbox"
@@ -474,24 +467,20 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              {/* Message list sidebar */}
+              {/* Message list */}
               <div
                 className={`fixed inset-y-0 left-0 z-20 w-full transform bg-default-50 transition-transform duration-200 ease-in-out md:relative md:z-0 md:w-2/5 md:translate-x-0 ${
                   isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 }`}
               >
                 <div className="flex h-full flex-col border-r border-divider">
-                  {/* Mobile header */}
                   <div className="flex items-center justify-between border-b border-divider p-3 md:hidden">
                     <h3 className="font-medium">Messages</h3>
                     <Button isIconOnly variant="light" onClick={() => setIsSidebarOpen(false)} aria-label="Close sidebar">
                       <Icon icon="lucide:x" style={{ fontSize: 20 }} />
                     </Button>
                   </div>
-
-                  {/* Message list content */}
                   <div className="flex-1 overflow-y-auto">
-                    {/* Search input */}
                     <div className="p-3 pb-0">
                       <Input
                         placeholder="Search messages..."
@@ -501,9 +490,8 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                       />
                     </div>
 
-                    {/* Message list */}
                     <div className="space-y-1">
-                      {inboxMessages.map((message) => (
+                      {inboxMessages.map((message, idx) => (
                         <div
                           key={message.id}
                           className={`cursor-pointer rounded-md p-3 ${
@@ -514,7 +502,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                             setIsSidebarOpen(false)
                           }}
                         >
-                          {/* Message preview */}
                           <div className="flex items-center gap-3">
                             <Avatar
                               src={message.sender.avatar}
@@ -525,7 +512,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                               }}
                             />
                             <div className="min-w-0 flex-grow">
-                              {/* Message header */}
                               <div className="mb-1 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <h4
@@ -549,7 +535,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                 <span className="whitespace-nowrap text-xs text-default-400">{formatTime(message.timestamp)}</span>
                               </div>
 
-                              {/* Message content preview */}
                               <p
                                 className={`truncate text-sm ${
                                   selectedInboxMessage === message.id ? 'text-primary-500' : !message.isRead ? 'font-medium' : 'text-default-500'
@@ -570,17 +555,14 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                 </div>
               </div>
 
-              {/* Message content area */}
+              {/* Message content */}
               <div className="flex h-full w-full flex-col md:w-3/5">
-                {/* Mobile header */}
                 <div className="flex items-center border-b border-divider p-3 md:hidden">
                   <Button isIconOnly variant="light" className="mr-2" onClick={() => setIsSidebarOpen(true)} aria-label="Open sidebar">
                     <Icon icon="lucide:menu" style={{ fontSize: 20 }} />
                   </Button>
                   <h3 className="font-medium">Message</h3>
                 </div>
-
-                {/* Selected message content */}
                 {selectedInboxMessage && (
                   <>
                     {selectedMessageData ? (
@@ -593,97 +575,120 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                           transition={{ duration: 0.2 }}
                           className="flex h-full flex-col"
                         >
-                          {/* Message header */}
-                          <motion.div
-                            className={`border-b p-4 ${selectedMessageData.isPinned ? 'bg-primary-50' : 'border-divider'}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <div className="mb-3 flex items-start justify-between">
-                              <div className="flex items-center gap-3">
-                                <Avatar
-                                  src={selectedMessageData.sender.avatar}
-                                  size="md"
-                                  className="h-8 w-8 min-w-8"
-                                  imgProps={{
-                                    className: 'object-cover',
-                                  }}
-                                />
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <h3 className="font-medium">{selectedMessageData.sender.name}</h3>
-                                    {selectedMessageData.sender.role === 'assistant' && (
-                                      <Chip size="sm" variant="flat" color="secondary">
-                                        AI Assistant
-                                      </Chip>
-                                    )}
-                                    {selectedMessageData.isPinned && <Icon icon="lucide:pin" className="text-primary" style={{ fontSize: 14 }} />}
+                          {(() => {
+                            const message = selectedMessageData
+                            if (!message) return null
+
+                            return (
+                              <>
+                                <motion.div
+                                  className={`border-b p-4 ${message.isPinned ? 'bg-primary-50' : 'border-divider'}`}
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <div className="mb-3 flex items-start justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <Avatar
+                                        src={message.sender.avatar}
+                                        size="md"
+                                        className="h-8 w-8 min-w-8"
+                                        imgProps={{
+                                          className: 'object-cover',
+                                        }}
+                                      />
+                                      <div>
+                                        <div className="flex items-center gap-2">
+                                          <h3 className="font-medium">{message.sender.name}</h3>
+                                          {message.sender.role === 'assistant' && (
+                                            <Chip size="sm" variant="flat" color="secondary">
+                                              AI Assistant
+                                            </Chip>
+                                          )}
+                                          {message.isPinned && <Icon icon="lucide:pin" className="text-primary" style={{ fontSize: 14 }} />}
+                                        </div>
+                                        <p className="text-xs text-default-400">
+                                          {formatTime(message.timestamp)} {message.sender.role !== 'assistant' && `(${message.sender.role})`}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex gap-1">
+                                      {!message.isPinned && (
+                                        <>
+                                          <Button isIconOnly size="sm" variant="light" aria-label="Reply">
+                                            <Icon icon="lucide:reply" style={{ fontSize: 18 }} />
+                                          </Button>
+                                          <Button isIconOnly size="sm" variant="light" aria-label="Forward">
+                                            <Icon icon="lucide:forward" style={{ fontSize: 18 }} />
+                                          </Button>
+                                        </>
+                                      )}
+                                      <Button isIconOnly size="sm" variant="light" aria-label="More options">
+                                        <Icon icon="lucide:more-vertical" style={{ fontSize: 18 }} />
+                                      </Button>
+                                    </div>
                                   </div>
-                                  <p className="text-xs text-default-400">
-                                    {formatTime(selectedMessageData.timestamp)} {selectedMessageData.sender.role !== 'assistant' && `(${selectedMessageData.sender.role})`}
-                                  </p>
-                                </div>
-                              </div>
 
-                              <div className="flex gap-1">
-                                {!selectedMessageData.isPinned && (
-                                  <>
-                                    <Button isIconOnly size="sm" variant="light" aria-label="Reply">
-                                      <Icon icon="lucide:reply" style={{ fontSize: 18 }} />
-                                    </Button>
-                                    <Button isIconOnly size="sm" variant="light" aria-label="Forward">
-                                      <Icon icon="lucide:forward" style={{ fontSize: 18 }} />
-                                    </Button>
-                                  </>
+                                  <h2 className="text-lg font-medium">{message.subject}</h2>
+                                </motion.div>
+
+                                <motion.div
+                                  className="flex-grow overflow-y-auto p-4"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ duration: 0.3, delay: 0.2 }}
+                                >
+                                  <div className={`prose prose-sm max-w-none ${message.sender.role === 'assistant' ? 'text-default-700' : ''}`}>
+                                    {message.sender.role === 'assistant' ? (
+                                      <div dangerouslySetInnerHTML={{ __html: message.content }} />
+                                    ) : (
+                                      message.content.split('\n').map((paragraph, i) => (
+                                        <p key={i} className="mb-4 whitespace-pre-wrap">
+                                          {paragraph}
+                                        </p>
+                                      ))
+                                    )}
+                                  </div>
+                                </motion.div>
+
+                                {message.sender.role === 'assistant' && (
+                                  <div className="mb-4 border-t border-divider px-4 py-3">
+                                    <div className="inline-flex items-center whitespace-nowrap">
+                                      <span className="ml-1 text-xs text-default-400">Auto-updates every 5 minutes</span>
+                                      <button
+                                        className="ml-1 inline-flex items-center justify-center rounded-full p-1 text-default-400 transition-colors hover:bg-default-100 hover:text-default-600"
+                                        onClick={() => {
+                                          // Add refresh logic here
+                                          console.log('Refreshing AI summary...')
+                                        }}
+                                      >
+                                        <Icon icon="lucide:refresh-cw" style={{ fontSize: 16 }} />
+                                      </button>
+                                    </div>
+                                  </div>
                                 )}
-                                <Button isIconOnly size="sm" variant="light" aria-label="More options">
-                                  <Icon icon="lucide:more-vertical" style={{ fontSize: 18 }} />
-                                </Button>
-                              </div>
-                            </div>
 
-                            <h2 className="text-lg font-medium">{selectedMessageData.subject}</h2>
-                          </motion.div>
-
-                          {/* Message body */}
-                          <motion.div
-                            className="flex-grow overflow-y-auto p-4"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.3, delay: 0.2 }}
-                          >
-                            <div className={`prose prose-sm max-w-none ${selectedMessageData.sender.role === 'assistant' ? 'text-default-700' : ''}`}>
-                              {selectedMessageData.sender.role === 'assistant' ? (
-                                <div dangerouslySetInnerHTML={{ __html: selectedMessageData.content }} />
-                              ) : (
-                                selectedMessageData.content.split('\n').map((paragraph, i) => (
-                                  <p key={i} className="mb-4 whitespace-pre-wrap">
-                                    {paragraph}
-                                  </p>
-                                ))
-                              )}
-                            </div>
-                          </motion.div>
-
-                          {/* Message actions */}
-                          {!selectedMessageData.isPinned && selectedMessageData.sender.role !== 'assistant' && (
-                            <motion.div
-                              className="border-t border-divider p-4 pb-6"
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.2, delay: 0.3 }}
-                            >
-                              <div className="flex gap-2">
-                                <Button color="primary" startContent={<Icon icon="lucide:reply" />}>
-                                  Reply
-                                </Button>
-                                <Button variant="flat" startContent={<Icon icon="lucide:forward" />}>
-                                  Forward
-                                </Button>
-                              </div>
-                            </motion.div>
-                          )}
+                                {!message.isPinned && message.sender.role !== 'assistant' && (
+                                  <motion.div
+                                    className="border-t border-divider p-4 pb-6"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.2, delay: 0.3 }}
+                                  >
+                                    <div className="flex gap-2">
+                                      <Button color="primary" startContent={<Icon icon="lucide:reply" />}>
+                                        Reply
+                                      </Button>
+                                      <Button variant="flat" startContent={<Icon icon="lucide:forward" />}>
+                                        Forward
+                                      </Button>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </>
+                            )
+                          })()}
                         </motion.div>
                       </AnimatePresence>
                     ) : (
@@ -703,8 +708,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
               </div>
             </motion.div>
           )}
-
-          {/* Class Discussion View */}
           {selected === 'discussion' && (
             <motion.div
               key="discussion"
@@ -714,11 +717,11 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              {/* Desktop chat groups sidebar */}
+              {/* Chat groups list - separate for desktop and mobile */}
+              {/* Desktop view */}
               <div className="hidden md:block md:w-1/4">
                 <div className="flex h-full flex-col border-r border-divider">
                   <div className="flex-1 overflow-y-auto">
-                    {/* Search input */}
                     <div className="flex-none p-3">
                       <Input
                         placeholder="Search chats..."
@@ -727,8 +730,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         className="mb-2"
                       />
                     </div>
-
-                    {/* Chat groups list */}
                     <div className="space-y-1 px-2">
                       {chatGroups.map((group) => (
                         <div
@@ -739,7 +740,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                             setIsSidebarOpen(false)
                           }}
                         >
-                          {/* Group header */}
                           <div className="flex items-center justify-between">
                             <h4 className={`text-sm font-medium ${selectedChat === group.id ? 'text-primary-500' : ''}`}>{group.name}</h4>
                             {group.unreadCount > 0 && (
@@ -749,7 +749,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                             )}
                           </div>
 
-                          {/* Group preview */}
                           <p className={`mt-1 truncate text-xs ${selectedChat === group.id ? 'text-primary-500' : 'text-default-500'}`}>
                             {group.lastMessage}
                           </p>
@@ -762,7 +761,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                 </div>
               </div>
 
-              {/* Mobile chat groups sidebar */}
+              {/* Mobile view */}
               <div className="relative flex h-full w-full flex-col md:hidden">
                 {/* Chat groups list */}
                 <div
@@ -771,17 +770,13 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                   }`}
                 >
                   <div className="flex h-full flex-col border-r border-divider">
-                    {/* Mobile header */}
                     <div className="flex items-center justify-between border-b border-divider p-3">
                       <h3 className="font-medium">Class Discussion</h3>
                       <Button isIconOnly variant="light" onClick={() => setIsSidebarOpen(false)} aria-label="Close sidebar">
                         <Icon icon="lucide:x" style={{ fontSize: 20 }} />
                       </Button>
                     </div>
-
-                    {/* Mobile chat groups content */}
                     <div className="flex-1 overflow-y-auto">
-                      {/* Search input */}
                       <div className="flex-none p-3">
                         <Input
                           placeholder="Search chats..."
@@ -790,8 +785,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                           className="mb-2"
                         />
                       </div>
-
-                      {/* Chat groups list */}
                       <div className="space-y-1 px-2">
                         {chatGroups.map((group) => (
                           <div
@@ -802,7 +795,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                               setIsSidebarOpen(false)
                             }}
                           >
-                            {/* Group header */}
                             <div className="flex items-center justify-between">
                               <h4 className={`text-sm font-medium ${selectedChat === group.id ? 'text-primary-500' : ''}`}>{group.name}</h4>
                               {group.unreadCount > 0 && (
@@ -812,7 +804,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                               )}
                             </div>
 
-                            {/* Group preview */}
                             <p className={`mt-1 truncate text-xs ${selectedChat === group.id ? 'text-primary-500' : 'text-default-500'}`}>
                               {group.lastMessage}
                             </p>
@@ -825,9 +816,8 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                   </div>
                 </div>
 
-                {/* Chat content area */}
+                {/* Chat content */}
                 <div className="flex h-full w-full flex-col">
-                  {/* Chat header */}
                   <div className="flex items-center justify-between border-b border-divider p-2">
                     <div className="flex items-center gap-2">
                       <Button isIconOnly variant="light" className="md:hidden" onClick={() => setIsSidebarOpen(true)} aria-label="Open sidebar">
@@ -850,16 +840,15 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                     </div>
                   </div>
 
-                  {/* Chat messages */}
+                  {/* Chat content */}
                   <div className="flex min-h-0 flex-1 flex-col">
                     <div className="flex-1 overflow-y-auto p-2">
-                      {/* Pinned messages section */}
+                      {/* Pinned messages */}
                       <div className="mb-4">
                         {chatState
                           .filter((m) => m.isPinned)
                           .map((message) => (
                             <div key={message.id} className="mb-2 rounded-lg border-l-4 border-primary bg-default-50 p-3">
-                              {/* Pinned message header */}
                               <div className="flex items-start justify-between">
                                 <div className="mb-1 flex items-center gap-2">
                                   <Icon icon="lucide:pin" className="text-primary" style={{ fontSize: 14 }} />
@@ -868,7 +857,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                 <span className="text-xs text-default-400">{formatTime(message.timestamp)}</span>
                               </div>
 
-                              {/* Pinned message content */}
                               <div className="mt-1 flex items-start gap-2">
                                 <Avatar
                                   src={message.sender.avatar}
@@ -894,7 +882,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                           ))}
                       </div>
 
-                      {/* Regular messages section */}
+                      {/* Regular messages */}
                       <div className="space-y-4">
                         {chatState
                           .filter((m) => !m.isPinned)
@@ -910,7 +898,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                               }}
                               className={`flex items-start gap-3 ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}
                             >
-                              {/* Message avatar */}
                               <Avatar
                                 src={message.sender.avatar}
                                 size="sm"
@@ -919,10 +906,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                   className: 'object-cover',
                                 }}
                               />
-
-                              {/* Message content */}
                               <div className={`flex-grow ${message.sender.id === 'current' ? 'flex flex-col items-end' : ''}`}>
-                                {/* Message header */}
                                 <div className={`flex items-center justify-between ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}>
                                   <div className={`flex items-center gap-1 ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}>
                                     <span className="font-medium">{message.sender.name}</span>
@@ -935,7 +919,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                   <span className="text-xs text-default-400">{formatTime(message.timestamp)}</span>
                                 </div>
 
-                                {/* Message body */}
                                 <div
                                   className={`mt-1 rounded-lg px-3 py-2 ${
                                     message.sender.id === 'current' ? 'bg-primary-100 text-primary-800' : 'bg-default-100'
@@ -948,9 +931,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                   ))}
                                 </div>
 
-                                {/* Message actions */}
                                 <div className={`mt-1 flex gap-2 ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}>
-                                  {/* Reaction button */}
                                   <div className="relative">
                                     <Button
                                       size="sm"
@@ -964,8 +945,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                     >
                                       <span className="text-xs">React</span>
                                     </Button>
-
-                                    {/* Reaction menu */}
                                     <AnimatePresence>
                                       {activeReactionMenu === message.id && (
                                         <motion.div
@@ -982,7 +961,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                             message.sender.id === 'current' ? 'right-0' : 'left-0'
                                           } bottom-full mb-2 flex gap-1 rounded-full border border-divider bg-default-100 p-1 shadow-lg`}
                                         >
-                                          {/* Reaction emojis */}
                                           {['👍', '❤️', '😂', '😮', '👏'].map((emoji, index) => (
                                             <motion.button
                                               key={emoji}
@@ -1017,8 +995,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                       )}
                                     </AnimatePresence>
                                   </div>
-
-                                  {/* Active reactions */}
                                   {message.reactions && message.reactions.length > 0 && (
                                     <div className={`flex flex-wrap gap-1 ${message.sender.id === 'current' ? 'justify-end' : ''}`}>
                                       <AnimatePresence mode="popLayout">
@@ -1062,8 +1038,272 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                                       </AnimatePresence>
                                     </div>
                                   )}
+                                  <Button
+                                    size="sm"
+                                    variant="light"
+                                    className="h-6 min-w-0 px-1"
+                                    startContent={<Icon icon="lucide:reply" style={{ fontSize: 14 }} />}
+                                  >
+                                    <span className="text-xs">Reply</span>
+                                  </Button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                      </div>
+                    </div>
 
-                                  {/* Reply button */}
+                    {/* Message input */}
+                    <div className="border-t border-divider p-3 pb-6">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Type a message..."
+                          fullWidth
+                          endContent={
+                            <div className="flex gap-1">
+                              <Button isIconOnly size="sm" variant="light" aria-label="Attach file">
+                                <Icon icon="lucide:paperclip" style={{ fontSize: 18 }} />
+                              </Button>
+                              <Button isIconOnly size="sm" variant="light" aria-label="Add emoji">
+                                <Icon icon="lucide:smile" style={{ fontSize: 18 }} />
+                              </Button>
+                            </div>
+                          }
+                        />
+                        <Button color="primary" isIconOnly aria-label="Send message">
+                          <Icon icon="lucide:send" />
+                        </Button>
+                      </div>
+
+                      <div className="mb-2 mt-3 flex items-center gap-2 px-1">
+                        <Icon icon="lucide:sparkles" className="text-primary" style={{ fontSize: 16 }} />
+                        <span className="text-xs text-default-500">AI Assistant is available to help with questions about this course</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop chat content */}
+              <div className="hidden h-full w-3/4 flex-col md:flex">
+                {selectedChat && (
+                  <>
+                    <div className="border-b border-divider p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium">{chatGroups.find((g) => g.id === selectedChat)?.name}</h3>
+                          <Chip size="sm" variant="flat" color="primary">
+                            28 members
+                          </Chip>
+                        </div>
+
+                        <div className="flex gap-1">
+                          <Button isIconOnly size="sm" variant="light" aria-label="Search in conversation">
+                            <Icon icon="lucide:search" style={{ fontSize: 18 }} />
+                          </Button>
+                          <Button isIconOnly size="sm" variant="light" aria-label="More options">
+                            <Icon icon="lucide:more-vertical" style={{ fontSize: 18 }} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex-grow overflow-y-auto p-4 pb-6">
+                      {/* Pinned messages */}
+                      <div className="mb-4">
+                        {chatState
+                          .filter((m) => m.isPinned)
+                          .map((message) => (
+                            <div key={message.id} className="mb-2 rounded-lg border-l-4 border-primary bg-default-50 p-3">
+                              <div className="flex items-start justify-between">
+                                <div className="mb-1 flex items-center gap-2">
+                                  <Icon icon="lucide:pin" className="text-primary" style={{ fontSize: 14 }} />
+                                  <span className="text-xs font-medium text-primary">Pinned by instructor</span>
+                                </div>
+                                <span className="text-xs text-default-400">{formatTime(message.timestamp)}</span>
+                              </div>
+
+                              <div className="mt-1 flex items-start gap-2">
+                                <Avatar
+                                  src={message.sender.avatar}
+                                  size="sm"
+                                  className="h-8 w-8 min-w-8"
+                                  imgProps={{
+                                    className: 'object-cover',
+                                  }}
+                                />
+                                <div>
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-sm font-medium">{message.sender.name}</span>
+                                    {message.sender.role === 'teacher' && (
+                                      <Chip size="sm" variant="flat" color="primary" className="h-4 px-1">
+                                        Instructor
+                                      </Chip>
+                                    )}
+                                  </div>
+                                  <p className="mt-1 text-sm">{message.content}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+
+                      {/* Regular messages */}
+                      <div className="space-y-4">
+                        {chatState
+                          .filter((m) => !m.isPinned)
+                          .map((message, index) => (
+                            <motion.div
+                              key={message.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.2,
+                                delay: index * 0.05,
+                                ease: 'easeOut',
+                              }}
+                              className={`flex items-start gap-3 ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}
+                            >
+                              <Avatar
+                                src={message.sender.avatar}
+                                size="sm"
+                                className="h-8 w-8 min-w-8"
+                                imgProps={{
+                                  className: 'object-cover',
+                                }}
+                              />
+                              <div className={`flex-grow ${message.sender.id === 'current' ? 'flex flex-col items-end' : ''}`}>
+                                <div className={`flex items-center justify-between ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}>
+                                  <div className={`flex items-center gap-1 ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}>
+                                    <span className="font-medium">{message.sender.name}</span>
+                                    {message.sender.role === 'teacher' && (
+                                      <Chip size="sm" variant="flat" color="primary" className="h-4 px-1">
+                                        Instructor
+                                      </Chip>
+                                    )}
+                                  </div>
+                                  <span className="text-xs text-default-400">{formatTime(message.timestamp)}</span>
+                                </div>
+
+                                <div
+                                  className={`mt-1 rounded-lg px-3 py-2 ${
+                                    message.sender.id === 'current' ? 'bg-primary-100 text-primary-800' : 'bg-default-100'
+                                  }`}
+                                >
+                                  {message.content.split('\n\n').map((paragraph, i) => (
+                                    <p key={i} className="mb-2 text-sm last:mb-0">
+                                      {paragraph}
+                                    </p>
+                                  ))}
+                                </div>
+
+                                <div className={`mt-1 flex gap-2 ${message.sender.id === 'current' ? 'flex-row-reverse' : ''}`}>
+                                  <div className="relative">
+                                    <Button
+                                      size="sm"
+                                      variant="light"
+                                      className="h-6 min-w-0 px-1"
+                                      startContent={<Icon icon="lucide:smile" style={{ fontSize: 14 }} />}
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setActiveReactionMenu(activeReactionMenu === message.id ? null : message.id)
+                                      }}
+                                    >
+                                      <span className="text-xs">React</span>
+                                    </Button>
+                                    <AnimatePresence>
+                                      {activeReactionMenu === message.id && (
+                                        <motion.div
+                                          initial={{ opacity: 0, scale: 0.8, y: 5 }}
+                                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                                          exit={{ opacity: 0, scale: 0.8, y: 5 }}
+                                          transition={{
+                                            type: 'spring',
+                                            stiffness: 500,
+                                            damping: 30,
+                                            duration: 0.2,
+                                          }}
+                                          className={`absolute ${
+                                            message.sender.id === 'current' ? 'right-0' : 'left-0'
+                                          } bottom-full mb-2 flex gap-1 rounded-full border border-divider bg-default-100 p-1 shadow-lg`}
+                                        >
+                                          {['👍', '❤️', '😂', '😮', '👏'].map((emoji, index) => (
+                                            <motion.button
+                                              key={emoji}
+                                              initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                                              exit={{ opacity: 0, scale: 0.5, y: 10 }}
+                                              transition={{
+                                                type: 'spring',
+                                                stiffness: 500,
+                                                damping: 30,
+                                                delay: index * 0.05,
+                                              }}
+                                              whileHover={{
+                                                scale: 1.2,
+                                                transition: { duration: 0.2 },
+                                              }}
+                                              whileTap={{ scale: 0.9 }}
+                                              className={`rounded-full p-1 transition-colors hover:bg-default-200 ${
+                                                message.reactions?.find((r) => r.emoji === emoji && r.users.includes('current'))
+                                                  ? 'bg-primary-100 text-primary-800'
+                                                  : ''
+                                              }`}
+                                              onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleReaction(message.id, emoji)
+                                              }}
+                                            >
+                                              {emoji}
+                                            </motion.button>
+                                          ))}
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
+                                  {message.reactions && message.reactions.length > 0 && (
+                                    <div className={`flex flex-wrap gap-1 ${message.sender.id === 'current' ? 'justify-end' : ''}`}>
+                                      <AnimatePresence mode="popLayout">
+                                        {message.reactions.map((reaction, idx) => (
+                                          <motion.div
+                                            key={`${message.id}-${reaction.emoji}`}
+                                            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                                            transition={{
+                                              type: 'spring',
+                                              stiffness: 500,
+                                              damping: 30,
+                                              delay: idx * 0.05,
+                                            }}
+                                            className={`flex items-center gap-1 rounded-full bg-default-100 px-2 py-0.5 text-xs ${
+                                              reaction.users.includes('current') ? 'bg-primary-100 text-primary-800' : ''
+                                            }`}
+                                          >
+                                            <motion.span
+                                              initial={{ scale: 0 }}
+                                              animate={{ scale: 1 }}
+                                              transition={{
+                                                type: 'spring',
+                                                stiffness: 500,
+                                                damping: 30,
+                                              }}
+                                            >
+                                              {reaction.emoji}
+                                            </motion.span>
+                                            <motion.span
+                                              initial={{ opacity: 0 }}
+                                              animate={{ opacity: 1 }}
+                                              transition={{ delay: 0.1 }}
+                                              className="text-default-500"
+                                            >
+                                              {reaction.count}
+                                            </motion.span>
+                                          </motion.div>
+                                        ))}
+                                      </AnimatePresence>
+                                    </div>
+                                  )}
                                   <Button
                                     size="sm"
                                     variant="light"
@@ -1078,9 +1318,9 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                           ))}
                       </div>
 
-                      {/* Typing indicators */}
+                      {/* Multiple typing indicators */}
                       <div className="mt-4 space-y-2">
-                        {/* Alex typing indicator */}
+                        {/* Alex typing */}
                         <div className="flex items-start gap-3">
                           <Avatar
                             src="https://img.heroui.chat/image/avatar?w=200&h=200&u=4"
@@ -1094,7 +1334,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                             <div className="flex items-center gap-2">
                               <span className="text-xs text-default-500">Alex is typing</span>
                               <div className="flex gap-1">
-                                {/* Typing animation dots */}
                                 <motion.div
                                   className="h-1.5 w-1.5 rounded-full bg-default-400"
                                   animate={{
@@ -1143,69 +1382,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                       </div>
                     </div>
 
-                    {/* Message input area */}
-                    <div className="border-t border-divider p-3 pb-6">
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Type a message..."
-                          fullWidth
-                          endContent={
-                            <div className="flex gap-1">
-                              <Button isIconOnly size="sm" variant="light" aria-label="Attach file">
-                                <Icon icon="lucide:paperclip" style={{ fontSize: 18 }} />
-                              </Button>
-                              <Button isIconOnly size="sm" variant="light" aria-label="Add emoji">
-                                <Icon icon="lucide:smile" style={{ fontSize: 18 }} />
-                              </Button>
-                            </div>
-                          }
-                        />
-                        <Button color="primary" isIconOnly aria-label="Send message">
-                          <Icon icon="lucide:send" />
-                        </Button>
-                      </div>
-
-                      {/* AI Assistant availability notice */}
-                      <div className="mb-2 mt-3 flex items-center gap-2 px-1">
-                        <Icon icon="lucide:sparkles" className="text-primary" style={{ fontSize: 16 }} />
-                        <span className="text-xs text-default-500">AI Assistant is available to help with questions about this course</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Desktop chat content */}
-              <div className="hidden h-full w-3/4 flex-col md:flex">
-                {selectedChat && (
-                  <>
-                    {/* Chat header */}
-                    <div className="border-b border-divider p-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{chatGroups.find((g) => g.id === selectedChat)?.name}</h3>
-                          <Chip size="sm" variant="flat" color="primary">
-                            28 members
-                          </Chip>
-                        </div>
-
-                        <div className="flex gap-1">
-                          <Button isIconOnly size="sm" variant="light" aria-label="Search in conversation">
-                            <Icon icon="lucide:search" style={{ fontSize: 18 }} />
-                          </Button>
-                          <Button isIconOnly size="sm" variant="light" aria-label="More options">
-                            <Icon icon="lucide:more-vertical" style={{ fontSize: 18 }} />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Chat messages area */}
-                    <div className="flex-grow overflow-y-auto p-4 pb-6">
-                      {/* ... rest of the chat messages area ... */}
-                    </div>
-
-                    {/* Message input area */}
                     <div className="border-t border-divider p-4 pb-6">
                       <div className="flex gap-2">
                         <Input
@@ -1227,7 +1403,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
                         </Button>
                       </div>
 
-                      {/* AI Assistant availability notice */}
                       <div className="mt-3 flex items-center gap-2">
                         <Icon icon="lucide:sparkles" className="text-primary" style={{ fontSize: 16 }} />
                         <span className="text-xs text-default-500">AI Assistant is available to help with questions about this course</span>
@@ -1238,8 +1413,6 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
               </div>
             </motion.div>
           )}
-
-          {/* AI Chat View */}
           {selected === 'ai' && (
             <motion.div
               key="ai"
@@ -1249,16 +1422,90 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              {/* AI chat content */}
               <div className="flex h-full min-h-0 flex-1 flex-col">
                 <div className="h-full min-h-0 flex-1 overflow-y-auto bg-default-50 p-6 pb-8">
-                  {/* Chat messages */}
+                  {/* Dummy conversation thread */}
                   <div className="mx-auto max-w-2xl space-y-6">
-                    {/* ... rest of the AI chat messages ... */}
+                    {/* User message 1 */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      className="flex justify-end"
+                    >
+                      <div className="max-w-[80%] rounded-lg bg-primary-100 p-4 text-primary-800">
+                        <div className="mb-1 text-sm font-medium">You</div>
+                        <div>
+                          Can you summarize the key points from <span className="font-semibold text-primary">@algo_lecture4.pdf</span>?
+                        </div>
+                        <div className="mt-2 text-right text-xs text-default-400">Today, 10:02 AM</div>
+                      </div>
+                    </motion.div>
+
+                    {/* AI message 1 */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+                      className="flex justify-start"
+                    >
+                      <div className="max-w-[80%] rounded-lg bg-default-100 p-4">
+                        <div className="mb-1 text-sm font-medium">AI Assistant</div>
+                        <div>
+                          Sure! Here are the key points from <span className="font-semibold text-primary">@algo_lecture4.pdf</span>:
+                          <ul className="ml-5 mt-2 list-disc">
+                            <li>Dynamic programming principles and optimal substructure</li>
+                            <li>Memoization vs. tabulation</li>
+                            <li>Example: Longest Increasing Subsequence</li>
+                            <li>Practice problems at the end of the lecture</li>
+                          </ul>
+                          Let me know if you want a detailed explanation of any section!
+                        </div>
+                        <div className="mt-2 text-xs text-default-400">Today, 10:02 AM</div>
+                      </div>
+                    </motion.div>
+
+                    {/* User message 2 */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: 0.2 }}
+                      className="flex justify-end"
+                    >
+                      <div className="max-w-[80%] rounded-lg bg-primary-100 p-4 text-primary-800">
+                        <div className="mb-1 text-sm font-medium">You</div>
+                        <div>
+                          Can you generate some practice questions based on <span className="font-semibold text-primary">@algo_lecture4.pdf</span>?
+                        </div>
+                        <div className="mt-2 text-right text-xs text-default-400">Today, 10:03 AM</div>
+                      </div>
+                    </motion.div>
+
+                    {/* AI message 2 */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: 0.3 }}
+                      className="flex justify-start"
+                    >
+                      <div className="max-w-[80%] rounded-lg bg-default-100 p-4">
+                        <div className="mb-1 text-sm font-medium">AI Assistant</div>
+                        <div>
+                          Absolutely! Here are some practice questions:
+                          <ol className="ml-5 mt-2 list-decimal">
+                            <li>Explain the difference between memoization and tabulation with examples.</li>
+                            <li>Given an array, how would you find the Longest Increasing Subsequence using dynamic programming?</li>
+                            <li>What are the advantages of using dynamic programming over greedy algorithms?</li>
+                          </ol>
+                          Would you like solutions or hints for any of these?
+                        </div>
+                        <div className="mt-2 text-xs text-default-400">Today, 10:03 AM</div>
+                      </div>
+                    </motion.div>
                   </div>
                 </div>
 
-                {/* Message input area */}
+                {/* Input area */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

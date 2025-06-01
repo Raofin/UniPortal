@@ -1,8 +1,8 @@
 import React from 'react'
-import { Card, CardBody, CardHeader, Button, Tooltip, Chip, Tabs, Tab } from '@heroui/react'
+import { Card, CardBody, CardHeader, Button, Chip } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
-import { format, addDays, isSameDay, differenceInDays } from 'date-fns'
+import { format, addDays, isSameDay } from 'date-fns'
 
 // Core interface for timeline events
 interface TimelineEvent {

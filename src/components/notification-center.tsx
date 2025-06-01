@@ -19,18 +19,17 @@ interface Notification {
 }
 
 export const NotificationCenter: React.FC = () => {
-  // State management for notifications
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedType, setSelectedType] = React.useState<'all' | 'grade' | 'assignment' | 'message'>('all')
 
-  // Initialize notifications with sample data
+  // Sample notifications data with various types and states
   const [notifications, setNotifications] = React.useState<Notification[]>([
     {
       id: 'n1',
       type: 'grade',
       title: 'Midterm Grade Released',
       description: 'Your midterm exam for Advanced Algorithms has been graded.',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
+      timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
       isRead: false,
       course: 'CS301: Advanced Algorithms',
       score: '92/100',
@@ -100,14 +99,11 @@ export const NotificationCenter: React.FC = () => {
     },
   ])
 
-  // Calculate notification counts
   const totalCount = notifications.length
   const unreadCount = notifications.filter((n) => !n.isRead).length
 
-  // Filter notifications based on selected type
   const filteredNotifications = selectedType === 'all' ? notifications : notifications.filter((n) => n.type === selectedType)
 
-  // Notification handlers
   const handleNotificationClick = (id: string) => {
     setNotifications(notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
   }
@@ -120,7 +116,7 @@ export const NotificationCenter: React.FC = () => {
     setSelectedType(type)
   }
 
-  // Utility functions for notification display
+  // Get appropriate icon based on notification type
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'grade':
@@ -134,6 +130,7 @@ export const NotificationCenter: React.FC = () => {
     }
   }
 
+  // Format timestamp to show relative time (e.g., "5 minutes ago", "2 hours ago")
   const formatTime = (date: Date) => {
     const now = new Date()
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
@@ -162,7 +159,7 @@ export const NotificationCenter: React.FC = () => {
         content: 'w-80 sm:w-96 bg-background/80 backdrop-blur-md border border-divider shadow-lg',
       }}
     >
-      {/* Notification bell trigger */}
+      {/* Notification bell trigger with unread count indicator */}
       <PopoverTrigger>
         <Button
           isIconOnly
@@ -175,7 +172,7 @@ export const NotificationCenter: React.FC = () => {
       </PopoverTrigger>
 
       <PopoverContent>
-        {/* Notification header with filters */}
+        {/* Header with title and mark all as read button */}
         <div className="border-b border-divider bg-background/80 p-3 backdrop-blur-md">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-medium">Notifications</h3>
@@ -243,6 +240,7 @@ export const NotificationCenter: React.FC = () => {
             >
               {filteredNotifications.length > 0 ? (
                 <div className="divide-y divide-divider">
+                  {/* Individual notification items */}
                   {filteredNotifications.map((notification) => (
                     <motion.div
                       key={notification.id}
@@ -253,7 +251,6 @@ export const NotificationCenter: React.FC = () => {
                     >
                       <div className="cursor-pointer p-3" onClick={() => handleNotificationClick(notification.id)}>
                         <div className="flex gap-3">
-                          {/* Notification icon */}
                           <motion.div
                             whileHover={{ scale: 1.1 }}
                             className={`rounded-full p-2 ${
@@ -267,7 +264,6 @@ export const NotificationCenter: React.FC = () => {
                             {getTypeIcon(notification.type)}
                           </motion.div>
 
-                          {/* Notification content */}
                           <div className="flex-grow min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0">
@@ -279,7 +275,6 @@ export const NotificationCenter: React.FC = () => {
 
                             <p className="mt-1 text-xs text-default-500 line-clamp-2">{notification.description}</p>
 
-                            {/* Notification metadata chips */}
                             <div className="mt-2 flex flex-wrap gap-2">
                               {notification.course && (
                                 <Chip size="sm" variant="flat" color="primary" className="text-xs truncate max-w-[120px]">
@@ -299,7 +294,6 @@ export const NotificationCenter: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Unread indicator */}
                           {!notification.isRead && (
                             <motion.div
                               initial={{ scale: 0 }}

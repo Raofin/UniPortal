@@ -18,7 +18,6 @@ import {
   DropdownItem,
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { motion } from 'framer-motion'
 
 // Core interfaces for file management
 interface FileItem {

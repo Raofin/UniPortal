@@ -1,8 +1,8 @@
 import React from 'react'
-import { Card, CardBody, CardHeader, Tooltip, Chip, Button, Progress, Popover, PopoverTrigger, PopoverContent, Divider } from '@heroui/react'
+import { Card, CardBody, CardHeader, Chip, Button, Progress, Popover, PopoverTrigger, PopoverContent, Divider } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
-import { format, isToday, isTomorrow, differenceInHours, differenceInDays } from 'date-fns'
+import { format, isToday, isTomorrow } from 'date-fns'
 
 interface Assignment {
   id: string

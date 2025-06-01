@@ -1,8 +1,8 @@
 import React from 'react'
-import { Card, CardBody, CardHeader, Divider, Button, Chip, Tooltip, Badge } from '@heroui/react'
+import { Card, CardBody, CardHeader, Divider, Button, Chip } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
-import { format, addDays, isSameDay, isToday, isTomorrow, differenceInMinutes } from 'date-fns'
+import { format, addDays, isSameDay, isToday, isTomorrow } from 'date-fns'
 
 // Core interfaces for the calendar system
 interface DayData {

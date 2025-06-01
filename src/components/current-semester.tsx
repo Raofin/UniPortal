@@ -1,8 +1,7 @@
 import React from 'react'
-import { Card, CardBody, CardHeader, Chip, Button, Tabs, Tab, Tooltip } from '@heroui/react'
+import { Card, CardBody, CardHeader, Chip } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from 'recharts'
 
 // Core interfaces for grade tracking and assessment management
 interface Grade {
