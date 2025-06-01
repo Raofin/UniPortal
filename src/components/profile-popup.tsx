@@ -18,7 +18,7 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
     department: 'Computer Science',
     year: '3rd Year',
     advisor: 'Dr. Emily Johnson',
-    cgpa: 3.96,
+    cgpa: 3.99,
     maxCgpa: 4.0,
     creditsCompleted: 130,
     totalCredits: 148,
@@ -33,7 +33,7 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
           {/* Header */}
           <div className="flex items-center gap-4 p-4">
-            <Avatar src="https://img.heroui.chat/image/avatar?w=200&h=200&u=1" size="lg" isBordered color="primary" />
+            <Avatar src="/images/me.jpg" size="lg" isBordered color="primary" />
             <div>
               <h3 className="font-semibold">{studentData.name}</h3>
               <p className="text-xs text-default-500">{studentData.email}</p>

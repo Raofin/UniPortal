@@ -194,6 +194,17 @@ export const FloatingResources: React.FC = () => {
   const [selectedSection, setSelectedSection] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [isSpinning, setIsSpinning] = React.useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
+  const [isMobileView, setIsMobileView] = React.useState(window.innerWidth < 768)
+
+  // Add this effect to handle window resize
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Sample sections
   const [sections, setSections] = React.useState<Section[]>([
@@ -426,16 +437,27 @@ export const FloatingResources: React.FC = () => {
           scrollBehavior="inside"
           hideCloseButton={true}
           classNames={{
-            base: 'h-[80vh]',
+            base: 'h-[90vh] md:h-[80vh]',
           }}
         >
           <ModalContent>
             <ModalHeader className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <h2 className="flex items-center gap-2 text-xl font-semibold">
-                  <Icon icon="lucide:folder-open" className="text-primary" />
-                  Resources Manager
-                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    isIconOnly
+                    variant="light"
+                    className="md:hidden"
+                    onPress={() => setIsSidebarOpen(!isSidebarOpen)}
+                    aria-label="Toggle sidebar"
+                  >
+                    <Icon icon="lucide:menu" />
+                  </Button>
+                  <h2 className="flex items-center gap-2 text-xl font-semibold">
+                    <Icon icon="lucide:folder-open" className="text-primary" />
+                    Resources Manager
+                  </h2>
+                </div>
                 <button
                   type="button"
                   onClick={handleModalClose}
@@ -448,95 +470,115 @@ export const FloatingResources: React.FC = () => {
             </ModalHeader>
 
             <ModalBody className="p-0">
-              <div className="flex h-full">
+              <div className="flex h-full relative">
                 {/* Sidebar */}
-                <div className="w-1/4 border-r border-divider p-4">
-                  <div className="mb-4">
-                    <Input
-                      placeholder="Search files..."
-                      startContent={<Icon icon="lucide:search" className="text-default-400" />}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      isClearable
-                      onClear={() => setSearchQuery('')}
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <Tabs
-                      selectedKey={activeTab}
-                      onSelectionChange={(key) => setActiveTab(key as 'all' | 'recent' | 'starred')}
-                      variant="light"
-                      color="primary"
-                      fullWidth
-                    >
-                      <Tab
-                        key="all"
-                        title={
-                          <div className="flex items-center gap-2">
-                            <Icon icon="lucide:layers" />
-                            <span>All</span>
-                          </div>
-                        }
-                      />
-                      <Tab
-                        key="recent"
-                        title={
-                          <div className="flex items-center gap-2">
-                            <Icon icon="lucide:clock" />
-                            <span>Recent</span>
-                          </div>
-                        }
-                      />
-                      <Tab
-                        key="starred"
-                        title={
-                          <div className="flex items-center gap-2">
-                            <Icon icon="lucide:star" />
-                            <span>Starred</span>
-                          </div>
-                        }
-                      />
-                    </Tabs>
-                  </div>
-
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="text-sm font-medium text-default-600">Sections</h3>
-                    <Button size="sm" variant="light" isIconOnly onPress={() => setIsAddingSectionModalOpen(true)}>
-                      <Icon icon="lucide:plus" />
-                    </Button>
-                  </div>
-
-                  <div className="space-y-1">
-                    <Button
-                      fullWidth
-                      variant={selectedSection === null ? 'flat' : 'light'}
-                      color={selectedSection === null ? 'primary' : 'default'}
-                      className="justify-start"
-                      startContent={<Icon icon="lucide:folder" />}
-                      onPress={() => setSelectedSection(null)}
-                    >
-                      All Sections
-                    </Button>
-
-                    {sections.map((section) => (
-                      <Button
-                        key={section.id}
-                        fullWidth
-                        variant={selectedSection === section.id ? 'flat' : 'light'}
-                        color={selectedSection === section.id ? section.color : 'default'}
-                        className="justify-start"
-                        startContent={<Icon icon="lucide:folder" />}
-                        onPress={() => setSelectedSection(section.id)}
-                      >
-                        {section.name}
+                <div
+                  className={`absolute inset-y-0 left-0 z-20 w-full transform bg-default-50 transition-transform duration-200 ease-in-out md:relative md:z-0 md:w-1/4 md:translate-x-0 ${
+                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+                  }`}
+                >
+                  <div className="flex h-full flex-col border-r border-divider">
+                    <div className="flex items-center justify-between border-b border-divider p-3 md:hidden">
+                      <h3 className="font-medium">Sections</h3>
+                      <Button isIconOnly variant="light" onClick={() => setIsSidebarOpen(false)} aria-label="Close sidebar">
+                        <Icon icon="lucide:x" style={{ fontSize: 20 }} />
                       </Button>
-                    ))}
+                    </div>
+                    <div className="flex h-full flex-col p-4">
+                      <div className="mb-4">
+                        <Input
+                          placeholder="Search files..."
+                          startContent={<Icon icon="lucide:search" className="text-default-400" />}
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          isClearable
+                          onClear={() => setSearchQuery('')}
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <Tabs
+                          selectedKey={activeTab}
+                          onSelectionChange={(key) => setActiveTab(key as 'all' | 'recent' | 'starred')}
+                          variant="light"
+                          color="primary"
+                          fullWidth
+                        >
+                          <Tab
+                            key="all"
+                            title={
+                              <div className="flex items-center gap-2">
+                                <Icon icon="lucide:layers" />
+                                <span>All</span>
+                              </div>
+                            }
+                          />
+                          <Tab
+                            key="recent"
+                            title={
+                              <div className="flex items-center gap-2">
+                                <Icon icon="lucide:clock" />
+                                <span>Recent</span>
+                              </div>
+                            }
+                          />
+                          <Tab
+                            key="starred"
+                            title={
+                              <div className="flex items-center gap-2">
+                                <Icon icon="lucide:star" />
+                                <span>Starred</span>
+                              </div>
+                            }
+                          />
+                        </Tabs>
+                      </div>
+
+                      <div className="mb-2 flex items-center justify-between">
+                        <h3 className="text-sm font-medium text-default-600">Sections</h3>
+                        <Button size="sm" variant="light" isIconOnly onPress={() => setIsAddingSectionModalOpen(true)}>
+                          <Icon icon="lucide:plus" />
+                        </Button>
+                      </div>
+
+                      <div className="space-y-1 overflow-y-auto">
+                        <Button
+                          fullWidth
+                          variant={selectedSection === null ? 'flat' : 'light'}
+                          color={selectedSection === null ? 'primary' : 'default'}
+                          className="justify-start"
+                          startContent={<Icon icon="lucide:folder" />}
+                          onPress={() => {
+                            setSelectedSection(null)
+                            if (isMobileView) setIsSidebarOpen(false)
+                          }}
+                        >
+                          All Sections
+                        </Button>
+
+                        {sections.map((section) => (
+                          <Button
+                            key={section.id}
+                            fullWidth
+                            variant={selectedSection === section.id ? 'flat' : 'light'}
+                            color={selectedSection === section.id ? section.color : 'default'}
+                            className="justify-start"
+                            startContent={<Icon icon="lucide:folder" />}
+                            onPress={() => {
+                              setSelectedSection(section.id)
+                              if (isMobileView) setIsSidebarOpen(false)
+                            }}
+                          >
+                            {section.name}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Main content */}
-                <div className="flex w-3/4 flex-col">
+                <div className="flex w-full flex-col md:w-3/4">
                   <div className="border-b border-divider p-4">
                     <UploadArea
                       isDragging={isDragging}

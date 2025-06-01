@@ -330,7 +330,7 @@ export const EnhancedAIChat: React.FC = () => {
                     <Avatar
                       src={
                         message.role === 'user'
-                          ? 'https://img.heroui.chat/image/avatar?w=200&h=200&u=1'
+                          ? '/images/me.jpg'
                           : 'https://img.heroui.chat/image/avatar?w=200&h=200&u=10'
                       }
                       size="sm"

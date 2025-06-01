@@ -426,8 +426,8 @@ export const UpcomingAssignments: React.FC = () => {
               >
                 <CardBody className="p-4">
                   <div className="mb-3 flex items-start justify-between gap-2">
-                    <div className="flex-grow">
-                      <div className="mb-1 flex items-center gap-2">
+                    <div className="flex-grow min-w-0">
+                      <div className="mb-1 flex flex-wrap items-center gap-2">
                         <Chip
                           size="sm"
                           color={getTypeColor(assignment.type)}
@@ -437,11 +437,11 @@ export const UpcomingAssignments: React.FC = () => {
                         >
                           {assignment.type.charAt(0).toUpperCase() + assignment.type.slice(1)}
                         </Chip>
-                        <h3 className="text-base font-medium sm:text-lg">{assignment.title}</h3>
+                        <h3 className="text-base font-medium sm:text-lg truncate">{assignment.title}</h3>
                       </div>
-                      <p className="text-sm text-default-500">{assignment.course}</p>
+                      <p className="text-sm text-default-500 truncate">{assignment.course}</p>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex flex-col items-end gap-2 shrink-0">
                       {assignment.status === 'in-progress' && (
                         <Chip
                           size="sm"
@@ -481,16 +481,17 @@ export const UpcomingAssignments: React.FC = () => {
                   <div className="mb-3 flex flex-wrap gap-2 text-xs text-default-500">
                     <div className="flex items-center gap-1">
                       <Icon icon="lucide:clock" width={14} />
-                      <span>{assignment.estimatedTime}</span>
+                      <span className="hidden sm:inline">{assignment.estimatedTime}</span>
+                      <span className="sm:hidden">{assignment.estimatedTime.split('-')[0]}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Icon icon="lucide:paperclip" width={14} />
-                      <span>{assignment.attachments} attachments</span>
+                      <span>{assignment.attachments}</span>
                     </div>
                     {assignment.comments > 0 && (
                       <div className="flex items-center gap-1">
                         <Icon icon="lucide:message-square" width={14} />
-                        <span>{assignment.comments} comments</span>
+                        <span>{assignment.comments}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1">
@@ -504,14 +505,16 @@ export const UpcomingAssignments: React.FC = () => {
                         }
                         width={14}
                       />
-                      <span>{assignment.submissionType.replace('-', ' ')}</span>
+                      <span className="hidden sm:inline">{assignment.submissionType.replace('-', ' ')}</span>
+                      <span className="sm:hidden">{assignment.submissionType === 'online' ? 'Online' : assignment.submissionType === 'in-person' ? 'In-Person' : 'Both'}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2 text-sm text-default-600">
                       <Icon icon="lucide:calendar" className="text-default-400" width={16} />
-                      <span>Due: {formatDueDate(assignment.dueDate)}</span>
+                      <span className="hidden sm:inline">Due: {formatDueDate(assignment.dueDate)}</span>
+                      <span className="sm:hidden">{formatDueDate(assignment.dueDate)}</span>
                     </div>
 
                     {(assignment.status === 'pending' || assignment.status === 'in-progress') && <CountdownTimer dueDate={assignment.dueDate} />}

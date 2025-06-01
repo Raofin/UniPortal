@@ -35,8 +35,8 @@ export const WelcomeSection: React.FC = () => {
                 transition={{ duration: 0.5 }}
                 className="flex-shrink-0"
               >
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-100 text-primary sm:h-24 sm:w-24">
-                  <Icon icon="lucide:bot" width={40} height={40} className="sm:h-12 sm:w-12" />
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-100 text-primary sm:h-24 sm:w-24 overflow-hidden">
+                  <img src="/images/me.jpg" alt="Profile" className="h-full w-full object-cover" />
                 </div>
               </motion.div>
 

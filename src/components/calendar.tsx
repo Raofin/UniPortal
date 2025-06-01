@@ -153,12 +153,12 @@ export const WeeklyCalendar: React.FC = () => {
   const todayButtonRef = React.useRef<HTMLButtonElement>(null)
   const isScrollingRef = React.useRef(false)
 
-  // Generate initial 11 days with today in the center
+  // Generate initial 30 days with today in the center
   const generateInitialDays = React.useCallback((): DayData[] => {
     const days: DayData[] = []
-    const startDate = addDays(today, -5) // Start 5 days before today
+    const startDate = addDays(today, -15) // Start 15 days before today
 
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 30; i++) {
       const date = addDays(startDate, i)
       const dayOfWeek = date.getDay()
       const isToday = isSameDay(date, today)
@@ -194,144 +194,55 @@ export const WeeklyCalendar: React.FC = () => {
 
     if (calendarRef.current && buttonElement) {
       const container = calendarRef.current
-      const containerWidth = container.clientWidth
-      const buttonLeft = buttonElement.offsetLeft
-      const buttonWidth = buttonElement.offsetWidth
-      const isMobile = window.innerWidth < 640 // sm breakpoint
+      const containerRect = container.getBoundingClientRect()
+      const buttonRect = buttonElement.getBoundingClientRect()
 
-      // Adjust scroll position based on device
-      const scrollLeft = isMobile
-        ? buttonLeft - containerWidth / 2 + buttonWidth / 2 + container.scrollLeft
-        : buttonLeft - containerWidth / 2 + buttonWidth / 2
+      // Check if the button is fully visible in the container
+      const isFullyVisible =
+        buttonRect.left >= containerRect.left &&
+        buttonRect.right <= containerRect.right
 
-      // Use a more reliable scroll method for mobile
-      if (isMobile) {
-        container.scrollTo({
-          left: scrollLeft,
-          behavior: 'smooth',
-        })
-      } else {
-        requestAnimationFrame(() => {
-          container.scrollTo({
-            left: scrollLeft,
-            behavior: 'smooth',
-          })
-        })
+      // Only scroll if the button is not fully visible
+      if (!isFullyVisible) {
+        const relativeLeft = buttonRect.left - containerRect.left
+        const containerWidth = container.clientWidth
+        const buttonWidth = buttonRect.width
+
+        // Calculate the scroll position needed to center the button
+        const scrollLeft = container.scrollLeft + relativeLeft - (containerWidth / 2) + (buttonWidth / 2)
+        container.scrollLeft = scrollLeft
       }
 
-      // Reset scrolling flag after animation completes
-      setTimeout(
-        () => {
-          isScrollingRef.current = false
-        },
-        isMobile ? 400 : 300,
-      ) // Longer timeout for mobile
+      // Reset scrolling flag after a short delay
+      setTimeout(() => {
+        isScrollingRef.current = false
+      }, 100)
     } else {
       isScrollingRef.current = false
     }
   }, [])
 
-  // Handle scroll to load more days
-  const handleScroll = React.useCallback(() => {
-    if (!calendarRef.current || isScrollingRef.current) return
-
-    const { scrollLeft: currentScrollLeft, scrollWidth, clientWidth } = calendarRef.current
-    const scrollRight = scrollWidth - currentScrollLeft - clientWidth
-
-    if (currentScrollLeft < 200) {
-      isScrollingRef.current = true
-      // Load more days at the start
-      const newStartDate = addDays(days[0].date, -5)
-      const newDays = Array.from({ length: 5 }, (_, i) => {
-        const date = addDays(newStartDate, i)
-        const dayOfWeek = date.getDay()
-        const isPast = date < today
-        const isToday = isSameDay(date, today)
-
-        let status: 'holiday' | 'none'
-        if (dayOfWeek === 5 || dayOfWeek === 6) {
-          status = 'holiday'
-        } else {
-          status = 'none'
-        }
-
-        return {
-          date,
-          status,
-          classes: baseSchedule[dayOfWeek] || [],
-          weekNumber: Math.floor((days[0].weekNumber * 7 + i) / 7),
-        }
-      })
-
-      setDays((prev) => [...newDays, ...prev.slice(0, 6)])
-
-      // Adjust scroll position and reset flag
-      requestAnimationFrame(() => {
-        if (calendarRef.current) {
-          calendarRef.current.scrollLeft += 5 * 90
-          setTimeout(() => {
-            isScrollingRef.current = false
-          }, 100)
-        }
-      })
-    } else if (scrollRight < 200) {
-      isScrollingRef.current = true
-      // Load more days at the end
-      const newEndDate = addDays(days[days.length - 1].date, 1)
-      const newDays = Array.from({ length: 5 }, (_, i) => {
-        const date = addDays(newEndDate, i)
-        const dayOfWeek = date.getDay()
-        const isPast = date < today
-        const isToday = isSameDay(date, today)
-
-        let status: 'holiday' | 'none'
-        if (dayOfWeek === 5 || dayOfWeek === 6) {
-          status = 'holiday'
-        } else {
-          status = 'none'
-        }
-
-        return {
-          date,
-          status,
-          classes: baseSchedule[dayOfWeek] || [],
-          weekNumber: Math.floor((days[days.length - 1].weekNumber * 7 + i + 1) / 7),
-        }
-      })
-
-      setDays((prev) => [...prev.slice(-6), ...newDays])
-      setTimeout(() => {
-        isScrollingRef.current = false
-      }, 100)
-    }
-  }, [days, today])
-
-  // Add scroll event listener with debounce
-  React.useEffect(() => {
-    const current = calendarRef.current
-    if (current) {
-      let scrollTimeout: ReturnType<typeof setTimeout>
-      const handleScrollWithDebounce = () => {
-        clearTimeout(scrollTimeout)
-        scrollTimeout = setTimeout(() => {
-          handleScroll()
-        }, 50)
-      }
-
-      current.addEventListener('scroll', handleScrollWithDebounce)
-      return () => {
-        current.removeEventListener('scroll', handleScrollWithDebounce)
-        clearTimeout(scrollTimeout)
-      }
-    }
-  }, [handleScroll])
-
-  // Set initial selected day to today
+  // Set initial selected day to today and center it
   React.useEffect(() => {
     if (!selectedDay) {
       const todayIndex = days.findIndex((day) => isSameDay(day.date, today))
       if (todayIndex !== -1) {
         setSelectedDay(days[todayIndex])
+      }
+    }
+
+    // Center today's date
+    if (calendarRef.current) {
+      const container = calendarRef.current
+      const todayButton = container.querySelector(`[data-date="${format(today, 'yyyy-MM-dd')}"]`) as HTMLButtonElement | null
+
+      if (todayButton) {
+        const containerWidth = container.clientWidth
+        const buttonLeft = todayButton.offsetLeft
+        const buttonWidth = todayButton.offsetWidth
+        const scrollLeft = buttonLeft - (containerWidth / 2) + (buttonWidth / 2)
+
+        container.scrollLeft = scrollLeft
       }
     }
   }, [days, selectedDay, today])
@@ -413,11 +324,9 @@ export const WeeklyCalendar: React.FC = () => {
           ref={calendarRef}
           className="overflow-x-auto px-2 pb-6 pt-4 scrollbar-hide sm:px-8"
           style={{
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
-            scrollSnapType: 'x mandatory', // Enable snap scrolling
-            scrollPaddingLeft: '50%', // Center the snap point
-            minHeight: '180px', // Increased height for timeline
+            minHeight: '180px',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
           }}
         >
           <div className="flex min-w-max gap-1 py-4 sm:gap-2">
@@ -429,7 +338,6 @@ export const WeeklyCalendar: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, duration: 0.3 }}
-                className="scroll-snap-center" // Enable snap scrolling for each day
               >
                 <Button
                   ref={isToday(day.date) ? todayButtonRef : null}
@@ -657,7 +565,7 @@ export const WeeklyCalendar: React.FC = () => {
   )
 }
 
-// Add this CSS at the top of the file, after the imports
+// Update the styles
 const styles = `
   .scrollbar-hide {
     -ms-overflow-style: none;  /* IE and Edge */
@@ -665,6 +573,9 @@ const styles = `
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Chrome, Safari and Opera */
+  }
+  .scroll-snap-align-center {
+    scroll-snap-align: center;
   }
 `
 

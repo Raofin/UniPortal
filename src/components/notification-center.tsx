@@ -174,12 +174,12 @@ export const NotificationCenter: React.FC = () => {
             </Button>
           </div>
 
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             <Button
               size="sm"
               variant={selectedType === 'all' ? 'flat' : 'light'}
               color={selectedType === 'all' ? 'primary' : 'default'}
-              className="flex-1"
+              className="flex-1 min-w-[60px]"
               onPress={() => handleTypeChange('all')}
             >
               All
@@ -188,31 +188,34 @@ export const NotificationCenter: React.FC = () => {
               size="sm"
               variant={selectedType === 'grade' ? 'flat' : 'light'}
               color={selectedType === 'grade' ? 'success' : 'default'}
-              className="flex-1"
+              className="flex-1 min-w-[60px]"
               startContent={<Icon icon="lucide:award" />}
               onPress={() => handleTypeChange('grade')}
             >
-              Grades
+              <span className="hidden sm:inline">Grades</span>
+              <span className="sm:hidden">Grade</span>
             </Button>
             <Button
               size="sm"
               variant={selectedType === 'assignment' ? 'flat' : 'light'}
               color={selectedType === 'assignment' ? 'warning' : 'default'}
-              className="flex-1"
+              className="flex-1 min-w-[60px]"
               startContent={<Icon icon="lucide:clipboard-list" />}
               onPress={() => handleTypeChange('assignment')}
             >
-              Assignments
+              <span className="hidden sm:inline">Assignments</span>
+              <span className="sm:hidden">Task</span>
             </Button>
             <Button
               size="sm"
               variant={selectedType === 'message' ? 'flat' : 'light'}
               color={selectedType === 'message' ? 'primary' : 'default'}
-              className="flex-1"
+              className="flex-1 min-w-[60px]"
               startContent={<Icon icon="lucide:message-circle" />}
               onPress={() => handleTypeChange('message')}
             >
-              Messages
+              <span className="hidden sm:inline">Messages</span>
+              <span className="sm:hidden">Msg</span>
             </Button>
           </div>
         </div>
@@ -251,31 +254,31 @@ export const NotificationCenter: React.FC = () => {
                             {getTypeIcon(notification.type)}
                           </motion.div>
 
-                          <div className="flex-grow">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <h4 className={`text-sm ${!notification.isRead ? 'font-medium' : ''}`}>{notification.title}</h4>
-                                {notification.sender && <p className="text-xs text-default-500">From: {notification.sender}</p>}
+                          <div className="flex-grow min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
+                                <h4 className={`text-sm truncate ${!notification.isRead ? 'font-medium' : ''}`}>{notification.title}</h4>
+                                {notification.sender && <p className="text-xs text-default-500 truncate">From: {notification.sender}</p>}
                               </div>
-                              <span className="text-xs text-default-400">{formatTime(notification.timestamp)}</span>
+                              <span className="text-xs text-default-400 shrink-0">{formatTime(notification.timestamp)}</span>
                             </div>
 
-                            <p className="mt-1 text-xs text-default-500">{notification.description}</p>
+                            <p className="mt-1 text-xs text-default-500 line-clamp-2">{notification.description}</p>
 
                             <div className="mt-2 flex flex-wrap gap-2">
                               {notification.course && (
-                                <Chip size="sm" variant="flat" color="primary" className="text-xs">
+                                <Chip size="sm" variant="flat" color="primary" className="text-xs truncate max-w-[120px]">
                                   {notification.course}
                                 </Chip>
                               )}
                               {notification.score && (
                                 <Chip size="sm" variant="flat" color="success" className="text-xs">
-                                  Score: {notification.score}
+                                  {notification.score}
                                 </Chip>
                               )}
                               {notification.dueDate && (
                                 <Chip size="sm" variant="flat" color="warning" className="text-xs">
-                                  Due: {formatTime(notification.dueDate)}
+                                  {formatTime(notification.dueDate)}
                                 </Chip>
                               )}
                             </div>

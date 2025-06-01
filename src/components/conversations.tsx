@@ -264,7 +264,7 @@ export const Conversations: React.FC<{ onClose?: () => void }> = ({ onClose }) =
       sender: {
         id: 'current',
         name: 'You',
-        avatar: 'https://img.heroui.chat/image/avatar?w=200&h=200&u=1',
+        avatar: '/images/me.jpg',
         role: 'student',
       },
       content: "I've been working on the dynamic programming assignment and I'm stuck on the memoization part. Can anyone help?",

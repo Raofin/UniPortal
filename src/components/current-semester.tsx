@@ -37,6 +37,7 @@ interface Course {
 
 export const RecentGrades: React.FC = () => {
   const [selected, setSelected] = React.useState<'byDate' | 'byCourse'>('byDate')
+  const [hoveredSegment, setHoveredSegment] = React.useState<{ x: number; y: number; content: string } | null>(null);
 
   // Helper function to randomly assign status
   const getRandomStatus = (index: number, total: number): 'completed' | 'pending' | 'unavailable' => {
@@ -480,39 +481,40 @@ export const RecentGrades: React.FC = () => {
                     ? '#fbbf24' // amber for pending
                     : '#e5e7eb' // light gray for unavailable
 
+              const tooltipContent = `${item.name} - ${
+                item.status === 'completed' && typeof item.score === 'number' && typeof item.totalScore === 'number'
+                  ? `${item.score}/${item.totalScore} (${item.name === 'Attendance' ? '10' : item.name === 'Assignments' ? '20' : item.name === 'Quizzes' ? '20' : item.name === 'Midterm Exam' ? '40' : item.name === 'Final Exam' ? '40' : '10'}%)`
+                  : item.status === 'pending'
+                    ? 'Pending'
+                    : 'Not available yet'
+              }`
+
               return (
-                <Tooltip
-                  key={`${title}-${item.name}`}
-                  content={
-                    <div className="p-2">
-                      <p className="font-medium">{item.name}</p>
-                      {item.status === 'completed' && item.score !== undefined ? (
-                        <p className="text-sm">
-                          {item.score}/{item.totalScore} ({item.weight}%)
-                        </p>
-                      ) : (
-                        <p className="text-sm">{item.status === 'pending' ? 'Pending' : 'Not available yet'}</p>
-                      )}
-                    </div>
-                  }
-                  placement="top"
-                >
+                <g key={`${title}-${item.name}`}>
                   <motion.path
                     d={pathData}
                     fill={fillColor}
                     stroke="#ffffff" // white stroke for light mode
-                    className="cursor-help transition-all hover:scale-105 hover:opacity-80 dark:stroke-gray-900" // dark stroke for dark mode
+                    className="cursor-help dark:stroke-gray-900" // dark stroke for dark mode
                     strokeWidth="1"
                     strokeDasharray={dashArray}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{
                       duration: 0.3,
                       delay: i * 0.1,
                       ease: 'easeOut',
                     }}
+                    onMouseEnter={(e) => {
+                      setHoveredSegment({
+                        x: e.clientX,
+                        y: e.clientY + 5,
+                        content: tooltipContent
+                      });
+                    }}
+                    onMouseLeave={() => setHoveredSegment(null)}
                   />
-                </Tooltip>
+                </g>
               )
             })}
 
@@ -552,7 +554,7 @@ export const RecentGrades: React.FC = () => {
               y="60"
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="10"
+              fontSize="8"
               fill="#6b7280" // gray text for light mode
               className="dark:fill-gray-400" // lighter gray for dark mode
               initial={{ opacity: 0, y: 10 }}
@@ -563,6 +565,18 @@ export const RecentGrades: React.FC = () => {
             </motion.text>
           </svg>
         </motion.div>
+        {hoveredSegment && (
+          <div
+            className="fixed z-50 -translate-x-1/2 transform rounded-lg bg-content1 p-1.5 shadow-lg"
+            style={{
+              left: hoveredSegment.x,
+              top: hoveredSegment.y,
+            }}
+          >
+            <p className="text-xs">{hoveredSegment.content}</p>
+            <div className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rotate-45 transform bg-content1"></div>
+          </div>
+        )}
       </div>
     )
   }
@@ -619,11 +633,8 @@ export const RecentGrades: React.FC = () => {
               const upcomingAssessment = allAssessments.find((a) => a.status === 'pending') || allAssessments.find((a) => a.status === 'unavailable')
 
               return (
-                <motion.div
+                <div
                   key={course.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: courseIndex * 0.1, duration: 0.3 }}
                   className="min-w-[320px] sm:min-w-[480px]"
                 >
                   <Card shadow="none" className="border border-divider bg-transparent dark:bg-content1/60">
@@ -711,7 +722,7 @@ export const RecentGrades: React.FC = () => {
                       </div>
                     </CardBody>
                   </Card>
-                </motion.div>
+                </div>
               )
             })}
           </div>
