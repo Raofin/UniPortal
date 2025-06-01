@@ -3,6 +3,7 @@ import { Card, CardBody, Button, Progress, Tooltip } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+// Core interfaces for motivational features
 interface Quote {
   id: number
   text: string
@@ -16,10 +17,13 @@ interface MoodEntry {
 }
 
 export const MotivationalFooter: React.FC = () => {
+  // State management for quotes and reflections
   const [currentQuoteIndex, setCurrentQuoteIndex] = React.useState(0)
   const [showReflection, setShowReflection] = React.useState(false)
   const [reflection, setReflection] = React.useState('')
   const [currentMood, setCurrentMood] = React.useState<MoodEntry['mood'] | null>(null)
+
+  // Initialize mood history with sample data
   const [moodHistory, setMoodHistory] = React.useState<MoodEntry[]>([
     { date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), mood: 'good' },
     { date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), mood: 'great' },
@@ -29,6 +33,7 @@ export const MotivationalFooter: React.FC = () => {
     { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), mood: 'okay' },
   ])
 
+  // Collection of motivational quotes
   const quotes: Quote[] = [
     {
       id: 1,
@@ -57,6 +62,7 @@ export const MotivationalFooter: React.FC = () => {
     },
   ]
 
+  // Daily reflection prompts
   const reflectionPrompts = [
     "What's one thing you're proud of today?",
     'What was your biggest challenge today?',
@@ -67,7 +73,7 @@ export const MotivationalFooter: React.FC = () => {
 
   const [currentPrompt, setCurrentPrompt] = React.useState(reflectionPrompts[Math.floor(Math.random() * reflectionPrompts.length)])
 
-  // Rotate quotes every 10 seconds
+  // Auto-rotate quotes every 10 seconds
   React.useEffect(() => {
     const interval = setInterval(() => {
       setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length)
@@ -76,11 +82,11 @@ export const MotivationalFooter: React.FC = () => {
     return () => clearInterval(interval)
   }, [quotes.length])
 
+  // Handle mood selection and update history
   const handleMoodSelection = (mood: MoodEntry['mood']) => {
     setCurrentMood(mood)
 
     if (mood) {
-      // If user already submitted a mood today, update it
       const today = new Date()
       const todayEntry = moodHistory.find(
         (entry) =>
@@ -90,12 +96,12 @@ export const MotivationalFooter: React.FC = () => {
       if (todayEntry) {
         setMoodHistory(moodHistory.map((entry) => (entry === todayEntry ? { ...entry, mood } : entry)))
       } else {
-        // Otherwise add a new entry
         setMoodHistory([...moodHistory, { date: today, mood }])
       }
     }
   }
 
+  // Handle reflection submission
   const handleReflectionSubmit = () => {
     if (reflection.trim() && currentMood) {
       const today = new Date()
@@ -105,10 +111,8 @@ export const MotivationalFooter: React.FC = () => {
       )
 
       if (todayEntry) {
-        // Update existing entry
         setMoodHistory(moodHistory.map((entry) => (entry === todayEntry ? { ...entry, mood: currentMood, reflection: reflection.trim() } : entry)))
       } else {
-        // Add new entry
         setMoodHistory([
           ...moodHistory,
           {
@@ -119,14 +123,13 @@ export const MotivationalFooter: React.FC = () => {
         ])
       }
 
-      // Reset form
       setReflection('')
       setShowReflection(false)
-      // Set a new random prompt
       setCurrentPrompt(reflectionPrompts[Math.floor(Math.random() * reflectionPrompts.length)])
     }
   }
 
+  // Utility functions for mood display
   const getMoodIcon = (mood: MoodEntry['mood']) => {
     switch (mood) {
       case 'great':
@@ -187,7 +190,7 @@ export const MotivationalFooter: React.FC = () => {
       <Card className="bg-gradient-to-r from-primary-50 to-background shadow-sm">
         <CardBody className="overflow-hidden p-6">
           <div className="flex flex-col gap-6 md:flex-row">
-            {/* Quote section */}
+            {/* Daily motivational quote section */}
             <div className="w-full md:w-1/2">
               <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
                 <Icon icon="lucide:sparkles" className="text-primary" />
@@ -195,7 +198,7 @@ export const MotivationalFooter: React.FC = () => {
               </h2>
 
               <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-lg p-6 pb-0">
-                {/* Decorative elements */}
+                {/* Decorative quote marks and sparkles */}
                 <div className="absolute right-2 top-2 text-5xl text-primary-100/40">
                   <Icon icon="lucide:quote" />
                 </div>
@@ -224,7 +227,7 @@ export const MotivationalFooter: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Floating particles */}
+                {/* Animated floating particles */}
                 <div className="pointer-events-none absolute inset-0">
                   {[...Array(5)].map((_, i) => (
                     <motion.div
@@ -253,7 +256,7 @@ export const MotivationalFooter: React.FC = () => {
               </div>
             </div>
 
-            {/* Reflection section */}
+            {/* Daily reflection and mood tracking section */}
             <div className="w-full md:w-1/2">
               <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
                 <Icon icon="lucide:heart-handshake" className="text-primary" />
@@ -292,6 +295,7 @@ export const MotivationalFooter: React.FC = () => {
               <div>
                 <p className="mb-2 text-sm text-default-600">How are you feeling today?</p>
 
+                {/* Mood selection buttons */}
                 <div className="mb-4 flex gap-2">
                   <Tooltip content="Great">
                     <Button
@@ -354,6 +358,7 @@ export const MotivationalFooter: React.FC = () => {
                   </Tooltip>
                 </div>
 
+                {/* Weekly mood history visualization */}
                 <div>
                   <p className="mb-2 text-sm text-default-600">Your mood this week:</p>
 

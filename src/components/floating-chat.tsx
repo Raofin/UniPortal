@@ -6,6 +6,7 @@ import { EnhancedAIChat } from './ai-chat'
 import { Conversations } from './conversations'
 import { ThemeSwitcher } from './theme-switcher'
 
+// Core interfaces for chat functionality
 interface Message {
   id: string
   sender: {
@@ -28,6 +29,7 @@ interface ChatGroup {
 }
 
 export const FloatingChat: React.FC = () => {
+  // State management for chat functionality
   const [isOpen, setIsOpen] = React.useState(false)
   const [activeTab, setActiveTab] = React.useState<'conversations' | 'ai'>('conversations')
   const [selectedChat, setSelectedChat] = React.useState<string | null>('cs301')
@@ -37,32 +39,32 @@ export const FloatingChat: React.FC = () => {
   const chatContainerRef = React.useRef<HTMLDivElement>(null)
   const [isSpinning, setIsSpinning] = React.useState(false)
 
-  // Mock data for chat groups
+  // Mock data for chat groups and messages
   const chatGroups: ChatGroup[] = [
     {
       id: 'cs301',
       name: 'CS301: Advanced Algorithms',
       unreadCount: 3,
       lastMessage: "Prof. Johnson: Don't forget to submit your assignments by Friday!",
-      lastMessageTime: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+      lastMessageTime: new Date(Date.now() - 30 * 60 * 1000),
     },
     {
       id: 'cs202',
       name: 'CS202: Data Structures',
       unreadCount: 0,
       lastMessage: 'Sarah: Has anyone started on the binary tree implementation?',
-      lastMessageTime: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      lastMessageTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
     },
     {
       id: 'cs305',
       name: 'CS305: Database Systems',
       unreadCount: 5,
       lastMessage: "Alex: I'm having trouble with the normalization exercise",
-      lastMessageTime: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
+      lastMessageTime: new Date(Date.now() - 1 * 60 * 60 * 1000),
     },
   ]
 
-  // Mock chat messages for CS301
+  // Initialize chat messages for different conversations
   const [messages, setMessages] = React.useState<Record<string, Message[]>>({
     cs301: [
       {
@@ -74,7 +76,7 @@ export const FloatingChat: React.FC = () => {
           role: 'teacher',
         },
         content: "Good morning everyone! Today we'll be discussing dynamic programming approaches to optimization problems.",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
         isRead: true,
       },
       {
@@ -86,7 +88,7 @@ export const FloatingChat: React.FC = () => {
           role: 'student',
         },
         content: 'Professor, could you clarify the difference between memoization and tabulation approaches?',
-        timestamp: new Date(Date.now() - 1.8 * 60 * 60 * 1000), // 1.8 hours ago
+        timestamp: new Date(Date.now() - 1.8 * 60 * 60 * 1000),
         isRead: true,
       },
       {
@@ -99,7 +101,7 @@ export const FloatingChat: React.FC = () => {
         },
         content:
           'Great question, Alex! Memoization is a top-down approach where we store the results of subproblems in a table (usually a map or array) and access them when needed. Tabulation is a bottom-up approach where we build our table starting from the smallest subproblems and work our way up to the original problem.',
-        timestamp: new Date(Date.now() - 1.7 * 60 * 60 * 1000), // 1.7 hours ago
+        timestamp: new Date(Date.now() - 1.7 * 60 * 60 * 1000),
         isRead: true,
       },
       {
@@ -111,7 +113,7 @@ export const FloatingChat: React.FC = () => {
           role: 'student',
         },
         content: 'I found this article that explains it really well: https://example.com/dynamic-programming',
-        timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000), // 1.5 hours ago
+        timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000),
         isRead: true,
       },
       {
@@ -123,7 +125,7 @@ export const FloatingChat: React.FC = () => {
           role: 'teacher',
         },
         content: "Don't forget to submit your assignments by Friday!",
-        timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+        timestamp: new Date(Date.now() - 30 * 60 * 1000),
         isRead: false,
       },
     ],
@@ -137,7 +139,7 @@ export const FloatingChat: React.FC = () => {
           role: 'student',
         },
         content: 'Has anyone started on the binary tree implementation?',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
         isRead: true,
       },
       {
@@ -149,7 +151,7 @@ export const FloatingChat: React.FC = () => {
           role: 'student',
         },
         content: "I've started working on it. The balancing part is a bit tricky though.",
-        timestamp: new Date(Date.now() - 1.9 * 60 * 60 * 1000), // 1.9 hours ago
+        timestamp: new Date(Date.now() - 1.9 * 60 * 60 * 1000),
         isRead: true,
       },
     ],
@@ -162,15 +164,14 @@ export const FloatingChat: React.FC = () => {
           avatar: 'https://img.heroui.chat/image/avatar?w=200&h=200&u=10',
           role: 'assistant',
         },
-        content:
-          "Hello! I'm your AI study assistant. I can help with your coursework, assignments, and uploaded notes. Just mention the course name, file, or topic you need help with.",
-        timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+        content: "Hello! I'm your AI study assistant. I can help with your coursework, assignments, and uploaded notes. Just mention the course name, file, or topic you need help with.",
+        timestamp: new Date(Date.now() - 5 * 60 * 1000),
         isRead: true,
       },
     ],
   })
 
-  // Mock inbox messages
+  // Mock inbox messages for notifications
   const inboxMessages = [
     {
       id: 'm1',
@@ -181,9 +182,8 @@ export const FloatingChat: React.FC = () => {
         role: 'teacher',
       },
       subject: 'Upcoming Midterm Exam Details',
-      content:
-        'Dear students, I wanted to provide some additional details about the upcoming midterm exam scheduled for next week. The exam will cover chapters 1-5 from the textbook, with a focus on tree and graph algorithms. Please make sure to review the practice problems we discussed in class. If you have any questions, feel free to reach out during office hours or via email. Best regards, Prof. Johnson',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      content: 'Dear students, I wanted to provide some additional details about the upcoming midterm exam scheduled for next week...',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
       isRead: false,
       attachments: [
         {
@@ -204,7 +204,7 @@ export const FloatingChat: React.FC = () => {
       subject: 'Registration for Next Semester Now Open',
       content:
         'Dear students, Registration for the Spring 2024 semester is now open. Please log in to the student portal to view available courses and register. Priority registration is available based on your academic standing. If you need advising before registration, please contact your academic advisor. Registration will close on November 15th. Thank you.',
-      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
       isRead: true,
     },
     {
@@ -218,12 +218,12 @@ export const FloatingChat: React.FC = () => {
       subject: 'Study Group for Database Final',
       content:
         "Hey Rawfin, A few of us are forming a study group for the Database Systems final exam. We're planning to meet at the library on Thursday at 6 PM. Would you like to join us? We'll be going over the practice problems and reviewing the key concepts from the semester. Let me know if you're interested! Best, Alex",
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
       isRead: true,
     },
   ]
 
-  // Format time function
+  // Format timestamp for message display
   const formatTime = (date: Date) => {
     const now = new Date()
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
@@ -240,6 +240,7 @@ export const FloatingChat: React.FC = () => {
     }
   }
 
+  // Handle sending new messages
   const handleSendMessage = () => {
     if (!newMessage.trim() || (!selectedChat && activeTab !== 'ai')) return
     const newMsg: Message = {
@@ -289,7 +290,7 @@ export const FloatingChat: React.FC = () => {
     setNewMessage('')
   }
 
-  // Generate a simple AI response based on the message content
+  // Generate AI responses based on message content
   const generateAIResponse = (message: string) => {
     const lowerMsg = message.toLowerCase()
 
@@ -306,13 +307,14 @@ export const FloatingChat: React.FC = () => {
     }
   }
 
-  // Scroll to bottom of chat when new messages are added
+  // Auto-scroll to bottom when new messages arrive
   React.useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
   }, [messages, selectedChat, activeTab, isTyping])
 
+  // Handle chat button click with animation
   const handleClick = () => {
     setIsSpinning(true)
     setIsOpen(true)
@@ -321,11 +323,10 @@ export const FloatingChat: React.FC = () => {
 
   return (
     <>
-      {/* Floating Buttons Container */}
+      {/* Floating action buttons container */}
       <div className="fixed bottom-8 left-0 right-0 z-50 flex w-full justify-center float-buttons:left-auto float-buttons:right-8 float-buttons:w-auto float-buttons:justify-end">
-        {/* Mobile: Horizontal buttons with background */}
+        {/* Mobile layout: Horizontal button group */}
         <div className="flex w-fit flex-row items-center justify-center gap-4 rounded-full bg-background/80 p-2 shadow-lg backdrop-blur-md float-buttons:hidden">
-          {/* Theme Switcher */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -335,7 +336,7 @@ export const FloatingChat: React.FC = () => {
             <ThemeSwitcher />
           </motion.div>
 
-          {/* Resources Button */}
+          {/* Resources button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -386,7 +387,7 @@ export const FloatingChat: React.FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* Chat Button */}
+          {/* Chat button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -435,9 +436,8 @@ export const FloatingChat: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Desktop: Vertical buttons */}
+        {/* Desktop layout: Vertical button group */}
         <div className="hidden flex-col items-end gap-4 float-buttons:flex">
-          {/* Theme Switcher */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -447,7 +447,7 @@ export const FloatingChat: React.FC = () => {
             <ThemeSwitcher />
           </motion.div>
 
-          {/* Resources Button */}
+          {/* Resources button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -498,7 +498,7 @@ export const FloatingChat: React.FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* Chat Button */}
+          {/* Chat button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -548,7 +548,7 @@ export const FloatingChat: React.FC = () => {
         </div>
       </div>
 
-      {/* Chat Modal */}
+      {/* Chat modal for conversations */}
       <Modal
         isOpen={isOpen}
         onOpenChange={setIsOpen}

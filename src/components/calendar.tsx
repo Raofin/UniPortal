@@ -4,9 +4,10 @@ import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 import { format, addDays, isSameDay, isToday, isTomorrow, differenceInMinutes } from 'date-fns'
 
+// Core interfaces for the calendar system
 interface DayData {
   date: Date
-  status: 'holiday' | 'none' // Simplified status to only holiday or none
+  status: 'holiday' | 'none'
   classes: ClassData[]
   weekNumber: number
 }
@@ -25,10 +26,9 @@ interface ClassData {
   status?: 'present' | 'absent' | 'none'
 }
 
-// Base schedule for Sunday-Thursday (all days with classes)
+// Base schedule configuration for each day of the week
 const baseSchedule: { [key: number]: ClassData[] } = {
   0: [
-    // Sunday
     {
       id: 's1',
       time: '10:00',
@@ -51,7 +51,6 @@ const baseSchedule: { [key: number]: ClassData[] } = {
     },
   ],
   1: [
-    // Monday
     {
       id: 'm1',
       time: '09:00',
@@ -74,7 +73,6 @@ const baseSchedule: { [key: number]: ClassData[] } = {
     },
   ],
   2: [
-    // Tuesday
     {
       id: 't1',
       time: '10:30',
@@ -97,7 +95,6 @@ const baseSchedule: { [key: number]: ClassData[] } = {
     },
   ],
   3: [
-    // Wednesday
     {
       id: 'w1',
       time: '09:00',
@@ -120,7 +117,6 @@ const baseSchedule: { [key: number]: ClassData[] } = {
     },
   ],
   4: [
-    // Thursday
     {
       id: 'th1',
       time: '11:00',
@@ -153,7 +149,7 @@ export const WeeklyCalendar: React.FC = () => {
   const todayButtonRef = React.useRef<HTMLButtonElement>(null)
   const isScrollingRef = React.useRef(false)
 
-  // Generate initial 30 days with today in the center
+  // Generate a 30-day calendar view centered around today
   const generateInitialDays = React.useCallback((): DayData[] => {
     const days: DayData[] = []
     const startDate = addDays(today, -15) // Start 15 days before today
@@ -182,14 +178,13 @@ export const WeeklyCalendar: React.FC = () => {
 
   const [days, setDays] = React.useState<DayData[]>(() => generateInitialDays())
 
-  // Handle day selection with smooth scrolling
+  // Handle day selection with smooth scrolling animation
   const handleDaySelect = React.useCallback((day: DayData) => {
     if (isScrollingRef.current) return // Prevent selection while scrolling
 
     setSelectedDay(day)
     isScrollingRef.current = true
 
-    // Find the button element for the selected day
     const buttonElement = calendarRef.current?.querySelector(`[data-date="${format(day.date, 'yyyy-MM-dd')}"]`) as HTMLButtonElement | null
 
     if (calendarRef.current && buttonElement) {
@@ -213,7 +208,7 @@ export const WeeklyCalendar: React.FC = () => {
         container.scrollLeft = scrollLeft
       }
 
-      // Reset scrolling flag after a short delay
+      // Reset scrolling flag after animation
       setTimeout(() => {
         isScrollingRef.current = false
       }, 100)
@@ -222,7 +217,7 @@ export const WeeklyCalendar: React.FC = () => {
     }
   }, [])
 
-  // Set initial selected day to today and center it
+  // Initialize calendar with today's date centered
   React.useEffect(() => {
     if (!selectedDay) {
       const todayIndex = days.findIndex((day) => isSameDay(day.date, today))
@@ -231,7 +226,7 @@ export const WeeklyCalendar: React.FC = () => {
       }
     }
 
-    // Center today's date
+    // Center today's date in the calendar view
     if (calendarRef.current) {
       const container = calendarRef.current
       const todayButton = container.querySelector(`[data-date="${format(today, 'yyyy-MM-dd')}"]`) as HTMLButtonElement | null
@@ -247,6 +242,7 @@ export const WeeklyCalendar: React.FC = () => {
     }
   }, [days, selectedDay, today])
 
+  // Helper functions for UI rendering
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'present':
@@ -290,12 +286,14 @@ export const WeeklyCalendar: React.FC = () => {
     return format(new Date(`2000-01-01T${time}`), 'h:mm a')
   }
 
+  // Find the next upcoming class
   const getNextClass = (classes: ClassData[]) => {
     const now = new Date()
     const currentTime = format(now, 'HH:mm')
     return classes.find((cls) => cls.time > currentTime)
   }
 
+  // Determine the current status of a class (completed, ongoing, or upcoming)
   const getClassStatus = (classItem: ClassData) => {
     const now = new Date()
     const classTime = new Date(`2000-01-01T${classItem.time}`)
@@ -320,6 +318,7 @@ export const WeeklyCalendar: React.FC = () => {
       </CardHeader>
 
       <CardBody className="p-0">
+        {/* Calendar days scrollable container */}
         <div
           ref={calendarRef}
           className="overflow-x-auto px-2 pb-6 pt-4 scrollbar-hide sm:px-8"
@@ -381,6 +380,7 @@ export const WeeklyCalendar: React.FC = () => {
 
         <Divider />
 
+        {/* Selected day's class schedule */}
         {selectedDay && (
           <div className="p-4 sm:p-8">
             <div className="mb-4 flex items-center justify-between">
@@ -439,16 +439,13 @@ export const WeeklyCalendar: React.FC = () => {
                       <div className="min-w-0 flex-grow">
                         {/* Mobile Layout */}
                         <div className="flex flex-col gap-2 sm:hidden">
-                          {/* Course Info */}
                           <div className="min-w-0 flex-grow">
                             <h4 className="truncate text-sm font-medium">{classItem.course}</h4>
                             {classItem.instructor && <p className="truncate text-xs text-default-500">Instructor: {classItem.instructor}</p>}
                             <p className="truncate text-xs text-default-500">Room: {classItem.classroom}</p>
                           </div>
 
-                          {/* Time and Status Section - Mobile */}
                           <div className="flex flex-col gap-2">
-                            {/* Time */}
                             <div className="flex items-center gap-2">
                               <Icon icon="lucide:clock" className="text-default-400" width={16} />
                               <div>
@@ -457,7 +454,6 @@ export const WeeklyCalendar: React.FC = () => {
                               </div>
                             </div>
 
-                            {/* Status Chips - Mobile */}
                             <div className="flex flex-wrap items-center gap-1.5">
                               <Chip
                                 size="sm"
@@ -565,21 +561,21 @@ export const WeeklyCalendar: React.FC = () => {
   )
 }
 
-// Update the styles
+// Custom scrollbar styles
 const styles = `
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari and Opera */
+    display: none;
   }
   .scroll-snap-align-center {
     scroll-snap-align: center;
   }
 `
 
-// Add this right after the imports
+// Add styles to document head
 const styleSheet = document.createElement('style')
 styleSheet.innerText = styles
 document.head.appendChild(styleSheet)

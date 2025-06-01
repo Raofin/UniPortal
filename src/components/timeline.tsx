@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 import { format, addDays, isSameDay, differenceInDays } from 'date-fns'
 
+// Core interface for timeline events
 interface TimelineEvent {
   id: string
   date: Date
@@ -20,6 +21,8 @@ interface TimelineEvent {
 export const AcademicTimeline: React.FC = () => {
   const today = new Date()
   const timelineRef = React.useRef<HTMLDivElement>(null)
+
+  // Filter state for different event types
   const [filters, setFilters] = React.useState({
     assignment: false,
     exam: true,
@@ -28,11 +31,11 @@ export const AcademicTimeline: React.FC = () => {
     class: true,
   })
 
-  // Generate 30 days of events
+  // Generate sample timeline events
   const generateEvents = (): TimelineEvent[] => {
     const events: TimelineEvent[] = []
 
-    // Add assignments with status
+    // Add assignments
     events.push({
       id: 'a1',
       date: addDays(today, 2),
@@ -172,10 +175,9 @@ export const AcademicTimeline: React.FC = () => {
 
   const [events] = React.useState<TimelineEvent[]>(generateEvents())
 
-  // Group events by date
+  // Group events by date for timeline display
   const eventsByDate = React.useMemo(() => {
     const grouped: Record<string, TimelineEvent[]> = {}
-
     events.forEach((event) => {
       const dateKey = format(event.date, 'yyyy-MM-dd')
       if (!grouped[dateKey]) {
@@ -183,7 +185,6 @@ export const AcademicTimeline: React.FC = () => {
       }
       grouped[dateKey].push(event)
     })
-
     return grouped
   }, [events])
 
@@ -210,7 +211,6 @@ export const AcademicTimeline: React.FC = () => {
   // Group filtered events by date
   const filteredEventsByDate = React.useMemo(() => {
     const grouped: Record<string, TimelineEvent[]> = {}
-
     filteredEvents.forEach((event) => {
       const dateKey = format(event.date, 'yyyy-MM-dd')
       if (!grouped[dateKey]) {
@@ -218,22 +218,20 @@ export const AcademicTimeline: React.FC = () => {
       }
       grouped[dateKey].push(event)
     })
-
     return grouped
   }, [filteredEvents])
 
   // Scroll to today's date when component mounts or filters change
   React.useEffect(() => {
     if (timelineRef.current) {
-      // Find today's date element
       const todayElement = timelineRef.current.querySelector('[data-today="true"]')
       if (todayElement) {
-        // Scroll to the element with a small offset
         todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
   }, [filters])
 
+  // Utility functions for event display
   const getEventTypeIcon = (type: string) => {
     switch (type) {
       case 'assignment':
@@ -268,15 +266,10 @@ export const AcademicTimeline: React.FC = () => {
     }
   }
 
-  const getAssignmentStatusColor = (status?: string) => {
-    // All assignment statuses use secondary color
-    return 'secondary'
-  }
-
-  const getAssignmentStatusIcon = (status?: string) => {
-    // All assignment status icons use secondary color
-    return <Icon icon="lucide:clipboard-check" className="text-secondary" width={16} height={16} />
-  }
+  const getAssignmentStatusColor = (status?: string) => 'secondary'
+  const getAssignmentStatusIcon = (status?: string) => (
+    <Icon icon="lucide:clipboard-check" className="text-secondary" width={16} height={16} />
+  )
 
   const toggleFilter = (filter: keyof typeof filters) => {
     setFilters((prev) => ({
@@ -287,6 +280,7 @@ export const AcademicTimeline: React.FC = () => {
 
   return (
     <Card className="glass-card">
+      {/* Timeline header */}
       <CardHeader className="px-4 pb-0 pt-6 sm:px-8">
         <div className="flex w-full flex-col items-center gap-1 pb-2 text-center">
           <div className="flex items-center gap-2">
@@ -298,6 +292,7 @@ export const AcademicTimeline: React.FC = () => {
       </CardHeader>
 
       <CardBody className="pt-0">
+        {/* Filter buttons */}
         <div className="px-4 pb-6 pt-2 sm:px-8">
           <div className="flex flex-wrap justify-center gap-2">
             <Button
@@ -353,12 +348,13 @@ export const AcademicTimeline: React.FC = () => {
           </div>
         </div>
 
-        <div className="relative max-h-[500px] overflow-y-auto px-4 pb-4 sm:px-8">
-          {/* Timeline container with the main line */}
+        {/* Timeline content */}
+        <div className="relative max-h-[500px] overflow-y-auto px-4 pb-4 sm:px-8" ref={timelineRef}>
           <div className="relative">
-            {/* The main timeline line */}
+            {/* Timeline line */}
             <div className="absolute bottom-0 top-0 w-0.5 bg-default-200" />
 
+            {/* Timeline events by date */}
             {Object.entries(filteredEventsByDate).map(([dateKey, dateEvents], dateIndex, dates) => {
               const date = new Date(dateKey)
               const isToday = isSameDay(date, today)
@@ -367,7 +363,7 @@ export const AcademicTimeline: React.FC = () => {
 
               return (
                 <div key={dateKey} data-today={isToday} className="relative mb-6 last:mb-0">
-                  {/* Date header with circle and connecting line */}
+                  {/* Date header */}
                   <div className={`mb-3 flex items-center gap-3 ${isToday ? 'sticky top-0 z-20 pb-2' : ''}`}>
                     <div className="relative flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7">
                       {/* Horizontal connecting line */}
@@ -442,7 +438,7 @@ export const AcademicTimeline: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Events */}
+                  {/* Events for this date */}
                   <div className="relative ml-2 space-y-3 pl-4 sm:ml-4 sm:pl-6">
                     {dateEvents.map((event, eventIndex) => (
                       <motion.div
@@ -554,6 +550,7 @@ export const AcademicTimeline: React.FC = () => {
             })}
           </div>
 
+          {/* Empty state */}
           {Object.keys(filteredEventsByDate).length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Icon icon="lucide:calendar-x" className="mb-4 h-12 w-12 text-default-300 sm:h-16 sm:w-16" />

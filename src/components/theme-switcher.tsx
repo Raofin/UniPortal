@@ -5,14 +5,16 @@ import { useTheme } from '@heroui/use-theme'
 import { motion } from 'framer-motion'
 
 export const ThemeSwitcher: React.FC = () => {
+  // Theme state management
   const { theme, setTheme } = useTheme()
   const isDark = theme === 'dark'
   const [isSpinning, setIsSpinning] = React.useState(false)
 
+  // Handle theme toggle with animation
   const handleClick = () => {
     setIsSpinning(true)
     setTheme(isDark ? 'light' : 'dark')
-    // Reset spinning after animation
+    // Reset spinning state after animation completes
     setTimeout(() => setIsSpinning(false), 500)
   }
 
@@ -26,6 +28,7 @@ export const ThemeSwitcher: React.FC = () => {
         className="relative h-12 w-12 overflow-hidden rounded-full"
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
       >
+        {/* Animated background container */}
         <motion.div
           initial={false}
           animate={{
@@ -51,6 +54,7 @@ export const ThemeSwitcher: React.FC = () => {
           }}
           className="flex h-full w-full items-center justify-center rounded-full"
         >
+          {/* Animated icon container */}
           <motion.div
             initial={{
               opacity: 0,
@@ -67,7 +71,12 @@ export const ThemeSwitcher: React.FC = () => {
               ease: 'easeOut',
             }}
           >
-            <Icon icon={isDark ? 'lucide:sun' : 'lucide:moon'} width={24} height={24} className={isDark ? 'text-warning' : 'text-primary'} />
+            <Icon
+              icon={isDark ? 'lucide:sun' : 'lucide:moon'}
+              width={24}
+              height={24}
+              className={isDark ? 'text-warning' : 'text-primary'}
+            />
           </motion.div>
         </motion.div>
       </Button>

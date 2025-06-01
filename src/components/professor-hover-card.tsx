@@ -3,6 +3,7 @@ import { Popover, PopoverTrigger, PopoverContent, Avatar, Button, Divider } from
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 
+// Core interfaces for professor data and component props
 interface ProfessorInfo {
   id: string
   name: string
@@ -20,7 +21,7 @@ interface ProfessorHoverCardProps {
 }
 
 export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professorId, children }) => {
-  // Mock professor data
+  // Sample professor data for demonstration
   const professors: Record<string, ProfessorInfo> = {
     prof1: {
       id: 'prof1',
@@ -54,6 +55,7 @@ export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professo
 
   const professor = professors[professorId]
 
+  // Return children without hover card if professor not found
   if (!professor) {
     return <>{children}</>
   }
@@ -65,6 +67,7 @@ export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professo
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0">
         <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+          {/* Professor header with avatar and basic info */}
           <div className="flex items-center gap-4 p-4">
             <Avatar src={professor.avatar} size="lg" isBordered color="primary" />
             <div>
@@ -76,9 +79,10 @@ export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professo
 
           <Divider />
 
+          {/* Contact information section */}
           <div className="space-y-3 p-4">
             <div className="flex items-start gap-2">
-              <Icon icon="lucide:clock" className="mt-0.5 text-default-500" size={16} />
+              <Icon icon="lucide:clock" className="mt-0.5 text-default-500" width={16} height={16} />
               <div>
                 <p className="text-sm font-medium">Office Hours</p>
                 <p className="text-xs text-default-500">{professor.officeHours}</p>
@@ -86,7 +90,7 @@ export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professo
             </div>
 
             <div className="flex items-start gap-2">
-              <Icon icon="lucide:mail" className="mt-0.5 text-default-500" size={16} />
+              <Icon icon="lucide:mail" className="mt-0.5 text-default-500" width={16} height={16} />
               <div>
                 <p className="text-sm font-medium">Email</p>
                 <p className="text-xs text-default-500">{professor.email}</p>
@@ -95,7 +99,7 @@ export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professo
 
             {professor.phone && (
               <div className="flex items-start gap-2">
-                <Icon icon="lucide:phone" className="mt-0.5 text-default-500" size={16} />
+                <Icon icon="lucide:phone" className="mt-0.5 text-default-500" width={16} height={16} />
                 <div>
                   <p className="text-sm font-medium">Phone</p>
                   <p className="text-xs text-default-500">{professor.phone}</p>
@@ -106,12 +110,13 @@ export const ProfessorHoverCard: React.FC<ProfessorHoverCardProps> = ({ professo
 
           <Divider />
 
+          {/* Action buttons */}
           <div className="flex justify-between p-3">
-            <Button size="sm" variant="light" color="primary" startContent={<Icon icon="lucide:calendar" size={16} />}>
+            <Button size="sm" variant="light" color="primary" startContent={<Icon icon="lucide:calendar" width={16} height={16} />}>
               Schedule Meeting
             </Button>
 
-            <Button size="sm" variant="flat" color="primary" startContent={<Icon icon="lucide:mail" size={16} />}>
+            <Button size="sm" variant="flat" color="primary" startContent={<Icon icon="lucide:mail" width={16} height={16} />}>
               Send Email
             </Button>
           </div>

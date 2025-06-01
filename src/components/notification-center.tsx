@@ -3,6 +3,7 @@ import { Popover, PopoverTrigger, PopoverContent, Button, Badge, Chip } from '@h
 import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+// Core interface for notification data structure
 interface Notification {
   id: string
   type: 'grade' | 'assignment' | 'message'
@@ -18,15 +19,18 @@ interface Notification {
 }
 
 export const NotificationCenter: React.FC = () => {
+  // State management for notifications
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedType, setSelectedType] = React.useState<'all' | 'grade' | 'assignment' | 'message'>('all')
+
+  // Initialize notifications with sample data
   const [notifications, setNotifications] = React.useState<Notification[]>([
     {
       id: 'n1',
       type: 'grade',
       title: 'Midterm Grade Released',
       description: 'Your midterm exam for Advanced Algorithms has been graded.',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+      timestamp: new Date(Date.now() - 30 * 60 * 1000),
       isRead: false,
       course: 'CS301: Advanced Algorithms',
       score: '92/100',
@@ -96,11 +100,14 @@ export const NotificationCenter: React.FC = () => {
     },
   ])
 
+  // Calculate notification counts
   const totalCount = notifications.length
   const unreadCount = notifications.filter((n) => !n.isRead).length
 
+  // Filter notifications based on selected type
   const filteredNotifications = selectedType === 'all' ? notifications : notifications.filter((n) => n.type === selectedType)
 
+  // Notification handlers
   const handleNotificationClick = (id: string) => {
     setNotifications(notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
   }
@@ -113,6 +120,7 @@ export const NotificationCenter: React.FC = () => {
     setSelectedType(type)
   }
 
+  // Utility functions for notification display
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'grade':
@@ -154,6 +162,7 @@ export const NotificationCenter: React.FC = () => {
         content: 'w-80 sm:w-96 bg-background/80 backdrop-blur-md border border-divider shadow-lg',
       }}
     >
+      {/* Notification bell trigger */}
       <PopoverTrigger>
         <Button
           isIconOnly
@@ -166,6 +175,7 @@ export const NotificationCenter: React.FC = () => {
       </PopoverTrigger>
 
       <PopoverContent>
+        {/* Notification header with filters */}
         <div className="border-b border-divider bg-background/80 p-3 backdrop-blur-md">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-medium">Notifications</h3>
@@ -174,6 +184,7 @@ export const NotificationCenter: React.FC = () => {
             </Button>
           </div>
 
+          {/* Notification type filters */}
           <div className="flex flex-wrap gap-1">
             <Button
               size="sm"
@@ -220,6 +231,7 @@ export const NotificationCenter: React.FC = () => {
           </div>
         </div>
 
+        {/* Notification list with animations */}
         <div className="max-h-[400px] overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -241,6 +253,7 @@ export const NotificationCenter: React.FC = () => {
                     >
                       <div className="cursor-pointer p-3" onClick={() => handleNotificationClick(notification.id)}>
                         <div className="flex gap-3">
+                          {/* Notification icon */}
                           <motion.div
                             whileHover={{ scale: 1.1 }}
                             className={`rounded-full p-2 ${
@@ -254,6 +267,7 @@ export const NotificationCenter: React.FC = () => {
                             {getTypeIcon(notification.type)}
                           </motion.div>
 
+                          {/* Notification content */}
                           <div className="flex-grow min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0">
@@ -265,6 +279,7 @@ export const NotificationCenter: React.FC = () => {
 
                             <p className="mt-1 text-xs text-default-500 line-clamp-2">{notification.description}</p>
 
+                            {/* Notification metadata chips */}
                             <div className="mt-2 flex flex-wrap gap-2">
                               {notification.course && (
                                 <Chip size="sm" variant="flat" color="primary" className="text-xs truncate max-w-[120px]">
@@ -284,6 +299,7 @@ export const NotificationCenter: React.FC = () => {
                             </div>
                           </div>
 
+                          {/* Unread indicator */}
                           {!notification.isRead && (
                             <motion.div
                               initial={{ scale: 0 }}
@@ -317,6 +333,7 @@ export const NotificationCenter: React.FC = () => {
           </AnimatePresence>
         </div>
 
+        {/* Footer with close button */}
         <div className="border-t border-divider bg-background/80 p-2 backdrop-blur-md">
           <Button size="sm" variant="light" className="w-full" onPress={() => setIsOpen(false)}>
             Close

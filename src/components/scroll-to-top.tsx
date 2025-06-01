@@ -4,8 +4,10 @@ import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export const ScrollToTop: React.FC = () => {
+  // State to control button visibility based on scroll position
   const [isVisible, setIsVisible] = React.useState(false)
 
+  // Toggle button visibility when scrolling past threshold
   const toggleVisibility = () => {
     if (window.scrollY > 300) {
       setIsVisible(true)
@@ -14,6 +16,7 @@ export const ScrollToTop: React.FC = () => {
     }
   }
 
+  // Smooth scroll to top of page
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -21,6 +24,7 @@ export const ScrollToTop: React.FC = () => {
     })
   }
 
+  // Add scroll event listener and cleanup
   React.useEffect(() => {
     window.addEventListener('scroll', toggleVisibility)
     return () => window.removeEventListener('scroll', toggleVisibility)
@@ -36,7 +40,15 @@ export const ScrollToTop: React.FC = () => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.2 }}
         >
-          <Button isIconOnly color="primary" variant="solid" size="lg" className="shadow-lg" onPress={scrollToTop} aria-label="Scroll to top">
+          <Button
+            isIconOnly
+            color="primary"
+            variant="solid"
+            size="lg"
+            className="shadow-lg"
+            onPress={scrollToTop}
+            aria-label="Scroll to top"
+          >
             <Icon icon="lucide:chevron-up" width={24} height={24} />
           </Button>
         </motion.div>

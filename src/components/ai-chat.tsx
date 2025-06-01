@@ -120,7 +120,7 @@ export const EnhancedAIChat: React.FC = () => {
             ...thread.messages,
             {
               id: `msg-${Date.now()}`,
-              role: 'user',
+              role: 'user' as const,
               content: newMessage,
               timestamp: new Date(),
             },
@@ -152,7 +152,7 @@ export const EnhancedAIChat: React.FC = () => {
                 ...thread.messages,
                 {
                   id: `msg-${Date.now()}-ai`,
-                  role: 'assistant',
+                  role: 'assistant' as const,
                   content: aiResponse,
                   timestamp: new Date(),
                 },
@@ -261,12 +261,12 @@ export const EnhancedAIChat: React.FC = () => {
             <div className="flex gap-1">
               <Tooltip content="Edit title">
                 <Button isIconOnly size="sm" variant="light" aria-label="Edit conversation title">
-                  <Icon icon="lucide:edit" size={18} />
+                  <Icon icon="lucide:edit" width={18} />
                 </Button>
               </Tooltip>
               <Tooltip content="Clear conversation">
                 <Button isIconOnly size="sm" variant="light" aria-label="Clear conversation">
-                  <Icon icon="lucide:trash-2" size={18} />
+                  <Icon icon="lucide:trash-2" width={18} />
                 </Button>
               </Tooltip>
             </div>
@@ -354,13 +354,13 @@ export const EnhancedAIChat: React.FC = () => {
                       {message.role === 'assistant' && (
                         <div className="mt-2 flex justify-end gap-2">
                           <Button size="sm" variant="light" isIconOnly className="text-default-400 hover:text-primary">
-                            <Icon icon="lucide:copy" size={16} />
+                            <Icon icon="lucide:copy" width={16} />
                           </Button>
                           <Button size="sm" variant="light" isIconOnly className="text-default-400 hover:text-primary">
-                            <Icon icon="lucide:thumbs-up" size={16} />
+                            <Icon icon="lucide:thumbs-up" width={16} />
                           </Button>
                           <Button size="sm" variant="light" isIconOnly className="text-default-400 hover:text-primary">
-                            <Icon icon="lucide:thumbs-down" size={16} />
+                            <Icon icon="lucide:thumbs-down" width={16} />
                           </Button>
                         </div>
                       )}
@@ -434,7 +434,7 @@ export const EnhancedAIChat: React.FC = () => {
               endContent={
                 <div className="flex gap-1">
                   <Button isIconOnly size="sm" variant="light" aria-label="Attach file">
-                    <Icon icon="lucide:paperclip" size={18} />
+                    <Icon icon="lucide:paperclip" width={18} />
                   </Button>
                 </div>
               }
@@ -445,7 +445,7 @@ export const EnhancedAIChat: React.FC = () => {
           </div>
 
           <div className="mt-2 flex items-center gap-2">
-            <Icon icon="lucide:info" className="text-default-400" size={16} />
+            <Icon icon="lucide:info" className="text-default-400" width={16} />
             <span className="text-xs text-default-500">
               I can help with your coursework, assignments, and uploaded notes. Just mention the course name, file, or topic you need help with.
             </span>

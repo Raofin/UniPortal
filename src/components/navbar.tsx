@@ -4,11 +4,13 @@ import { Icon } from '@iconify/react'
 import { NotificationCenter } from './notification-center'
 import { ProfilePopup } from './profile-popup'
 
+// Props interface for navigation functionality
 interface NavbarProps {
   onNavigate: (section: string) => void
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
+  // Smooth scroll to top of page
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -21,11 +23,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
       className="fixed left-0 right-0 top-0 z-50 border-b border-divider/10 bg-background/50 shadow-sm backdrop-blur-md"
       shouldHideOnScroll={false}
     >
+      {/* Brand logo and name */}
       <NavbarBrand className="cursor-pointer" onClick={scrollToTop}>
         <Icon icon="lucide:graduation-cap" width={24} height={24} className="text-primary" />
         <p className="ml-2 font-semibold text-inherit">UniPortal</p>
       </NavbarBrand>
 
+      {/* Main navigation items - visible on desktop */}
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         <NavbarItem>
           <Button variant="light" onPress={() => onNavigate('calendar')} startContent={<Icon icon="lucide:calendar" width={18} height={18} />}>
@@ -53,7 +57,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
         </NavbarItem>
       </NavbarContent>
 
+      {/* Right side navigation items */}
       <NavbarContent justify="end" className="gap-2">
+        {/* Mobile navigation menu */}
         <NavbarItem className="sm:hidden">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
@@ -93,9 +99,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
             </DropdownMenu>
           </Dropdown>
         </NavbarItem>
+
+        {/* Notification center */}
         <NavbarItem>
           <NotificationCenter />
         </NavbarItem>
+
+        {/* User profile */}
         <NavbarItem>
           <ProfilePopup
             trigger={

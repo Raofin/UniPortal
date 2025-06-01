@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from 'recharts'
 
+// Core interfaces for grade tracking and assessment management
 interface Grade {
   id: string
   course: string
@@ -39,7 +40,7 @@ export const RecentGrades: React.FC = () => {
   const [selected, setSelected] = React.useState<'byDate' | 'byCourse'>('byDate')
   const [hoveredSegment, setHoveredSegment] = React.useState<{ x: number; y: number; content: string } | null>(null);
 
-  // Helper function to randomly assign status
+  // Utility functions for generating mock data
   const getRandomStatus = (index: number, total: number): 'completed' | 'pending' | 'unavailable' => {
     const random = Math.random()
     if (index < Math.floor(total * 0.6)) return 'completed' // 60% chance of completed
@@ -47,13 +48,13 @@ export const RecentGrades: React.FC = () => {
     return 'unavailable' // 20% chance of unavailable
   }
 
-  // Helper function to generate random score within bounds
   const getRandomScore = (total: number, minPercentage: number = 0.6): number => {
     const min = Math.floor(total * minPercentage)
     const max = total
     return Math.floor(Math.random() * (max - min + 1)) + min
   }
 
+  // Mock course data with assessments
   const courses: Course[] = [
     {
       id: 'cs301',
@@ -67,7 +68,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a1',
             name: 'Attendance',
             weight: 10,
-            score: getRandomScore(10, 0.7), // 7-10
+            score: getRandomScore(10, 0.7),
             totalScore: 10,
             status: 'completed',
           },
@@ -75,7 +76,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a2',
             name: 'Assignments',
             weight: 20,
-            score: getRandomScore(20, 0.8), // 16-20
+            score: getRandomScore(20, 0.8),
             totalScore: 20,
             status: 'completed',
           },
@@ -83,7 +84,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a3',
             name: 'Quizzes',
             weight: 20,
-            score: getRandomScore(20, 0.75), // 15-20
+            score: getRandomScore(20, 0.75),
             totalScore: 20,
             status: 'completed',
           },
@@ -91,7 +92,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a4',
             name: 'Midterm Exam',
             weight: 40,
-            score: getRandomScore(40, 0.8), // 32-40
+            score: getRandomScore(40, 0.8),
             totalScore: 40,
             status: 'completed',
           },
@@ -99,7 +100,7 @@ export const RecentGrades: React.FC = () => {
             id: 'a5',
             name: 'Presentation',
             weight: 10,
-            score: getRandomScore(10, 0.7), // 7-10
+            score: getRandomScore(10, 0.7),
             totalScore: 10,
             status: 'completed',
           },
@@ -336,6 +337,7 @@ export const RecentGrades: React.FC = () => {
     },
   ]
 
+  // Calculate course progress and grades
   const calculateProgress = (course: Course) => {
     const midtermAssessments = course.assessments.midterm
     const finalAssessments = course.assessments.final
@@ -344,6 +346,7 @@ export const RecentGrades: React.FC = () => {
     const totalFinalWeight = finalAssessments.reduce((sum, a) => sum + a.weight, 0)
     const totalWeight = totalMidtermWeight + totalFinalWeight
 
+    // Calculate earned points from completed assessments
     const earnedMidtermPoints = midtermAssessments
       .filter((a) => a.status === 'completed' && a.score !== undefined)
       .reduce((sum, a) => sum + ((a.score || 0) / a.totalScore) * a.weight, 0)
@@ -354,14 +357,12 @@ export const RecentGrades: React.FC = () => {
 
     const totalEarnedPoints = earnedMidtermPoints + earnedFinalPoints
 
-    // Calculate completed percentage (what portion of the course has been completed)
+    // Calculate completion percentage
     const completedMidtermWeight = midtermAssessments.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
-
     const completedFinalWeight = finalAssessments.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
-
     const completedPercentage = ((completedMidtermWeight + completedFinalWeight) / totalWeight) * 100
 
-    // Calculate current grade percentage based on completed assessments
+    // Calculate current grade based on completed assessments
     const currentGradePercentage = completedPercentage > 0 ? (totalEarnedPoints / (completedMidtermWeight + completedFinalWeight)) * 100 : 0
 
     return {
@@ -371,6 +372,7 @@ export const RecentGrades: React.FC = () => {
     }
   }
 
+  // Helper functions for grade calculations and UI
   const getLetterGrade = (percentage: number) => {
     if (percentage >= 90) return 'A'
     if (percentage >= 80) return 'B'
@@ -392,7 +394,6 @@ export const RecentGrades: React.FC = () => {
     }
   }
 
-  // Add new function for tooltips
   const renderTooltip = (assessment: Assessment) => {
     if (assessment.status !== 'completed' || assessment.score === undefined) {
       return `${assessment.name} - Not completed yet`
@@ -402,19 +403,18 @@ export const RecentGrades: React.FC = () => {
     return `${assessment.name} - ${assessment.score}/${assessment.totalScore} (${assessment.weight}%)`
   }
 
-  // Define a cohesive color scheme with different shades of blue
+  // Color scheme for different assessment types
   const assessmentColors = {
-    // Use different shades of blue for different assessment types
-    Attendance: '#60a5fa', // lighter blue
-    Assignments: '#3b82f6', // primary blue
-    Quizzes: '#2563eb', // darker blue
-    'Midterm Exam': '#1d4ed8', // deep blue
-    'Final Exam': '#1d4ed8', // deep blue
-    Presentation: '#93c5fd', // very light blue
-    Project: '#93c5fd', // very light blue
+    Attendance: '#60a5fa',
+    Assignments: '#3b82f6',
+    Quizzes: '#2563eb',
+    'Midterm Exam': '#1d4ed8',
+    'Final Exam': '#1d4ed8',
+    Presentation: '#93c5fd',
+    Project: '#93c5fd',
   }
 
-  // Fix the circle charts visibility issues with a cohesive color scheme
+  // Render circular progress chart for assessments
   const renderCircleChart = (data: any[], percentage: number, title: string) => {
     return (
       <div className="flex flex-col items-center">
@@ -430,23 +430,22 @@ export const RecentGrades: React.FC = () => {
           transition={{ duration: 0.3, ease: 'easeOut' }}
         >
           <svg className="h-full w-full" viewBox="0 0 100 100">
-            {/* Background circle with improved visibility */}
+            {/* Background circle */}
             <motion.circle
               cx="50"
               cy="50"
               r="45"
               fill="none"
-              stroke="#e5e7eb" // light gray for light mode
-              className="dark:stroke-gray-700" // darker gray for dark mode
+              stroke="#e5e7eb"
+              className="dark:stroke-gray-700"
               strokeWidth="10"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 1, ease: 'easeInOut' }}
             />
 
-            {/* Segments for each assessment with improved visibility */}
+            {/* Assessment segments */}
             {data.map((item, i) => {
-              // Calculate start and end angles
               const totalValue = data.reduce((sum, d) => sum + d.value, 0)
               const anglePerValue = 360 / totalValue
 
@@ -456,8 +455,6 @@ export const RecentGrades: React.FC = () => {
               }
 
               const endAngle = startAngle + item.value * anglePerValue
-
-              // Convert to radians and calculate path
               const startRad = ((startAngle - 90) * Math.PI) / 180
               const endRad = ((endAngle - 90) * Math.PI) / 180
 
@@ -467,23 +464,19 @@ export const RecentGrades: React.FC = () => {
               const y2 = 50 + 45 * Math.sin(endRad)
 
               const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0
-
               const pathData = `M 50 50 L ${x1} ${y1} A 45 45 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
 
-              // For pending items, use dashed stroke
               const dashArray = item.status === 'pending' ? '3,2' : 'none'
-
-              // Use different colors based on status and type
               const fillColor =
                 item.status === 'completed'
-                  ? item.color // use the assessment-specific color
+                  ? item.color
                   : item.status === 'pending'
-                    ? '#fbbf24' // amber for pending
-                    : '#e5e7eb' // light gray for unavailable
+                    ? '#fbbf24'
+                    : '#e5e7eb'
 
               const tooltipContent = `${item.name} - ${
                 item.status === 'completed' && typeof item.score === 'number' && typeof item.totalScore === 'number'
-                  ? `${item.score}/${item.totalScore} (${item.name === 'Attendance' ? '10' : item.name === 'Assignments' ? '20' : item.name === 'Quizzes' ? '20' : item.name === 'Midterm Exam' ? '40' : item.name === 'Final Exam' ? '40' : '10'}%)`
+                  ? `${item.score}/${item.totalScore} (${item.weight}%)`
                   : item.status === 'pending'
                     ? 'Pending'
                     : 'Not available yet'
@@ -494,8 +487,8 @@ export const RecentGrades: React.FC = () => {
                   <motion.path
                     d={pathData}
                     fill={fillColor}
-                    stroke="#ffffff" // white stroke for light mode
-                    className="cursor-help dark:stroke-gray-900" // dark stroke for dark mode
+                    stroke="#ffffff"
+                    className="cursor-help dark:stroke-gray-900"
                     strokeWidth="1"
                     strokeDasharray={dashArray}
                     initial={{ opacity: 0 }}
@@ -518,21 +511,20 @@ export const RecentGrades: React.FC = () => {
               )
             })}
 
-            {/* Center circle with improved visibility */}
+            {/* Center circle with completion percentage */}
             <motion.circle
               cx="50"
               cy="50"
               r="25"
-              fill="#ffffff" // white for light mode
-              stroke="#e5e7eb" // light gray for light mode
-              className="dark:fill-gray-900 dark:stroke-gray-700" // dark mode styles
+              fill="#ffffff"
+              stroke="#e5e7eb"
+              className="dark:fill-gray-900 dark:stroke-gray-700"
               strokeWidth="1"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.3, delay: 0.5 }}
             />
 
-            {/* Completion text with improved visibility */}
             <motion.text
               x="50"
               y="45"
@@ -540,8 +532,8 @@ export const RecentGrades: React.FC = () => {
               dominantBaseline="middle"
               fontSize="14"
               fontWeight="bold"
-              fill="#111827" // dark text for light mode
-              className="dark:fill-gray-100" // light text for dark mode
+              fill="#111827"
+              className="dark:fill-gray-100"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.6 }}
@@ -555,8 +547,8 @@ export const RecentGrades: React.FC = () => {
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize="8"
-              fill="#6b7280" // gray text for light mode
-              className="dark:fill-gray-400" // lighter gray for dark mode
+              fill="#6b7280"
+              className="dark:fill-gray-400"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.7 }}
@@ -565,6 +557,8 @@ export const RecentGrades: React.FC = () => {
             </motion.text>
           </svg>
         </motion.div>
+
+        {/* Tooltip for assessment details */}
         {hoveredSegment && (
           <div
             className="fixed z-50 -translate-x-1/2 transform rounded-lg bg-content1 p-1.5 shadow-lg"
@@ -599,7 +593,7 @@ export const RecentGrades: React.FC = () => {
             {courses.map((course, courseIndex) => {
               const progress = calculateProgress(course)
 
-              // Calculate midterm and final term data for pie charts
+              // Prepare data for progress charts
               const midtermData = course.assessments.midterm.map((assessment) => ({
                 name: assessment.name,
                 value: assessment.weight,
@@ -618,17 +612,16 @@ export const RecentGrades: React.FC = () => {
                 color: assessmentColors[assessment.name as keyof typeof assessmentColors] || 'var(--heroui-default-500)',
               }))
 
-              // Calculate completion percentages
+              // Calculate completion percentages for each term
               const midtermCompletedWeight = course.assessments.midterm.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
               const finalCompletedWeight = course.assessments.final.filter((a) => a.status === 'completed').reduce((sum, a) => sum + a.weight, 0)
               const totalMidtermWeight = course.assessments.midterm.reduce((sum, a) => sum + a.weight, 0)
               const totalFinalWeight = course.assessments.final.reduce((sum, a) => sum + a.weight, 0)
 
-              // Calculate percentages based on total weight of each term
               const midtermPercentage = (midtermCompletedWeight / totalMidtermWeight) * 100
               const finalPercentage = (finalCompletedWeight / totalFinalWeight) * 100
 
-              // Calculate next upcoming assessment
+              // Find next upcoming assessment
               const allAssessments = [...course.assessments.midterm, ...course.assessments.final]
               const upcomingAssessment = allAssessments.find((a) => a.status === 'pending') || allAssessments.find((a) => a.status === 'unavailable')
 
@@ -639,7 +632,7 @@ export const RecentGrades: React.FC = () => {
                 >
                   <Card shadow="none" className="border border-divider bg-transparent dark:bg-content1/60">
                     <CardBody className="p-4 sm:p-8">
-                      {/* Course Header */}
+                      {/* Course Header with basic info and progress */}
                       <div className="mb-6 flex items-start justify-between border-b border-divider pb-4 sm:mb-8 sm:pb-6">
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 sm:gap-3">
@@ -684,13 +677,13 @@ export const RecentGrades: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Progress Charts */}
+                      {/* Progress Charts for midterm and final */}
                       <div className="mb-6 flex flex-nowrap justify-center gap-4 overflow-x-auto pb-2 sm:mb-8 sm:gap-6">
                         <div className="flex-shrink-0">{renderCircleChart(midtermData, midtermPercentage, 'Midterm (50%)')}</div>
                         <div className="flex-shrink-0">{renderCircleChart(finalData, finalPercentage, 'Final Term (50%)')}</div>
                       </div>
 
-                      {/* Assessment Summary */}
+                      {/* Assessment Summary Statistics */}
                       <div className="grid grid-cols-3 gap-3 rounded-xl bg-default-50 p-3 dark:bg-default-100 sm:gap-4 sm:p-4">
                         <div className="flex items-center gap-2 sm:gap-2.5">
                           <div className="rounded-full bg-success/10 p-1 sm:p-1.5">

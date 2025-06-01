@@ -15,6 +15,8 @@ import { Spinner } from '@heroui/react'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true)
+
+  // Refs for smooth scrolling to sections
   const sectionRefs = {
     calendar: React.useRef<HTMLDivElement>(null),
     assignments: React.useRef<HTMLDivElement>(null),
@@ -24,19 +26,20 @@ const App: React.FC = () => {
     conversations: React.useRef<HTMLDivElement>(null),
   }
 
-  // Simulate loading of all resources
+  // Simulate initial loading of resources
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1500) // Show loading for 1.5 seconds
+    }, 1500)
 
     return () => clearTimeout(timer)
   }, [])
 
+  // Smooth scroll to section with navbar offset
   const scrollToSection = (section: keyof typeof sectionRefs) => {
     const element = sectionRefs[section].current
     if (element) {
-      const navbarHeight = 64 // Height of the navbar in pixels
+      const navbarHeight = 64
       const elementPosition = element.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.pageYOffset - navbarHeight
 
@@ -54,7 +57,7 @@ const App: React.FC = () => {
       <div className="blob-2" />
       <div className="blob-3" />
 
-      {/* Loading overlay */}
+      {/* Loading overlay with blur effect */}
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -77,11 +80,12 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
+      {/* Main content with conditional blur during loading */}
       <div className={isLoading ? 'blur-sm' : ''}>
         <Navbar onNavigate={scrollToSection} />
 
         <main className="container mx-auto max-w-6xl px-4 pt-24">
-          {/* Content sections with glass effect */}
+          {/* Welcome section with fade-in animation */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,6 +95,7 @@ const App: React.FC = () => {
             <WelcomeSection />
           </motion.div>
 
+          {/* Calendar section with scroll-triggered animation */}
           <motion.div
             ref={sectionRefs.calendar}
             initial={{ opacity: 0 }}
@@ -102,6 +107,7 @@ const App: React.FC = () => {
             <WeeklyCalendar />
           </motion.div>
 
+          {/* Assignments section with scroll-triggered animation */}
           <motion.div
             ref={sectionRefs.assignments}
             initial={{ opacity: 0 }}
@@ -113,6 +119,7 @@ const App: React.FC = () => {
             <UpcomingAssignments />
           </motion.div>
 
+          {/* Grades section with scroll-triggered animation */}
           <motion.div
             ref={sectionRefs.grades}
             initial={{ opacity: 0 }}
@@ -124,6 +131,7 @@ const App: React.FC = () => {
             <RecentGrades />
           </motion.div>
 
+          {/* Timeline section with scroll-triggered animation */}
           <motion.div
             ref={sectionRefs.timeline}
             initial={{ opacity: 0 }}
@@ -136,6 +144,7 @@ const App: React.FC = () => {
           </motion.div>
         </main>
 
+        {/* Floating components and footer */}
         <MotivationalFooter />
         <FloatingChat />
         <FloatingResources />

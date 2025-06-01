@@ -3,6 +3,7 @@ import { Popover, PopoverTrigger, PopoverContent, Avatar, Divider, Button, Progr
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 
+// Props interface for profile popup component
 interface ProfilePopupProps {
   trigger: React.ReactNode
 }
@@ -10,7 +11,7 @@ interface ProfilePopupProps {
 export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
   const [isOpen, setIsOpen] = React.useState(false)
 
-  // Mock student data
+  // Sample student data for demonstration
   const studentData = {
     name: 'Zaid Amin Rawfin',
     id: '20-42459-1',
@@ -31,7 +32,7 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
       <PopoverTrigger>{trigger}</PopoverTrigger>
       <PopoverContent className="w-80 p-0">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
-          {/* Header */}
+          {/* Student profile header with avatar and basic info */}
           <div className="flex items-center gap-4 p-4">
             <Avatar src="/images/me.jpg" size="lg" isBordered color="primary" />
             <div>
@@ -45,8 +46,9 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
 
           <Divider />
 
-          {/* Academic Info */}
+          {/* Academic progress section */}
           <div className="p-4">
+            {/* CGPA progress */}
             <div className="mb-2 flex items-center justify-between">
               <h4 className="text-sm font-medium">CGPA</h4>
               <div className="flex items-baseline gap-1">
@@ -57,6 +59,7 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
 
             <Progress value={(studentData.cgpa / studentData.maxCgpa) * 100} color="success" className="mb-4" size="sm" />
 
+            {/* Credits progress */}
             <div className="mb-2 flex items-center justify-between">
               <h4 className="text-sm font-medium">Credits Completed</h4>
               <div className="flex items-baseline gap-1">
@@ -67,6 +70,7 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
 
             <Progress value={(studentData.creditsCompleted / studentData.totalCredits) * 100} color="primary" className="mb-4" size="sm" />
 
+            {/* Academic details */}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-default-500">Student ID</span>
@@ -92,18 +96,18 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ trigger }) => {
 
           <Divider />
 
-          {/* Footer */}
+          {/* Footer with last login and action buttons */}
           <div className="flex items-center justify-between p-4">
             <div className="text-xs text-default-500">
               <span>Last login: {studentData.lastLogin}</span>
             </div>
 
             <div className="flex gap-2">
-              <Button size="sm" variant="light" color="primary" startContent={<Icon icon="lucide:settings" size={16} />}>
+              <Button size="sm" variant="light" color="primary" startContent={<Icon icon="lucide:settings" width={16} height={16} />}>
                 Settings
               </Button>
 
-              <Button size="sm" variant="flat" color="danger" startContent={<Icon icon="lucide:log-out" size={16} />}>
+              <Button size="sm" variant="flat" color="danger" startContent={<Icon icon="lucide:log-out" width={16} height={16} />}>
                 Logout
               </Button>
             </div>

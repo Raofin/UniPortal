@@ -20,6 +20,7 @@ import {
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 
+// Core interfaces for file management
 interface FileItem {
   id: string
   title: string
@@ -37,13 +38,14 @@ interface Section {
   color: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'default'
 }
 
-// Separate component for the file list
+// Component for displaying the file list with actions
 const FileList: React.FC<{
   files: FileItem[]
   sections: Section[]
   onStarToggle: (id: string) => void
   onDelete: (id: string) => void
 }> = ({ files, sections, onStarToggle, onDelete }) => {
+  // Get appropriate icon based on file type
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'pdf':
@@ -64,6 +66,7 @@ const FileList: React.FC<{
     }
   }
 
+  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString(undefined, {
@@ -73,6 +76,7 @@ const FileList: React.FC<{
     })
   }
 
+  // Show empty state if no files
   if (files.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -153,7 +157,7 @@ const FileList: React.FC<{
   )
 }
 
-// Separate component for the upload area
+// Component for file upload area with drag and drop support
 const UploadArea: React.FC<{
   isDragging: boolean
   onDragOver: (e: React.DragEvent) => void
@@ -185,6 +189,7 @@ const UploadArea: React.FC<{
 )
 
 export const FloatingResources: React.FC = () => {
+  // State management for resources functionality
   const [isOpen, setIsOpen] = React.useState(false)
   const [activeTab, setActiveTab] = React.useState<'all' | 'recent' | 'starred'>('all')
   const [searchQuery, setSearchQuery] = React.useState('')
@@ -197,7 +202,7 @@ export const FloatingResources: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
   const [isMobileView, setIsMobileView] = React.useState(window.innerWidth < 768)
 
-  // Add this effect to handle window resize
+  // Handle window resize for responsive layout
   React.useEffect(() => {
     const handleResize = () => {
       setIsMobileView(window.innerWidth < 768)
@@ -206,7 +211,7 @@ export const FloatingResources: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Sample sections
+  // Initialize sections with default categories
   const [sections, setSections] = React.useState<Section[]>([
     { id: 'algorithms', name: 'Algorithms', color: 'primary' },
     { id: 'database', name: 'Database Systems', color: 'secondary' },
@@ -214,7 +219,7 @@ export const FloatingResources: React.FC = () => {
     { id: 'networks', name: 'Computer Networks', color: 'warning' },
   ])
 
-  // Sample files
+  // Initialize files with sample data
   const [files, setFiles] = React.useState<FileItem[]>([
     {
       id: '1',
@@ -293,6 +298,7 @@ export const FloatingResources: React.FC = () => {
     },
   ])
 
+  // File upload handlers
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(true)
@@ -355,12 +361,12 @@ export const FloatingResources: React.FC = () => {
 
       setFiles([newFile, ...files])
     }
-    // Reset the input value so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
   }
 
+  // Filter and sort files based on active tab and search query
   const filteredFiles = React.useMemo(() => {
     return files
       .filter((file) => {
@@ -383,6 +389,7 @@ export const FloatingResources: React.FC = () => {
       .slice(0, activeTab === 'recent' ? 5 : undefined)
   }, [files, activeTab, searchQuery, selectedSection])
 
+  // Section management handlers
   const handleAddSection = () => {
     if (newSectionName.trim()) {
       const newSection: Section = {
@@ -406,9 +413,9 @@ export const FloatingResources: React.FC = () => {
     setFiles(files.filter((file) => file.id !== fileId))
   }
 
+  // Modal management
   const handleModalClose = React.useCallback(() => {
     setIsOpen(false)
-    // Reset states after a short delay to ensure modal is closed
     setTimeout(() => {
       setActiveTab('all')
       setSearchQuery('')
@@ -420,13 +427,11 @@ export const FloatingResources: React.FC = () => {
   const handleClick = () => {
     setIsSpinning(true)
     setIsOpen(true)
-    // Reset spinning after animation
     setTimeout(() => setIsSpinning(false), 500)
   }
 
   return (
     <>
-      {/* Hidden button for resources modal trigger */}
       <Button data-resources-button className="hidden" onPress={() => setIsOpen(true)} />
 
       {isOpen && (
@@ -471,7 +476,7 @@ export const FloatingResources: React.FC = () => {
 
             <ModalBody className="p-0">
               <div className="flex h-full relative">
-                {/* Sidebar */}
+                {/* Sidebar with sections and filters */}
                 <div
                   className={`absolute inset-y-0 left-0 z-20 w-full transform bg-default-50 transition-transform duration-200 ease-in-out md:relative md:z-0 md:w-1/4 md:translate-x-0 ${
                     isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
@@ -577,7 +582,7 @@ export const FloatingResources: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Main content */}
+                {/* Main content area with file list */}
                 <div className="flex w-full flex-col md:w-3/4">
                   <div className="border-b border-divider p-4">
                     <UploadArea

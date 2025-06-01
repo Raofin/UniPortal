@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Icon } from '@iconify/react'
 
 export const WelcomeSection: React.FC = () => {
+  // State for popover visibility
   const [isClassOpen, setIsClassOpen] = useState(false)
   const [isAssignmentOpen, setIsAssignmentOpen] = useState(false)
-
   const isAnyPopoverOpen = isClassOpen || isAssignmentOpen
 
   return (
     <>
-      {/* Global backdrop blur overlay */}
+      {/* Global backdrop blur when any popover is open */}
       <AnimatePresence>
         {isAnyPopoverOpen && (
           <motion.div
@@ -28,7 +28,7 @@ export const WelcomeSection: React.FC = () => {
         <Card className="relative overflow-hidden border-none bg-transparent shadow-none">
           <CardBody className="p-6">
             <div className="flex flex-col items-center gap-6">
-              {/* Avatar */}
+              {/* Profile avatar with animation */}
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -40,7 +40,7 @@ export const WelcomeSection: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* Welcome message */}
+              {/* Welcome message with animations */}
               <div className="text-center">
                 <motion.h1
                   initial={{ y: -20, opacity: 0 }}
@@ -62,14 +62,14 @@ export const WelcomeSection: React.FC = () => {
                 </motion.p>
               </div>
 
-              {/* Quick info with popovers */}
+              {/* Quick info buttons with popovers */}
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="flex flex-wrap justify-center gap-3"
               >
-                {/* Class popover */}
+                {/* Next class popover */}
                 <Popover isOpen={isClassOpen} onOpenChange={setIsClassOpen} placement="bottom">
                   <PopoverTrigger>
                     <button className="flex items-center gap-2 rounded-full bg-primary-50 px-3 py-1.5 text-sm text-primary-600 transition-colors hover:bg-primary-100">
@@ -79,6 +79,7 @@ export const WelcomeSection: React.FC = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-80 border-none bg-background/95 p-4 shadow-none backdrop-blur-sm">
                     <div className="space-y-3">
+                      {/* Class details */}
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-semibold text-foreground">Advanced Algorithms</h3>
@@ -86,6 +87,7 @@ export const WelcomeSection: React.FC = () => {
                         </div>
                         <div className="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700">Next</div>
                       </div>
+                      {/* Class schedule and location */}
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2 text-default-600">
                           <Icon icon="lucide:clock" className="h-4 w-4" />
@@ -100,6 +102,7 @@ export const WelcomeSection: React.FC = () => {
                           <span>Prof. Sarah Johnson</span>
                         </div>
                       </div>
+                      {/* Action button */}
                       <div className="pt-2">
                         <button className="w-full rounded-lg bg-primary-50 px-3 py-2 text-sm font-medium text-primary-600 transition-colors hover:bg-primary-100">
                           View Course Details
@@ -109,7 +112,7 @@ export const WelcomeSection: React.FC = () => {
                   </PopoverContent>
                 </Popover>
 
-                {/* Assignment popover */}
+                {/* Upcoming assignment popover */}
                 <Popover isOpen={isAssignmentOpen} onOpenChange={setIsAssignmentOpen} placement="bottom">
                   <PopoverTrigger>
                     <button className="flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1.5 text-sm text-warning-600 transition-colors hover:bg-warning-100">
@@ -119,6 +122,7 @@ export const WelcomeSection: React.FC = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-80 border-none bg-background/95 p-4 shadow-none backdrop-blur-sm">
                     <div className="space-y-3">
+                      {/* Assignment details */}
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-semibold text-foreground">Data Structures Project</h3>
@@ -126,6 +130,7 @@ export const WelcomeSection: React.FC = () => {
                         </div>
                         <div className="rounded-full bg-warning-100 px-2 py-0.5 text-xs font-medium text-warning-700">Due Soon</div>
                       </div>
+                      {/* Assignment information */}
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2 text-default-600">
                           <Icon icon="lucide:clock" className="h-4 w-4" />
@@ -140,6 +145,7 @@ export const WelcomeSection: React.FC = () => {
                           <span>Worth 25% of final grade</span>
                         </div>
                       </div>
+                      {/* Action button */}
                       <div className="pt-2">
                         <button className="w-full rounded-lg bg-warning-50 px-3 py-2 text-sm font-medium text-warning-600 transition-colors hover:bg-warning-100">
                           View Assignment Details
