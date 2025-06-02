@@ -24,6 +24,11 @@ const App: React.FC = () => {
     conversations: React.useRef<HTMLDivElement>(null),
   }
 
+  // Reset scroll position on initial load
+  React.useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   // Simulate initial loading of resources
   React.useEffect(() => {
     const timer = setTimeout(() => {

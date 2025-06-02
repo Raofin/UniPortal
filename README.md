@@ -1,22 +1,24 @@
 # UniPortal
 
-UniPortal is a responsive frontend for a university student portal, developed for the HeroUI Hackathon. Built using the HeroUI library, HeroUI Chat, and VS Code. It provides a modern, visually engaging interface. The design adapts smoothly to all devices and screen sizes, ensuring accessibility and ease of use.
+UniPortal is a modern university student portal developed using the HeroUI library, HeroUI Chat, and Visual Studio Code. Its sleek, visually appealing, animation-rich, and fully responsive interface ensures a seamless user experience.
+
+> *🏁 Developed as a submission for the HeroUI Hackathon.*
 
 ## Features
 
-- 📱 Fully responsive design
-- 🎨 Modern and clean UI using HeroUI components
-- 💬 Integrated chat functionality with HeroUI Chat
-- 📊 Interactive dashboard with real-time updates
-- 📚 Course management and assignment tracking
-- 📅 Calendar integration
-- 📝 Note-taking capabilities
-- 🔔 Real-time notifications
-- 🌙 Dark mode support
+📱 Fully Responsive Design
+🎨 Modern & Clean UI (HeroUI Components)
+📚 Course Management & Assignment Tracking
+📅 Calendar Integration & Academic Timeline
+💬 Chat & Smart Inbox
+📝 Note Upload
+🔔 Profile & Notifications
+🌙 Light & Dark Mode Support
 
 ## Screenshots
 
 ### Desktop Views
+
 ![Screenshot 1](assets/01.png)
 ![Screenshot 2](assets/02.png)
 ![Screenshot 3](assets/03.png)
@@ -31,20 +33,21 @@ UniPortal is a responsive frontend for a university student portal, developed fo
 ![Screenshot 12](assets/12.png)
 
 ### Mobile Views
+
 <p float="left">
-  <img src="assets/13.png" width="200" />
-  <img src="assets/14.png" width="200" />
-  <img src="assets/15.png" width="200" />
+  <img src="assets/13.png" width="250" />
+  <img src="assets/14.png" width="250" />
+  <img src="assets/15.png" width="250" />
 </p>
 <p float="left">
-  <img src="assets/16.png" width="200" />
-  <img src="assets/17.png" width="200" />
-  <img src="assets/18.png" width="200" />
+  <img src="assets/16.png" width="250" />
+  <img src="assets/17.png" width="250" />
+  <img src="assets/18.png" width="250" />
 </p>
 <p float="left">
-  <img src="assets/19.png" width="200" />
-  <img src="assets/20.png" width="200" />
-  <img src="assets/21.png" width="200" />
+  <img src="assets/19.png" width="250" />
+  <img src="assets/20.png" width="250" />
+  <img src="assets/21.png" width="250" />
 </p>
 
 ## Tech Stack
@@ -60,17 +63,20 @@ UniPortal is a responsive frontend for a university student portal, developed fo
 ## Getting Started
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/raofin/UniPortal.git
 ```
 
 2. Install dependencies:
+
 ```bash
 cd uniportal
 npm install
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 ```
