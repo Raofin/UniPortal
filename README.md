@@ -2,17 +2,17 @@
 
 UniPortal is a modern university student portal developed using the HeroUI library, HeroUI Chat, and Visual Studio Code. Its sleek, visually appealing, animation-rich, and fully responsive interface ensures a seamless user experience.
 
-> *🏁 Developed as a submission for the HeroUI Hackathon.*
+> *🚀 Developed as a submission for the HeroUI Hackathon.*
 
 ## Features
 
-📱 Fully Responsive Design
-🎨 Modern & Clean UI (HeroUI Components)
-📚 Course Management & Assignment Tracking
-📅 Calendar Integration & Academic Timeline
-💬 Chat & Smart Inbox
-📝 Note Upload
-🔔 Profile & Notifications
+📱 Fully Responsive Design <br>
+🎨 Modern & Clean UI (HeroUI Components) <br>
+📚 Course Management & Assignment Tracking <br>
+📅 Calendar Integration & Academic Timeline <br>
+💬 Chat & Smart Inbox <br>
+📝 Note Upload <br>
+🔔 Profile & Notifications <br>
 🌙 Light & Dark Mode Support
 
 ## Screenshots
