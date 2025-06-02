@@ -7,7 +7,7 @@ UniPortal is a modern, visually appealing student portal designed to support uni
 ## Features
 
 📱 Fully Responsive Design <br>
-🎨 Modern & Clean UI (HeroUI Components) <br>
+🎨 Modern & Clean UI <br>
 📚 Course Management & Assignment Tracking <br>
 📅 Calendar Integration & Academic Timeline <br>
 💬 Chat & Smart Inbox <br>
@@ -72,20 +72,20 @@ npm run dev
 
 ### Mobile Views
 
-<p float="center">
-  <img src="assets/13.png" width="250" />
-  <img src="assets/14.png" width="250" />
-  <img src="assets/15.png" width="250" />
+<p align="center">
+  <img src="assets/13.png" width="260" />
+  <img src="assets/14.png" width="260" />
+  <img src="assets/15.png" width="260" />
 </p>
-<p float="center">
-  <img src="assets/16.png" width="250" />
-  <img src="assets/17.png" width="250" />
-  <img src="assets/18.png" width="250" />
+<p align="center">
+  <img src="assets/16.png" width="260" />
+  <img src="assets/17.png" width="260" />
+  <img src="assets/18.png" width="260" />
 </p>
-<p float="center">
-  <img src="assets/19.png" width="250" />
-  <img src="assets/20.png" width="250" />
-  <img src="assets/21.png" width="250" />
+<p align="center">
+  <img src="assets/19.png" width="260" />
+  <img src="assets/20.png" width="260" />
+  <img src="assets/21.png" width="260" />
 </p>
 
 ## License
