@@ -15,6 +15,10 @@ UniPortal is a modern university student portal developed using the HeroUI libra
 🔔 Profile & Notifications <br>
 🌙 Light & Dark Mode Support
 
+## Video
+
+### Youtube: [youtu.be/0WgNAVap8Ws](https://youtu.be/0WgNAVap8Ws)
+
 ## Screenshots
 
 ### Desktop Views
